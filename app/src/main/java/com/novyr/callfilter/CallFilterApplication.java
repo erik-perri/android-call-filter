@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
@@ -15,6 +16,7 @@ import com.orm.SugarApp;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class CallFilterApplication extends SugarApp {
     private static final String TAG = CallFilterApplication.class.getName();
@@ -33,7 +35,6 @@ public class CallFilterApplication extends SugarApp {
         boolean blockUnknown = sharedPref.getBoolean("block_unknown", false);
 
         return blockUnknown && !isNumberInContacts(context, number) && !isNumberInWhitelist(number);
-
     }
 
     public static boolean isNumberInWhitelist(String number) {
@@ -85,6 +86,7 @@ public class CallFilterApplication extends SugarApp {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     public static String formatNumber(Context context, String number) {
         if (number == null) {
             return "Unknown";
@@ -99,7 +101,10 @@ public class CallFilterApplication extends SugarApp {
             return contact.name;
         }
 
-        //noinspection deprecation
-        return PhoneNumberUtils.formatNumber(number);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return PhoneNumberUtils.formatNumber(number, Locale.getDefault().getCountry());
+        } else {
+            return PhoneNumberUtils.formatNumber(number);
+        }
     }
 }
