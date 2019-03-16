@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PermissionManager
-{
+public class PermissionManager {
     private Activity mActivity;
 
     /**
@@ -24,8 +23,7 @@ public class PermissionManager
      */
     private ArrayList<String> mNeededPermissions;
 
-    public PermissionManager(Activity activity)
-    {
+    public PermissionManager(Activity activity) {
         this.mActivity = activity;
         this.mRequiredPermissions = Arrays.asList(
                 Manifest.permission.READ_PHONE_STATE,
@@ -35,8 +33,7 @@ public class PermissionManager
         this.mNeededPermissions = new ArrayList<>();
     }
 
-    public boolean hasRequiredPermissions()
-    {
+    public boolean hasRequiredPermissions() {
         for (String item : mRequiredPermissions) {
             if (ContextCompat.checkSelfPermission(mActivity, item) != PackageManager.PERMISSION_GRANTED) {
                 return false;
@@ -45,13 +42,11 @@ public class PermissionManager
         return true;
     }
 
-    public boolean shouldRequestPermissions()
-    {
+    public boolean shouldRequestPermissions() {
         return shouldRequestPermissions(false);
     }
 
-    public boolean shouldRequestPermissions(boolean forceAttempt)
-    {
+    public boolean shouldRequestPermissions(boolean forceAttempt) {
         this.mNeededPermissions.clear();
 
         for (String item : mRequiredPermissions) {
@@ -65,8 +60,7 @@ public class PermissionManager
         return this.mNeededPermissions.size() > 0;
     }
 
-    public void requestPermissions(int requestCode)
-    {
+    public void requestPermissions(int requestCode) {
         if (this.mNeededPermissions.size() < 1) {
             return;
         }
@@ -75,8 +69,7 @@ public class PermissionManager
         ActivityCompat.requestPermissions(this.mActivity, permissions, requestCode);
     }
 
-    public void requestPermissions()
-    {
+    public void requestPermissions() {
         requestPermissions(0);
     }
 }

@@ -9,20 +9,18 @@ import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 
-import com.orm.SugarApp;
 import com.novyr.callfilter.models.Contact;
 import com.novyr.callfilter.models.WhitelistEntry;
+import com.orm.SugarApp;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class CallFilterApplication extends SugarApp
-{
+public class CallFilterApplication extends SugarApp {
     private static final String TAG = CallFilterApplication.class.getName();
     private static final HashMap<String, Contact> mContacts = new HashMap<>();
 
-    public static boolean shouldBlockCall(Context context, String number)
-    {
+    public static boolean shouldBlockCall(Context context, String number) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 
         // Private
@@ -38,15 +36,13 @@ public class CallFilterApplication extends SugarApp
 
     }
 
-    public static boolean isNumberInWhitelist(String number)
-    {
+    public static boolean isNumberInWhitelist(String number) {
         List<WhitelistEntry> entries = WhitelistEntry.find(WhitelistEntry.class, "number = ?", number);
 
         return entries.size() > 0;
     }
 
-    public static boolean isNumberInContacts(Context context, String number)
-    {
+    public static boolean isNumberInContacts(Context context, String number) {
         if (number == null) {
             return false;
         }
@@ -54,15 +50,13 @@ public class CallFilterApplication extends SugarApp
         try {
             Contact contact = getContactInfo(context, number);
             return (contact != null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // If we failed to check we to return true to prevent blocking anything
             return true;
         }
     }
 
-    public static Contact getContactInfo(Context context, String number)
-    {
+    public static Contact getContactInfo(Context context, String number) {
         if (mContacts.containsKey(number)) {
             return mContacts.get(number);
         }
@@ -82,20 +76,16 @@ public class CallFilterApplication extends SugarApp
                 mContacts.put(number, new Contact(name, id));
                 return mContacts.get(number);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.d(TAG, "Failed to find check phone number against contacts", e);
-        }
-        finally {
+        } finally {
             cursor.close();
         }
 
         return null;
     }
 
-    public static String formatNumber(Context context, String number)
-    {
-
+    public static String formatNumber(Context context, String number) {
         if (number == null) {
             return "Unknown";
         }

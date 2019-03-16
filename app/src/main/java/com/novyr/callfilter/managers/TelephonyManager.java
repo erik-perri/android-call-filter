@@ -6,8 +6,7 @@ import android.util.Log;
 
 import java.lang.reflect.Method;
 
-public class TelephonyManager
-{
+public class TelephonyManager {
     private static final String TAG = TelephonyManager.class.getName();
     private Context mContext;
     private Object mInterfaceTelephony = null;
@@ -15,8 +14,7 @@ public class TelephonyManager
     private Method mMethodEndCall = null;
     private Method mMethodAnswerRingingCall = null;
 
-    public TelephonyManager(Context context)
-    {
+    public TelephonyManager(Context context) {
         try {
             android.telephony.TelephonyManager manager = (android.telephony.TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             if (manager == null) {
@@ -31,40 +29,34 @@ public class TelephonyManager
             mMethodEndCall = mInterfaceTelephony.getClass().getDeclaredMethod("endCall");
             mMethodSilenceRinger = mInterfaceTelephony.getClass().getDeclaredMethod("silenceRinger");
             mMethodAnswerRingingCall = mInterfaceTelephony.getClass().getDeclaredMethod("answerRingingCall");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.d(TAG, "Failed to find telephony interface or methods", e);
         }
     }
 
-    public boolean silenceAndEndCall()
-    {
+    public boolean silenceAndEndCall() {
         silenceRinger();
         return endCall();
     }
 
-    public boolean endCall()
-    {
+    public boolean endCall() {
         try {
             if (mInterfaceTelephony != null || mMethodEndCall != null) {
                 Object returned = mMethodEndCall.invoke(mInterfaceTelephony);
                 return (Boolean) returned;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.d(TAG, "Failed to call endCall method", e);
         }
         return false;
     }
 
-    public void silenceRinger()
-    {
+    public void silenceRinger() {
         try {
             if (mInterfaceTelephony != null || mMethodSilenceRinger != null) {
                 mMethodSilenceRinger.invoke(mInterfaceTelephony);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.d(TAG, "Failed to call silenceRinger method", e);
         }
     }

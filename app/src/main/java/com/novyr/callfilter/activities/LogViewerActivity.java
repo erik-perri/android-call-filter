@@ -33,25 +33,21 @@ import com.novyr.callfilter.models.Contact;
 import com.novyr.callfilter.models.LogEntry;
 import com.novyr.callfilter.models.WhitelistEntry;
 
-public class LogViewerActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener
-{
+public class LogViewerActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
     private static final String TAG = LogViewerActivity.class.getName();
 
     private SwipeRefreshLayout mRefreshLayout;
     private Snackbar mPermissionNotice;
     private ListView mLogList;
-    private BroadcastReceiver mRefreshLogViewReceiver = new BroadcastReceiver()
-    {
+    private BroadcastReceiver mRefreshLogViewReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent bufferIntent)
-        {
+        public void onReceive(Context context, Intent bufferIntent) {
             refreshFromDatabase();
         }
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_viewer);
 
@@ -72,8 +68,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
 
         refreshFromDatabase();
@@ -82,22 +77,19 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
-    protected void onPause()
-    {
+    protected void onPause() {
         super.onPause();
 
         unregisterReceiver(mRefreshLogViewReceiver);
     }
 
     @Override
-    public void onRefresh()
-    {
+    public void onRefresh() {
         refreshFromDatabase();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (mPermissionNotice != null) {
             PermissionManager manager = new PermissionManager(this);
             if (manager.hasRequiredPermissions()) {
@@ -107,15 +99,13 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_log_viewer, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         switch (id) {
@@ -133,10 +123,8 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
                         .setTitle(getString(R.string.dialog_clear_logs_title))
                         .setMessage(getString(R.string.dialog_clear_logs_message))
                         .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener()
-                        {
-                            public void onClick(DialogInterface dialog, int whichButton)
-                            {
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
                                 LogEntry.deleteAll(LogEntry.class);
                                 if (mRefreshLayout != null) {
                                     mRefreshLayout.setRefreshing(true);
@@ -157,36 +145,30 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState)
-    {
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
     }
 
     @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
-    {
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         int topRowVerticalPosition = (mLogList == null || mLogList.getChildCount() == 0) ? 0 : mLogList.getChildAt(0).getTop();
         mRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
     }
 
-    public void refreshFromDatabase()
-    {
+    public void refreshFromDatabase() {
         ListView list = (ListView) findViewById(R.id.log_list);
         list.setAdapter(new LogEntryAdapter(this));
         if (mRefreshLayout != null) {
             // Delay so it is obvious the list was actually refreshed (sometimes it is too fast on my phone)
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable()
-            {
-                public void run()
-                {
+            handler.postDelayed(new Runnable() {
+                public void run() {
                     mRefreshLayout.setRefreshing(false);
                 }
             }, 500);
         }
     }
 
-    private void handlePermissionCheck()
-    {
+    private void handlePermissionCheck() {
         final PermissionManager manager = new PermissionManager(this);
 
         if (manager.shouldRequestPermissions()) {
@@ -194,17 +176,14 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
         }
     }
 
-    private void showPermissionWarning()
-    {
+    private void showPermissionWarning() {
         final PermissionManager manager = new PermissionManager(this);
 
         if (!manager.hasRequiredPermissions()) {
             View parentLayout = findViewById(R.id.log_list);
-            mPermissionNotice = Snackbar.make(parentLayout, R.string.warning_permissions, Snackbar.LENGTH_INDEFINITE).setAction(R.string.warning_action_retry, new View.OnClickListener()
-            {
+            mPermissionNotice = Snackbar.make(parentLayout, R.string.warning_permissions, Snackbar.LENGTH_INDEFINITE).setAction(R.string.warning_action_retry, new View.OnClickListener() {
                 @Override
-                public void onClick(View view)
-                {
+                public void onClick(View view) {
                     if (manager.shouldRequestPermissions(true)) {
                         manager.requestPermissions();
                     }
@@ -215,8 +194,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)
-    {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         ListView.AdapterContextMenuInfo info = (ListView.AdapterContextMenuInfo) menuInfo;
         LogEntryAdapter adapter = (LogEntryAdapter) mLogList.getAdapter();
 
@@ -235,12 +213,10 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
                 if (CallFilterApplication.isNumberInWhitelist(entry.number)) {
                     menu.add(0, index++, order++, R.string.context_menu_whitelist_remove);
                 }
-            }
-            else {
+            } else {
                 if (CallFilterApplication.isNumberInWhitelist(entry.number)) {
                     menu.add(0, index++, order++, R.string.context_menu_whitelist_remove);
-                }
-                else {
+                } else {
                     menu.add(0, index++, order++, R.string.context_menu_whitelist_add);
                 }
             }
@@ -252,8 +228,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item)
-    {
+    public boolean onContextItemSelected(MenuItem item) {
         super.onContextItemSelected(item);
 
         String contextItemSelected = item.getTitle().toString();
@@ -269,24 +244,20 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
             Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contact.id);
             intent.setData(uri);
             startActivity(intent);
-        }
-        else if (contextItemSelected.equals(getString(R.string.context_menu_whitelist_remove))) {
+        } else if (contextItemSelected.equals(getString(R.string.context_menu_whitelist_remove))) {
             message = String.format("Failed to remove %s from whitelist", formattedNumber);
             if (WhitelistEntry.deleteAll(WhitelistEntry.class, "number = ?", logEntry.number) > 0) {
                 message = String.format("Removed %s from whitelist", formattedNumber);
             }
-        }
-        else if (contextItemSelected.equals(getString(R.string.context_menu_whitelist_add))) {
+        } else if (contextItemSelected.equals(getString(R.string.context_menu_whitelist_add))) {
             WhitelistEntry whitelistEntry = new WhitelistEntry(logEntry.number);
             if (whitelistEntry.save() > 0) {
                 message = String.format("Added %s to whitelist", formattedNumber);
             }
-        }
-        else if (contextItemSelected.equals(getString(R.string.context_menu_log_remove))) {
+        } else if (contextItemSelected.equals(getString(R.string.context_menu_log_remove))) {
             if (logEntry.delete()) {
                 message = "Deleted log entry";
-            }
-            else {
+            } else {
                 message = "Failed to delete log entry";
             }
             refreshFromDatabase();

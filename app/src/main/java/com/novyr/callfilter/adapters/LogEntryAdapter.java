@@ -14,17 +14,14 @@ import com.novyr.callfilter.models.LogEntry;
 
 import java.text.DateFormat;
 
-public class LogEntryAdapter extends ArrayAdapter<LogEntry>
-{
-    public LogEntryAdapter(Context context)
-    {
+public class LogEntryAdapter extends ArrayAdapter<LogEntry> {
+    public LogEntryAdapter(Context context) {
         super(context, 0, LogEntry.listAll(LogEntry.class, "created DESC"));
     }
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, @NonNull ViewGroup parent)
-    {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         LogEntry item = getItem(position);
 
         if (convertView == null) {
