@@ -3,11 +3,13 @@ package com.novyr.callfilter.managers;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class PermissionManager {
@@ -25,11 +27,16 @@ public class PermissionManager {
 
     public PermissionManager(Activity activity) {
         this.mActivity = activity;
-        this.mRequiredPermissions = Arrays.asList(
+        this.mRequiredPermissions = new LinkedList<>(Arrays.asList(
                 Manifest.permission.CALL_PHONE,
                 Manifest.permission.READ_CONTACTS,
                 Manifest.permission.READ_PHONE_STATE
-        );
+        ));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mRequiredPermissions.add(Manifest.permission.READ_CALL_LOG);
+        }
+
         this.mNeededPermissions = new ArrayList<>();
     }
 

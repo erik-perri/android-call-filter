@@ -3,6 +3,7 @@ package com.novyr.callfilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import com.novyr.callfilter.managers.TelephonyManager;
 import com.novyr.callfilter.models.LogEntry;
@@ -29,8 +30,11 @@ public class CallReceiver extends BroadcastReceiver {
 
         if (state.equals(android.telephony.TelephonyManager.EXTRA_STATE_RINGING)) {
             String number = intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
-            TelephonyManager manager = new TelephonyManager(context);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && number == null) {
+                return;
+            }
 
+            TelephonyManager manager = new TelephonyManager(context);
             String action = "allowed";
             if (CallFilterApplication.shouldBlockCall(context, number)) {
                 if (manager.silenceAndEndCall()) {
