@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="block_unknown"
+        android:summary="@string/setting_block_unknown_summary"
+        android:title="@string/setting_block_unknown_title"/>
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="block_private"
+        android:summary="@string/setting_block_private_summary"
+        android:title="@string/setting_block_private_title"/>
+</PreferenceScreen>
