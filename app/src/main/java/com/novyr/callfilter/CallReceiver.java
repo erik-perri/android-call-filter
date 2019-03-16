@@ -20,6 +20,11 @@ public class CallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        String intentAction = intent.getAction();
+        if (intentAction == null || !intentAction.equals("android.intent.action.PHONE_STATE")) {
+            return;
+        }
+
         String state = intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_STATE);
 
         if (state.equals(android.telephony.TelephonyManager.EXTRA_STATE_RINGING)) {
