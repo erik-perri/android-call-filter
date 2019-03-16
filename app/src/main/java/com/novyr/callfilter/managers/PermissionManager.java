@@ -26,9 +26,9 @@ public class PermissionManager {
     public PermissionManager(Activity activity) {
         this.mActivity = activity;
         this.mRequiredPermissions = Arrays.asList(
-                Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.CALL_PHONE,
-                Manifest.permission.READ_CONTACTS
+                Manifest.permission.READ_CONTACTS,
+                Manifest.permission.READ_PHONE_STATE
         );
         this.mNeededPermissions = new ArrayList<>();
     }
