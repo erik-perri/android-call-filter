@@ -7,8 +7,6 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
-import com.novyr.callfilter.CallFilterApplication;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,7 +17,7 @@ public class PermissionsChecker implements CheckerInterface {
     private List<String> mWantedPermissions;
 
     public PermissionsChecker() {
-        if (Build.VERSION.SDK_INT >= CallFilterApplication.Q) {
+        if (android.support.v4.os.BuildCompat.isAtLeastQ()) {
             mWantedPermissions = new LinkedList<>(Collections.singletonList(Manifest.permission.READ_CONTACTS));
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mWantedPermissions = new LinkedList<>(Arrays.asList(

@@ -1,5 +1,6 @@
 package com.novyr.callfilter.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -37,7 +39,7 @@ import com.novyr.callfilter.models.WhitelistEntry;
 
 public class LogViewerActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
     public static final String BROADCAST_REFRESH = "com.novyr.callfilter.refresh";
-    private static final String TAG = LogViewerActivity.class.getName();
+
     private SwipeRefreshLayout mRefreshLayout;
     private Snackbar mPermissionNotice;
     private ListView mLogList;
@@ -87,7 +89,8 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
         showPermissionWarning();
     }
 
-    @RequiresApi(api = CallFilterApplication.Q)
+    @SuppressLint("NewApi") // TODO Remove once Q is available
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CallScreeningRoleChecker.CALL_SCREENING_REQUEST) {

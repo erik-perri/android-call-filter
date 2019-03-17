@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class CallFilterApplication extends SugarApp {
-    // TODO Replace CallFilterApplication.Q with Build.VERSION_CODES.Q when it isn't 10000
-    public static final int Q = Build.VERSION_CODES.P;
-
     private static final String TAG = CallFilterApplication.class.getName();
     private static final HashMap<String, Contact> mContacts = new HashMap<>();
 
