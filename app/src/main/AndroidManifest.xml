@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="com.novyr.callfilter"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.novyr.callfilter">
 
-    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".CallFilterApplication"
@@ -22,9 +21,9 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
@@ -33,26 +32,26 @@
             android:label="@string/action_settings">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.LogViewerActivity"/>
+                android:value=".activities.LogViewerActivity" />
         </activity>
 
         <receiver android:name=".CallReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE"/>
+                <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
 
         <meta-data
             android:name="DATABASE"
-            android:value="call_filter.db"/>
+            android:value="call_filter.db" />
         <meta-data
             android:name="VERSION"
-            android:value="1"/>
+            android:value="1" />
         <meta-data
             android:name="QUERY_LOG"
-            android:value="true"/>
+            android:value="true" />
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
-            android:value="com.novyr"/>
+            android:value="com.novyr" />
     </application>
 </manifest>
