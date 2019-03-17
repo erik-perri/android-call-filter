@@ -12,7 +12,6 @@ public class TelephonyManager {
     private Object mInterfaceTelephony = null;
     private Method mMethodSilenceRinger = null;
     private Method mMethodEndCall = null;
-    private Method mMethodAnswerRingingCall = null;
 
     public TelephonyManager(Context context) {
         try {
@@ -28,7 +27,6 @@ public class TelephonyManager {
             mInterfaceTelephony = methodGetInterface.invoke(manager);
             mMethodEndCall = mInterfaceTelephony.getClass().getDeclaredMethod("endCall");
             mMethodSilenceRinger = mInterfaceTelephony.getClass().getDeclaredMethod("silenceRinger");
-            mMethodAnswerRingingCall = mInterfaceTelephony.getClass().getDeclaredMethod("answerRingingCall");
         } catch (Exception e) {
             Log.d(TAG, "Failed to find telephony interface or methods", e);
         }
