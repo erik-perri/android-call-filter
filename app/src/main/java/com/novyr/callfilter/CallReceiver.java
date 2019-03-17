@@ -37,7 +37,7 @@ public class CallReceiver extends BroadcastReceiver {
             TelephonyManager manager = new TelephonyManager(context);
             String action = "allowed";
             if (CallFilterApplication.shouldBlockCall(context, number)) {
-                if (manager.silenceAndEndCall()) {
+                if (manager.endCall()) {
                     action = "blocked";
                 } else {
                     action = "failed";

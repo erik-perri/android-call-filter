@@ -34,30 +34,20 @@ public class TelephonyManager {
         }
     }
 
-    public boolean silenceAndEndCall() {
-        silenceRinger();
-        return endCall();
-    }
-
     public boolean endCall() {
         try {
-            if (mInterfaceTelephony != null || mMethodEndCall != null) {
-                Object returned = mMethodEndCall.invoke(mInterfaceTelephony);
-                return (Boolean) returned;
+            if (mInterfaceTelephony == null || mMethodEndCall == null) {
+                return false;
             }
+
+            if (mMethodSilenceRinger != null) {
+                mMethodSilenceRinger.invoke(mInterfaceTelephony);
+            }
+
+            return (Boolean) mMethodEndCall.invoke(mInterfaceTelephony);
         } catch (Exception e) {
             Log.d(TAG, "Failed to call endCall method", e);
         }
         return false;
-    }
-
-    public void silenceRinger() {
-        try {
-            if (mInterfaceTelephony != null || mMethodSilenceRinger != null) {
-                mMethodSilenceRinger.invoke(mInterfaceTelephony);
-            }
-        } catch (Exception e) {
-            Log.d(TAG, "Failed to call silenceRinger method", e);
-        }
     }
 }
