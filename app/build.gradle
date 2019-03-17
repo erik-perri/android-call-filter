@@ -6,6 +6,7 @@ android {
     defaultConfig {
         applicationId "com.novyr.callfilter"
         minSdkVersion 15
+        //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
