@@ -78,6 +78,16 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (mPermissionNotice != null) {
+            PermissionManager manager = new PermissionManager(this);
+            if (manager.hasRequiredPermissions()) {
+                mPermissionNotice.dismiss();
+            }
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
 
@@ -87,16 +97,6 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     @Override
     public void onRefresh() {
         refreshFromDatabase();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (mPermissionNotice != null) {
-            PermissionManager manager = new PermissionManager(this);
-            if (manager.hasRequiredPermissions()) {
-                mPermissionNotice.dismiss();
-            }
-        }
     }
 
     @Override
@@ -153,45 +153,6 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         int topRowVerticalPosition = (mLogList == null || mLogList.getChildCount() == 0) ? 0 : mLogList.getChildAt(0).getTop();
         mRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
-    }
-
-    private void refreshFromDatabase() {
-        ListView list = findViewById(R.id.log_list);
-        list.setAdapter(new LogEntryAdapter(this));
-        if (mRefreshLayout != null) {
-            // Delay so it is obvious the list was actually refreshed (sometimes it is too fast on my phone)
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    mRefreshLayout.setRefreshing(false);
-                }
-            }, 500);
-        }
-    }
-
-    private void handlePermissionCheck() {
-        final PermissionManager manager = new PermissionManager(this);
-
-        if (manager.shouldRequestPermissions()) {
-            manager.requestPermissions();
-        }
-    }
-
-    private void showPermissionWarning() {
-        final PermissionManager manager = new PermissionManager(this);
-
-        if (!manager.hasRequiredPermissions()) {
-            View parentLayout = findViewById(R.id.log_list);
-            mPermissionNotice = Snackbar.make(parentLayout, R.string.warning_permissions, Snackbar.LENGTH_INDEFINITE).setAction(R.string.warning_action_retry, new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (manager.shouldRequestPermissions(true)) {
-                        manager.requestPermissions();
-                    }
-                }
-            });
-            mPermissionNotice.show();
-        }
     }
 
     @Override
@@ -278,5 +239,44 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
         }
 
         return true;
+    }
+
+    private void handlePermissionCheck() {
+        final PermissionManager manager = new PermissionManager(this);
+
+        if (manager.shouldRequestPermissions()) {
+            manager.requestPermissions();
+        }
+    }
+
+    private void refreshFromDatabase() {
+        ListView list = findViewById(R.id.log_list);
+        list.setAdapter(new LogEntryAdapter(this));
+        if (mRefreshLayout != null) {
+            // Delay so it is obvious the list was actually refreshed (sometimes it is too fast on my phone)
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    mRefreshLayout.setRefreshing(false);
+                }
+            }, 500);
+        }
+    }
+
+    private void showPermissionWarning() {
+        final PermissionManager manager = new PermissionManager(this);
+
+        if (!manager.hasRequiredPermissions()) {
+            View parentLayout = findViewById(R.id.log_list);
+            mPermissionNotice = Snackbar.make(parentLayout, R.string.warning_permissions, Snackbar.LENGTH_INDEFINITE).setAction(R.string.warning_action_retry, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (manager.shouldRequestPermissions(true)) {
+                        manager.requestPermissions();
+                    }
+                }
+            });
+            mPermissionNotice.show();
+        }
     }
 }
