@@ -154,7 +154,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
         mRefreshLayout.setEnabled(firstVisibleItem == 0 && topRowVerticalPosition >= 0);
     }
 
-    public void refreshFromDatabase() {
+    private void refreshFromDatabase() {
         ListView list = (ListView) findViewById(R.id.log_list);
         list.setAdapter(new LogEntryAdapter(this));
         if (mRefreshLayout != null) {
