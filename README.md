@@ -9,3 +9,4 @@ This is a basic app that will silence the ringer and hang up on calls that are e
 
  * Instant run must be disabled in Android Studio for debugging, it is not compatible with the version of [Sugar ORM](https://github.com/chennaione/sugar) used.
  * The app does not always get notified about the call before the ringer can start, so there is sometimes a second of ringer before it hangs up.
+ * The app has a whitelist to allow numbers not in the contacts but has not way to view it.
