@@ -33,7 +33,7 @@ public class PermissionManager {
                 Manifest.permission.READ_PHONE_STATE
         ));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mRequiredPermissions.add(Manifest.permission.READ_CALL_LOG);
         }
 

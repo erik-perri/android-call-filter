@@ -30,7 +30,7 @@ public class CallReceiver extends BroadcastReceiver {
 
         if (state.equals(android.telephony.TelephonyManager.EXTRA_STATE_RINGING)) {
             String number = intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && number == null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && number == null) {
                 return;
             }
 
