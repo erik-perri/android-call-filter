@@ -73,7 +73,7 @@ public class PermissionManager {
             return;
         }
 
-        String[] permissions = this.mNeededPermissions.toArray(new String[this.mNeededPermissions.size()]);
+        String[] permissions = this.mNeededPermissions.toArray(new String[0]);
         ActivityCompat.requestPermissions(this.mActivity, permissions, 0);
     }
 }
