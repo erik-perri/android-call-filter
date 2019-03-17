@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 
 import com.novyr.callfilter.managers.TelephonyManager;
+import com.novyr.callfilter.managers.telephony.HandlerInterface;
 import com.novyr.callfilter.models.LogEntry;
 
 import java.util.Date;
@@ -36,13 +37,13 @@ public class CallReceiver extends BroadcastReceiver {
                 return;
             }
 
-            TelephonyManager manager = new TelephonyManager(context);
+            HandlerInterface handler = TelephonyManager.findHandler(context);
             String action = "allowed";
             if (CallFilterApplication.shouldBlockCall(context, number)) {
-                if (manager.endCall()) {
+                if (handler.endCall()) {
                     action = "blocked";
                 } else {
-                    action = "failed";
+                    action = "error";
                 }
             }
 
