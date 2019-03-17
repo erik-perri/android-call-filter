@@ -35,6 +35,7 @@ import com.novyr.callfilter.models.WhitelistEntry;
 
 public class LogViewerActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
     private static final String TAG = LogViewerActivity.class.getName();
+    public static final String BROADCAST_REFRESH = "com.novyr.callfilter.refresh";
 
     private SwipeRefreshLayout mRefreshLayout;
     private Snackbar mPermissionNotice;
@@ -73,7 +74,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
 
         refreshFromDatabase();
         showPermissionWarning();
-        registerReceiver(mRefreshLogViewReceiver, new IntentFilter(CallReceiver.BROADCAST_REFRESH));
+        registerReceiver(mRefreshLogViewReceiver, new IntentFilter(BROADCAST_REFRESH));
     }
 
     @Override
