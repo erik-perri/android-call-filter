@@ -1,21 +1,26 @@
 package com.novyr.callfilter.activities;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,13 +30,17 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.novyr.callfilter.CallFilterApplication;
-import com.novyr.callfilter.CallReceiver;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.adapters.LogEntryAdapter;
 import com.novyr.callfilter.managers.PermissionManager;
+import com.novyr.callfilter.managers.permission.CallScreeningRoleChecker;
 import com.novyr.callfilter.models.Contact;
 import com.novyr.callfilter.models.LogEntry;
 import com.novyr.callfilter.models.WhitelistEntry;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class LogViewerActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
     private static final String TAG = LogViewerActivity.class.getName();
@@ -46,6 +55,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
             refreshFromDatabase();
         }
     };
+    private PermissionManager mPermissionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +64,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
+        mPermissionManager = new PermissionManager(getWantedPermissions());
         mRefreshLayout = findViewById(R.id.refresh_layout);
         mRefreshLayout.setOnRefreshListener(this);
 
@@ -62,7 +73,6 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
         mLogList.setOnScrollListener(this);
 
         registerForContextMenu(mLogList);
-        handlePermissionCheck();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -73,17 +83,23 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
         super.onResume();
 
         refreshFromDatabase();
-        showPermissionWarning();
         registerReceiver(mRefreshLogViewReceiver, new IntentFilter(BROADCAST_REFRESH));
+
+        if (!mPermissionManager.hasAccess(this)) {
+            mPermissionManager.requestAccess(this, false);
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (mPermissionNotice != null) {
-            PermissionManager manager = new PermissionManager(this);
-            if (manager.hasRequiredPermissions()) {
-                mPermissionNotice.dismiss();
-            }
+        showPermissionWarning();
+    }
+
+    @RequiresApi(api = CallFilterApplication.Q)
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CallScreeningRoleChecker.CALL_SCREENING_REQUEST) {
+            showPermissionWarning();
         }
     }
 
@@ -241,14 +257,6 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
         return true;
     }
 
-    private void handlePermissionCheck() {
-        final PermissionManager manager = new PermissionManager(this);
-
-        if (manager.shouldRequestPermissions()) {
-            manager.requestPermissions();
-        }
-    }
-
     private void refreshFromDatabase() {
         ListView list = findViewById(R.id.log_list);
         list.setAdapter(new LogEntryAdapter(this));
@@ -264,19 +272,36 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     private void showPermissionWarning() {
-        final PermissionManager manager = new PermissionManager(this);
-
-        if (!manager.hasRequiredPermissions()) {
-            View parentLayout = findViewById(R.id.log_list);
-            mPermissionNotice = Snackbar.make(parentLayout, R.string.warning_permissions, Snackbar.LENGTH_INDEFINITE).setAction(R.string.warning_action_retry, new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (manager.shouldRequestPermissions(true)) {
-                        manager.requestPermissions();
-                    }
-                }
-            });
-            mPermissionNotice.show();
+        if (mPermissionManager.hasAccess(this)) {
+            if (mPermissionNotice != null) {
+                mPermissionNotice.dismiss();
+                mPermissionNotice = null;
+            }
+            return;
         }
+
+        View parentLayout = findViewById(R.id.log_list);
+        final Activity self = this;
+        mPermissionNotice = Snackbar.make(parentLayout, R.string.warning_permissions, Snackbar.LENGTH_INDEFINITE).setAction(R.string.warning_action_retry, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mPermissionManager.requestAccess(self, true);
+            }
+        });
+        mPermissionNotice.show();
+    }
+
+    private String[] getWantedPermissions() {
+        List<String> permissions = new ArrayList<>();
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo("com.novyr.callfilter", PackageManager.GET_PERMISSIONS);
+            if (info != null && info.requestedPermissions != null) {
+                Collections.addAll(permissions, info.requestedPermissions);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d(TAG, "Failed to find permissions", e);
+        }
+
+        return permissions.toArray(new String[0]);
     }
 }

@@ -1,79 +1,42 @@
 package com.novyr.callfilter.managers;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.novyr.callfilter.CallFilterApplication;
+import com.novyr.callfilter.managers.permission.PermissionsChecker;
+import com.novyr.callfilter.managers.permission.CallScreeningRoleChecker;
+import com.novyr.callfilter.managers.permission.CheckerInterface;
+
 import java.util.LinkedList;
 import java.util.List;
 
 public class PermissionManager {
-    private Activity mActivity;
+    private List<CheckerInterface> mCheckers;
 
-    /**
-     * Permissions needed for the App to run
-     */
-    private List<String> mRequiredPermissions;
+    public PermissionManager(String[] wantedPermissions) {
+        this.mCheckers = new LinkedList<>();
 
-    /**
-     * Permissions not yet granted
-     */
-    private ArrayList<String> mNeededPermissions;
-
-    public PermissionManager(Activity activity) {
-        this.mActivity = activity;
-        this.mRequiredPermissions = new LinkedList<>(Arrays.asList(
-                Manifest.permission.CALL_PHONE,
-                Manifest.permission.READ_CONTACTS,
-                Manifest.permission.READ_PHONE_STATE
-        ));
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mRequiredPermissions.add(Manifest.permission.ANSWER_PHONE_CALLS);
-            mRequiredPermissions.add(Manifest.permission.READ_CALL_LOG);
+        if (Build.VERSION.SDK_INT >= CallFilterApplication.Q) {
+            this.mCheckers.add(new CallScreeningRoleChecker());
         }
 
-        this.mNeededPermissions = new ArrayList<>();
+        this.mCheckers.add(new PermissionsChecker(wantedPermissions));
     }
 
-    public boolean hasRequiredPermissions() {
-        for (String item : mRequiredPermissions) {
-            if (ContextCompat.checkSelfPermission(mActivity, item) != PackageManager.PERMISSION_GRANTED) {
+    public boolean hasAccess(Activity activity) {
+        for (CheckerInterface checker : mCheckers) {
+            if (!checker.hasAccess(activity)) {
                 return false;
             }
         }
+
         return true;
     }
 
-    public boolean shouldRequestPermissions() {
-        return shouldRequestPermissions(false);
-    }
-
-    public boolean shouldRequestPermissions(boolean forceAttempt) {
-        this.mNeededPermissions.clear();
-
-        for (String item : mRequiredPermissions) {
-            if (forceAttempt || ContextCompat.checkSelfPermission(mActivity, item) != PackageManager.PERMISSION_GRANTED) {
-                if (forceAttempt || !ActivityCompat.shouldShowRequestPermissionRationale(mActivity, item)) {
-                    this.mNeededPermissions.add(item);
-                }
-            }
+    public void requestAccess(Activity activity, boolean forceRequest) {
+        for (CheckerInterface checker : mCheckers) {
+            checker.requestAccess(activity, forceRequest);
         }
-
-        return this.mNeededPermissions.size() > 0;
-    }
-
-    public void requestPermissions() {
-        if (this.mNeededPermissions.size() < 1) {
-            return;
-        }
-
-        String[] permissions = this.mNeededPermissions.toArray(new String[0]);
-        ActivityCompat.requestPermissions(this.mActivity, permissions, 0);
     }
 }

@@ -11,6 +11,11 @@ import com.novyr.callfilter.managers.telephony.HandlerInterface;
 public class CallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (Build.VERSION.SDK_INT >= CallFilterApplication.Q) {
+            // If we are on Q+ we use the CallScreeningService API instead
+            return;
+        }
+
         String intentAction = intent.getAction();
         if (intentAction == null || !intentAction.equals("android.intent.action.PHONE_STATE")) {
             return;
