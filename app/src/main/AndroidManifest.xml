@@ -3,11 +3,15 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="com.novyr.callfilter">
 
-    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"
+                     android:maxSdkVersion="28"/>
+    <uses-permission android:name="android.permission.CALL_PHONE"
+                     android:maxSdkVersion="28"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG"
+                     android:maxSdkVersion="28"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"
+                     android:maxSdkVersion="28"/>
 
     <application
         android:name=".CallFilterApplication"
