@@ -53,17 +53,17 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
-        mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        mRefreshLayout = findViewById(R.id.refresh_layout);
         mRefreshLayout.setOnRefreshListener(this);
 
-        mLogList = (ListView) findViewById(R.id.log_list);
+        mLogList = findViewById(R.id.log_list);
         mLogList.setEmptyView(findViewById(R.id.empty));
         mLogList.setOnScrollListener(this);
 
         registerForContextMenu(mLogList);
         handlePermissionCheck();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
@@ -155,7 +155,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     private void refreshFromDatabase() {
-        ListView list = (ListView) findViewById(R.id.log_list);
+        ListView list = findViewById(R.id.log_list);
         list.setAdapter(new LogEntryAdapter(this));
         if (mRefreshLayout != null) {
             // Delay so it is obvious the list was actually refreshed (sometimes it is too fast on my phone)
@@ -222,6 +222,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
             }
         }
 
+        //noinspection UnusedAssignment
         menu.add(0, index++, order++, R.string.context_menu_log_remove);
 
         super.onCreateContextMenu(menu, v, menuInfo);

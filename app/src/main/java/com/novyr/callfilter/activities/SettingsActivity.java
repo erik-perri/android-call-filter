@@ -22,7 +22,6 @@ public class SettingsActivity extends AppCompatActivity {
                 .commit();
     }
 
-
     public static class SettingsFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {

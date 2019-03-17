@@ -32,8 +32,8 @@ public class LogEntryAdapter extends ArrayAdapter<LogEntry> {
             return convertView;
         }
 
-        TextView tvDate = (TextView) convertView.findViewById(R.id.created);
-        TextView tvMessage = (TextView) convertView.findViewById(R.id.message);
+        TextView tvDate = convertView.findViewById(R.id.created);
+        TextView tvMessage = convertView.findViewById(R.id.message);
 
         String formattedNumber = CallFilterApplication.formatNumber(getContext(), item.number);
 
