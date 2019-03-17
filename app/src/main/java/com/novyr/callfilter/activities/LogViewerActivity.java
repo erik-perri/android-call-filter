@@ -235,15 +235,23 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
         ListView.AdapterContextMenuInfo info = (ListView.AdapterContextMenuInfo) item.getMenuInfo();
         LogEntryAdapter adapter = (LogEntryAdapter) mLogList.getAdapter();
         LogEntry logEntry = adapter.getItem(info.position);
+        if (logEntry == null) {
+            return false;
+        }
+
         String message = "";
         String formattedNumber = CallFilterApplication.formatNumber(this, logEntry.number);
 
         if (contextItemSelected.equals(getString(R.string.context_menu_open_contacts))) {
             Contact contact = CallFilterApplication.getContactInfo(this, logEntry.number);
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contact.id);
-            intent.setData(uri);
-            startActivity(intent);
+            if (contact == null) {
+                message = "Failed to find contact";
+            } else {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contact.id);
+                intent.setData(uri);
+                startActivity(intent);
+            }
         } else if (contextItemSelected.equals(getString(R.string.context_menu_whitelist_remove))) {
             message = String.format("Failed to remove %s from whitelist", formattedNumber);
             if (WhitelistEntry.deleteAll(WhitelistEntry.class, "number = ?", logEntry.number) > 0) {
