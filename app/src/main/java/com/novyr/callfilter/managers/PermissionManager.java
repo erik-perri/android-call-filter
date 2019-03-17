@@ -34,6 +34,7 @@ public class PermissionManager {
         ));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            mRequiredPermissions.add(Manifest.permission.ANSWER_PHONE_CALLS);
             mRequiredPermissions.add(Manifest.permission.READ_CALL_LOG);
         }
 

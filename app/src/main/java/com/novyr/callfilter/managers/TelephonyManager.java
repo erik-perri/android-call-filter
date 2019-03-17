@@ -1,7 +1,13 @@
 package com.novyr.callfilter.managers;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
+import android.telecom.TelecomManager;
 import android.util.Log;
 
 import java.lang.reflect.Method;
@@ -34,18 +40,39 @@ public class TelephonyManager {
 
     public boolean endCall() {
         try {
-            if (mInterfaceTelephony == null || mMethodEndCall == null) {
-                return false;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                return endCallP();
             }
 
-            if (mMethodSilenceRinger != null) {
-                mMethodSilenceRinger.invoke(mInterfaceTelephony);
-            }
-
-            return (Boolean) mMethodEndCall.invoke(mInterfaceTelephony);
+            return endCallLegacy();
         } catch (Exception e) {
-            Log.d(TAG, "Failed to call endCall method", e);
+            Log.d(TAG, "Failed to silence and end call", e);
         }
         return false;
     }
+
+    private boolean endCallLegacy() throws Exception {
+        if (mInterfaceTelephony == null || mMethodEndCall == null) {
+            return false;
+        }
+
+        if (mMethodSilenceRinger != null) {
+            mMethodSilenceRinger.invoke(mInterfaceTelephony);
+        }
+
+        return (Boolean) mMethodEndCall.invoke(mInterfaceTelephony);
+    }
+
+    // https://stackoverflow.com/a/51121175
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    private boolean endCallP() {
+        final TelecomManager telecomManager = (TelecomManager) mContext.getSystemService(Context.TELECOM_SERVICE);
+        if (telecomManager != null && ContextCompat.checkSelfPermission(mContext, Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_GRANTED) {
+            telecomManager.endCall();
+            return true;
+        }
+
+        return false;
+    }
+
 }
