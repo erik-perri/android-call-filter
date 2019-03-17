@@ -46,6 +46,13 @@
             </intent-filter>
         </receiver>
 
+        <service android:name="com.novyr.callfilter.CallFilterService"
+                 android:permission="android.permission.BIND_SCREENING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService"/>
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="DATABASE"
             android:value="call_filter.db"/>
