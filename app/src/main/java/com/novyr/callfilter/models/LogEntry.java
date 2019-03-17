@@ -9,7 +9,9 @@ public class LogEntry extends SugarRecord {
     public String action;
     public String number;
 
+    @SuppressWarnings("unused")
     public LogEntry() {
+        // This is needed by Sugar ORM
     }
 
     public LogEntry(Date created, String action, String number) {
