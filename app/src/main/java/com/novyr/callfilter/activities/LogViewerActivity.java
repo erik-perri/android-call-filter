@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +18,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,10 +34,6 @@ import com.novyr.callfilter.managers.permission.CallScreeningRoleChecker;
 import com.novyr.callfilter.models.Contact;
 import com.novyr.callfilter.models.LogEntry;
 import com.novyr.callfilter.models.WhitelistEntry;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class LogViewerActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
     private static final String TAG = LogViewerActivity.class.getName();
@@ -64,7 +57,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
-        mPermissionManager = new PermissionManager(getWantedPermissions());
+        mPermissionManager = new PermissionManager();
         mRefreshLayout = findViewById(R.id.refresh_layout);
         mRefreshLayout.setOnRefreshListener(this);
 
@@ -289,19 +282,5 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
             }
         });
         mPermissionNotice.show();
-    }
-
-    private String[] getWantedPermissions() {
-        List<String> permissions = new ArrayList<>();
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo("com.novyr.callfilter", PackageManager.GET_PERMISSIONS);
-            if (info != null && info.requestedPermissions != null) {
-                Collections.addAll(permissions, info.requestedPermissions);
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d(TAG, "Failed to find permissions", e);
-        }
-
-        return permissions.toArray(new String[0]);
     }
 }
