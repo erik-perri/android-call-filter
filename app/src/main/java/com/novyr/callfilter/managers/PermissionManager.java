@@ -68,16 +68,12 @@ public class PermissionManager {
         return this.mNeededPermissions.size() > 0;
     }
 
-    public void requestPermissions(int requestCode) {
+    public void requestPermissions() {
         if (this.mNeededPermissions.size() < 1) {
             return;
         }
 
         String[] permissions = this.mNeededPermissions.toArray(new String[this.mNeededPermissions.size()]);
-        ActivityCompat.requestPermissions(this.mActivity, permissions, requestCode);
-    }
-
-    public void requestPermissions() {
-        requestPermissions(0);
+        ActivityCompat.requestPermissions(this.mActivity, permissions, 0);
     }
 }
