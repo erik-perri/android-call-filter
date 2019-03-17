@@ -122,7 +122,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         switch (id) {
@@ -207,7 +207,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         super.onContextItemSelected(item);
 
         String contextItemSelected = item.getTitle().toString();
