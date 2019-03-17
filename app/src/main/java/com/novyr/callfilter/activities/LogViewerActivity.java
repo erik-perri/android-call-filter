@@ -36,9 +36,8 @@ import com.novyr.callfilter.models.LogEntry;
 import com.novyr.callfilter.models.WhitelistEntry;
 
 public class LogViewerActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
-    private static final String TAG = LogViewerActivity.class.getName();
     public static final String BROADCAST_REFRESH = "com.novyr.callfilter.refresh";
-
+    private static final String TAG = LogViewerActivity.class.getName();
     private SwipeRefreshLayout mRefreshLayout;
     private Snackbar mPermissionNotice;
     private ListView mLogList;

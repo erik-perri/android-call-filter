@@ -10,7 +10,7 @@ public interface CheckerInterface {
     boolean hasAccess(Activity activity);
 
     /**
-     * @param activity The application activity
+     * @param activity     The application activity
      * @param forceAttempt Whether to force the attempt event if it looks like we have access
      */
     void requestAccess(Activity activity, boolean forceAttempt);

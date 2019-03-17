@@ -11,10 +11,6 @@ import java.util.Date;
 class CallLogger {
     private final Intent mBroadcastRefresh;
 
-    public enum Action {
-        ALLOWED, BLOCKED, FAILED
-    }
-
     CallLogger() {
         mBroadcastRefresh = new Intent(LogViewerActivity.BROADCAST_REFRESH);
     }
@@ -24,5 +20,9 @@ class CallLogger {
         log.save();
 
         context.sendBroadcast(mBroadcastRefresh);
+    }
+
+    public enum Action {
+        ALLOWED, BLOCKED, FAILED
     }
 }
