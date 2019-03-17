@@ -8,6 +8,8 @@ import android.os.Build;
 import com.novyr.callfilter.managers.TelephonyManager;
 import com.novyr.callfilter.models.LogEntry;
 
+import java.util.Date;
+
 public class CallReceiver extends BroadcastReceiver {
     public static final String BROADCAST_REFRESH = "com.novyr.callfilter.refresh";
     private static final String TAG = CallReceiver.class.getName();
@@ -44,7 +46,7 @@ public class CallReceiver extends BroadcastReceiver {
                 }
             }
 
-            LogEntry log = new LogEntry(action, number);
+            LogEntry log = new LogEntry(new Date(), action, number);
             log.save();
 
             context.sendBroadcast(mBroadcastRefresh);

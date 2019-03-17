@@ -12,10 +12,6 @@ public class LogEntry extends SugarRecord {
     public LogEntry() {
     }
 
-    public LogEntry(String action, String number) {
-        this(new Date(), action, number);
-    }
-
     public LogEntry(Date created, String action, String number) {
         this.created = created;
         this.action = action;
