@@ -41,14 +41,14 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     public static final String BROADCAST_REFRESH = "com.novyr.callfilter.refresh";
 
     private SwipeRefreshLayout mRefreshLayout;
-    private Snackbar mPermissionNotice;
-    private ListView mLogList;
     final private BroadcastReceiver mRefreshLogViewReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent bufferIntent) {
             refreshFromDatabase();
         }
     };
+    private Snackbar mPermissionNotice;
+    private ListView mLogList;
     private PermissionManager mPermissionManager;
 
     @Override
