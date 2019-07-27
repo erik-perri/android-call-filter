@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -56,8 +55,6 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_log_viewer);
-
-        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
         mPermissionManager = new PermissionManager();
         mRefreshLayout = findViewById(R.id.refresh_layout);
