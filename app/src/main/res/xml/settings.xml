@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
     <SwitchPreferenceCompat
-        android:key="block_unknown"
-        android:summary="@string/setting_block_unknown_summary"
-        android:title="@string/setting_block_unknown_title" />
+        app:key="block_unknown"
+        app:summary="@string/setting_block_unknown_summary"
+        app:title="@string/setting_block_unknown_title" />
 
     <SwitchPreferenceCompat
-        android:key="block_private"
-        android:summary="@string/setting_block_private_summary"
-        android:title="@string/setting_block_private_title" />
+        app:key="block_private"
+        app:summary="@string/setting_block_private_summary"
+        app:title="@string/setting_block_private_title" />
 </androidx.preference.PreferenceScreen>
