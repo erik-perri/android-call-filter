@@ -1,12 +1,15 @@
 package com.novyr.callfilter;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 
@@ -60,6 +63,10 @@ public class CallFilterApplication extends SugarApp {
     public static Contact getContactInfo(Context context, String number) {
         if (mContacts.containsKey(number)) {
             return mContacts.get(number);
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            throw new InternalError("Unable to lookup contact");
         }
 
         Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
