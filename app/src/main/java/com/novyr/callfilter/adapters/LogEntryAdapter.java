@@ -1,7 +1,6 @@
 package com.novyr.callfilter.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,8 @@ import com.novyr.callfilter.R;
 import com.novyr.callfilter.models.LogEntry;
 
 import java.text.DateFormat;
+
+import androidx.annotation.NonNull;
 
 public class LogEntryAdapter extends ArrayAdapter<LogEntry> {
     public LogEntryAdapter(Context context) {
@@ -56,7 +57,7 @@ public class LogEntryAdapter extends ArrayAdapter<LogEntry> {
             case "allowed":
                 action = "Allowed call";
                 break;
-            case "error":
+            case "failed":
                 action = "Failed to block call";
                 break;
             default:

@@ -7,23 +7,15 @@ import android.os.Build;
 
 import com.novyr.callfilter.managers.TelephonyManager;
 import com.novyr.callfilter.managers.telephony.HandlerInterface;
-import com.novyr.callfilter.models.LogEntry;
-
-import java.util.Date;
 
 public class CallReceiver extends BroadcastReceiver {
-    public static final String BROADCAST_REFRESH = "com.novyr.callfilter.refresh";
-    private static final String TAG = CallReceiver.class.getName();
-    private final Intent mBroadcastRefresh;
-
-    public CallReceiver() {
-        super();
-
-        mBroadcastRefresh = new Intent(BROADCAST_REFRESH);
-    }
-
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // If we are on Q+ we use the CallScreeningService API instead
+            return;
+        }
+
         String intentAction = intent.getAction();
         if (intentAction == null || !intentAction.equals("android.intent.action.PHONE_STATE")) {
             return;
@@ -34,6 +26,7 @@ public class CallReceiver extends BroadcastReceiver {
             return;
         }
 
+        //noinspection deprecation
         String number = intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && number == null) {
             // Since we request both READ_CALL_LOG and READ_PHONE_STATE permissions our onReceive
@@ -43,18 +36,16 @@ public class CallReceiver extends BroadcastReceiver {
         }
 
         HandlerInterface handler = TelephonyManager.findHandler(context);
-        String action = "allowed";
+        CallLogger.Action action = CallLogger.Action.ALLOWED;
         if (CallFilterApplication.shouldBlockCall(context, number)) {
             if (handler.endCall()) {
-                action = "blocked";
+                action = CallLogger.Action.BLOCKED;
             } else {
-                action = "error";
+                action = CallLogger.Action.FAILED;
             }
         }
 
-        LogEntry log = new LogEntry(new Date(), action, number);
-        log.save();
-
-        context.sendBroadcast(mBroadcastRefresh);
+        CallLogger recorder = new CallLogger();
+        recorder.record(context, action, number);
     }
 }

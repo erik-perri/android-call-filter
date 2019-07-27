@@ -5,14 +5,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.ContextCompat;
 import android.telecom.TelecomManager;
+
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 @RequiresApi(api = Build.VERSION_CODES.P)
 public class AndroidPieHandler implements HandlerInterface {
-    private static final String TAG = AndroidPieHandler.class.getName();
-
     private TelecomManager mTelecomManager = null;
 
     public AndroidPieHandler(Context context) {

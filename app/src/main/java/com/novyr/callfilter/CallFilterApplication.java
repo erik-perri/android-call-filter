@@ -1,7 +1,9 @@
 package com.novyr.callfilter;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -17,6 +19,8 @@ import com.orm.SugarApp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.core.content.ContextCompat;
 
 public class CallFilterApplication extends SugarApp {
     private static final String TAG = CallFilterApplication.class.getName();
@@ -48,6 +52,11 @@ public class CallFilterApplication extends SugarApp {
             return false;
         }
 
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            // If we can't check we to return true to prevent blocking anything
+            return true;
+        }
+
         try {
             Contact contact = getContactInfo(context, number);
             return (contact != null);
@@ -60,6 +69,10 @@ public class CallFilterApplication extends SugarApp {
     public static Contact getContactInfo(Context context, String number) {
         if (mContacts.containsKey(number)) {
             return mContacts.get(number);
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            return null;
         }
 
         Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
