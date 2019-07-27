@@ -18,27 +18,31 @@ public class CallFilterService extends CallScreeningService {
 
         Uri handle = details.getHandle();
         String number = null;
-        if (handle != null) {
-            String scheme = handle.getScheme();
-            if (scheme != null && scheme.equals("tel")) {
-                number = handle.getSchemeSpecificPart();
+
+        if (details.getCallDirection() == Call.Details.DIRECTION_INCOMING) {
+            if (handle != null) {
+                String scheme = handle.getScheme();
+                if (scheme != null && scheme.equals("tel")) {
+                    number = handle.getSchemeSpecificPart();
+                }
             }
-        }
 
-        CallLogger.Action action = CallLogger.Action.ALLOWED;
-        if (CallFilterApplication.shouldBlockCall(getApplicationContext(), number)) {
-            action = CallLogger.Action.BLOCKED;
-            response.setDisallowCall(true);
-            response.setRejectCall(true);
-            response.setSkipNotification(true);
+            CallLogger.Action action = CallLogger.Action.ALLOWED;
 
-            // TODO Doesn't work?
-            response.setSkipCallLog(false);
+            if (CallFilterApplication.shouldBlockCall(getApplicationContext(), number)) {
+                action = CallLogger.Action.BLOCKED;
+                response.setDisallowCall(true);
+                response.setRejectCall(true);
+                response.setSkipNotification(true);
+
+                // TODO Doesn't work?
+                response.setSkipCallLog(false);
+            }
+
+            CallLogger recorder = new CallLogger();
+            recorder.record(getApplicationContext(), action, number);
         }
 
         respondToCall(details, response.build());
-
-        CallLogger recorder = new CallLogger();
-        recorder.record(getApplicationContext(), action, number);
     }
 }
