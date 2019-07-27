@@ -99,6 +99,8 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == CallScreeningRoleChecker.CALL_SCREENING_REQUEST) {
             showPermissionWarning();
         }
