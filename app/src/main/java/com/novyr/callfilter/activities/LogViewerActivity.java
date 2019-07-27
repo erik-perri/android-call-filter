@@ -72,15 +72,22 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!mPermissionManager.hasAccess(this)) {
+            mPermissionManager.requestAccess(this, false);
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
         refreshFromDatabase();
         registerReceiver(mRefreshLogViewReceiver, new IntentFilter(BROADCAST_REFRESH));
 
-        if (!mPermissionManager.hasAccess(this)) {
-            mPermissionManager.requestAccess(this, false);
-        }
+        showPermissionWarning();
     }
 
     @Override
