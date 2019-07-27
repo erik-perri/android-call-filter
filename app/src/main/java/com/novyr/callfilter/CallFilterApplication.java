@@ -51,6 +51,11 @@ public class CallFilterApplication extends SugarApp {
             return false;
         }
 
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            // If we can't check we to return true to prevent blocking anything
+            return true;
+        }
+
         try {
             Contact contact = getContactInfo(context, number);
             return (contact != null);
@@ -66,7 +71,7 @@ public class CallFilterApplication extends SugarApp {
         }
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            throw new InternalError("Unable to lookup contact");
+            return null;
         }
 
         Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
