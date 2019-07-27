@@ -2,9 +2,10 @@ package com.novyr.callfilter;
 
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.telecom.Call;
 import android.telecom.CallScreeningService;
+
+import androidx.annotation.RequiresApi;
 
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class CallFilterService extends CallScreeningService {

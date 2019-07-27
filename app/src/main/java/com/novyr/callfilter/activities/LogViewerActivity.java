@@ -12,13 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +20,7 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.novyr.callfilter.CallFilterApplication;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.adapters.LogEntryAdapter;
@@ -35,6 +29,13 @@ import com.novyr.callfilter.managers.permission.CallScreeningRoleChecker;
 import com.novyr.callfilter.models.Contact;
 import com.novyr.callfilter.models.LogEntry;
 import com.novyr.callfilter.models.WhitelistEntry;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class LogViewerActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener {
     public static final String BROADCAST_REFRESH = "com.novyr.callfilter.refresh";

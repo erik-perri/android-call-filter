@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
-import android.support.v4.content.ContextCompat;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 
@@ -20,6 +19,8 @@ import com.orm.SugarApp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.core.content.ContextCompat;
 
 public class CallFilterApplication extends SugarApp {
     private static final String TAG = CallFilterApplication.class.getName();
