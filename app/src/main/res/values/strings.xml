@@ -9,7 +9,7 @@
     <string name="setting_block_unknown_title">Block unknown numbers</string>
     <string name="setting_block_unknown_summary">Block calls from people not in your contacts</string>
     <string name="setting_block_private_title">Block private numbers</string>
-    <string name="setting_block_private_summary">Block calls from unknown numbers</string>
+    <string name="setting_block_private_summary">Block calls from private numbers</string>
     <string name="warning_permissions">Failed to acquire permissions</string>
     <string name="warning_empty_log_list">Log is empty</string>
     <string name="warning_action_retry">RETRY</string>
