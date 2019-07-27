@@ -56,7 +56,7 @@ public class LogEntryAdapter extends ArrayAdapter<LogEntry> {
             case "allowed":
                 action = "Allowed call";
                 break;
-            case "error":
+            case "failed":
                 action = "Failed to block call";
                 break;
             default:
