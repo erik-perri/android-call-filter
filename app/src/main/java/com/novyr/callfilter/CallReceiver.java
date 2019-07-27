@@ -11,7 +11,7 @@ import com.novyr.callfilter.managers.telephony.HandlerInterface;
 public class CallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (android.support.v4.os.BuildCompat.isAtLeastQ()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // If we are on Q+ we use the CallScreeningService API instead
             return;
         }
@@ -26,8 +26,8 @@ public class CallReceiver extends BroadcastReceiver {
             return;
         }
 
+        //noinspection deprecation
         String number = intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
-        //noinspection ConstantConditions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && number == null) {
             // Since we request both READ_CALL_LOG and READ_PHONE_STATE permissions our onReceive
             // will get called twice, the first has a null phone number.

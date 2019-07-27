@@ -1,6 +1,5 @@
 package com.novyr.callfilter.activities;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -89,7 +88,6 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
         showPermissionWarning();
     }
 
-    @SuppressLint("NewApi") // TODO Remove once Q is available
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

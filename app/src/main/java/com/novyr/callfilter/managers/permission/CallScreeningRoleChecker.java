@@ -7,11 +7,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
-@SuppressLint("NewApi") // TODO Remove once Q is available
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class CallScreeningRoleChecker implements CheckerInterface {
     public static final int CALL_SCREENING_REQUEST = 1;
-    private static final String CALL_SCREEN_APP_ROLE = "android.app.role.CALL_SCREENING_APP";
+    private static final String CALL_SCREEN_APP_ROLE = "android.app.role.CALL_SCREENING";
 
     @Override
     public boolean hasAccess(Activity activity) {

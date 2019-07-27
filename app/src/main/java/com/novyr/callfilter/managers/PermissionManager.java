@@ -1,7 +1,7 @@
 package com.novyr.callfilter.managers;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.os.Build;
 
 import com.novyr.callfilter.managers.permission.CallScreeningRoleChecker;
 import com.novyr.callfilter.managers.permission.CheckerInterface;
@@ -13,11 +13,10 @@ import java.util.List;
 public class PermissionManager {
     private List<CheckerInterface> mCheckers;
 
-    @SuppressLint("NewApi") // TODO Remove once Q is available
     public PermissionManager() {
         this.mCheckers = new LinkedList<>();
 
-        if (android.support.v4.os.BuildCompat.isAtLeastQ()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             this.mCheckers.add(new CallScreeningRoleChecker());
         }
 

@@ -17,7 +17,7 @@ public class PermissionsChecker implements CheckerInterface {
     private List<String> mWantedPermissions;
 
     public PermissionsChecker() {
-        if (android.support.v4.os.BuildCompat.isAtLeastQ()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             mWantedPermissions = new LinkedList<>(Collections.singletonList(Manifest.permission.READ_CONTACTS));
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mWantedPermissions = new LinkedList<>(Arrays.asList(
