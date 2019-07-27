@@ -43,7 +43,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     private SwipeRefreshLayout mRefreshLayout;
     private Snackbar mPermissionNotice;
     private ListView mLogList;
-    private BroadcastReceiver mRefreshLogViewReceiver = new BroadcastReceiver() {
+    final private BroadcastReceiver mRefreshLogViewReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent bufferIntent) {
             refreshFromDatabase();
@@ -54,6 +54,7 @@ public class LogViewerActivity extends AppCompatActivity implements SwipeRefresh
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_log_viewer);
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);

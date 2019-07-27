@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class PermissionManager {
-    private List<CheckerInterface> mCheckers;
+    final private List<CheckerInterface> mCheckers;
 
     public PermissionManager() {
         this.mCheckers = new LinkedList<>();
