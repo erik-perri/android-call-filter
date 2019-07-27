@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_gravity="center_vertical"
-              android:paddingLeft="@dimen/list_horizontal_margin"
-              android:paddingRight="@dimen/list_horizontal_margin"
-              android:paddingTop="@dimen/list_vertical_margin"
-              android:paddingBottom="@dimen/list_vertical_margin"
-              android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/list_horizontal_margin"
+    android:paddingTop="@dimen/list_vertical_margin"
+    android:paddingRight="@dimen/list_horizontal_margin"
+    android:paddingBottom="@dimen/list_vertical_margin">
 
     <TextView
         android:id="@+id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Message Placeholder"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@color/log_list_message"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:ignore="HardcodedText"/>
+        tools:text="Message Placeholder" />
 
     <TextView
         android:id="@+id/created"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Date Placeholder"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:textColor="@color/log_list_date"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        tools:ignore="HardcodedText"/>
+        tools:text="Date Placeholder" />
 </LinearLayout>
