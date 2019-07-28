@@ -1,4 +1,4 @@
-package com.novyr.callfilter.activities;
+package com.novyr.callfilter.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,7 +18,6 @@ import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
 import com.novyr.callfilter.managers.PermissionManager;
 import com.novyr.callfilter.managers.permission.CallScreeningRoleChecker;
-import com.novyr.callfilter.ui.LogListAdapter;
 import com.novyr.callfilter.viewmodel.LogViewModel;
 import com.novyr.callfilter.viewmodel.WhitelistViewModel;
 
@@ -34,7 +33,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class LogViewerActivity extends AppCompatActivity /*implements SwipeRefreshLayout.OnRefreshListener, AbsListView.OnScrollListener*/ {
+public class MainActivity extends AppCompatActivity {
     private RecyclerView mLogList;
     private LogViewModel mLogViewModel;
 

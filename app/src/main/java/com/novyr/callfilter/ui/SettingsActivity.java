@@ -1,4 +1,4 @@
-package com.novyr.callfilter.activities;
+package com.novyr.callfilter.ui;
 
 import android.os.Bundle;
 
