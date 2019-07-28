@@ -3,10 +3,17 @@ package com.novyr.callfilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 
+import com.novyr.callfilter.db.entity.LogEntity;
+import com.novyr.callfilter.db.entity.enums.Action;
 import com.novyr.callfilter.managers.TelephonyManager;
 import com.novyr.callfilter.managers.telephony.HandlerInterface;
+
+import java.util.Date;
+
+import androidx.annotation.NonNull;
 
 public class CallReceiver extends BroadcastReceiver {
     @Override
@@ -35,17 +42,44 @@ public class CallReceiver extends BroadcastReceiver {
             return;
         }
 
-        HandlerInterface handler = TelephonyManager.findHandler(context);
-        CallLogger.Action action = CallLogger.Action.ALLOWED;
-        if (CallFilterApplication.shouldBlockCall(context, number)) {
-            if (handler.endCall()) {
-                action = CallLogger.Action.BLOCKED;
-            } else {
-                action = CallLogger.Action.FAILED;
-            }
-        }
+        new ReceiveAsyncTask().execute(new ReceiveTaskParams(context, number));
+    }
 
-        CallLogger recorder = new CallLogger();
-        recorder.record(context, action, number);
+    private static class ReceiveAsyncTask extends AsyncTask<ReceiveTaskParams, Void, Void> {
+        @Override
+        protected Void doInBackground(ReceiveTaskParams... params) {
+            ReceiveTaskParams taskParams = params[0];
+            if (taskParams == null) {
+                return null;
+            }
+
+            HandlerInterface handler = TelephonyManager.findHandler(taskParams.context);
+            CallChecker checker = new CallChecker(taskParams.context);
+            Action action = Action.ALLOWED;
+            if (checker.shouldBlockCall(taskParams.number)) {
+                if (handler.endCall()) {
+                    action = Action.BLOCKED;
+                } else {
+                    action = Action.FAILED;
+                }
+            }
+
+            CallFilterApplication application = (CallFilterApplication) taskParams.context.getApplicationContext();
+            application.getLogRepository().insert(new LogEntity(new Date(), action, taskParams.number));
+
+            return null;
+        }
+    }
+
+    private class ReceiveTaskParams {
+        @NonNull
+        final Context context;
+
+        final String number;
+
+        ReceiveTaskParams(@NonNull Context context, String number) {
+            this.context = context;
+            this.number = number;
+        }
     }
 }

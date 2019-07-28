@@ -5,15 +5,7 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_refresh"
-        android:title="@string/action_refresh"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/action_clear_log"
         android:title="@string/action_clear_logs"
         app:showAsAction="never" />
-    <!--<item
-        android:id="@+id/action_check_permissions"
-        android:title="@string/action_check_permissions"
-        app:showAsAction="never"/>-->
 </menu>

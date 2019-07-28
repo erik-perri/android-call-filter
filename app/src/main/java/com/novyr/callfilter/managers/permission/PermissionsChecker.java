@@ -15,7 +15,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 public class PermissionsChecker implements CheckerInterface {
-    final private List<String> mWantedPermissions;
+    private final List<String> mWantedPermissions;
 
     public PermissionsChecker() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
