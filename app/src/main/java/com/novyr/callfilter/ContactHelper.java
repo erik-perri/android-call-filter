@@ -24,19 +24,19 @@ public class ContactHelper {
         mContentResolver = context.getContentResolver();
     }
 
-    public String findContactName(String number) {
+    public String findContactName(String number) throws InternalError {
         Contact contact = findContact(number);
 
         return contact != null ? contact.getName() : null;
     }
 
-    public String findContactId(String number) {
+    public String findContactId(String number) throws InternalError {
         Contact contact = findContact(number);
 
         return contact != null ? contact.getId() : null;
     }
 
-    private Contact findContact(String number) {
+    private Contact findContact(String number) throws InternalError {
         if (mContacts.containsKey(number)) {
             return mContacts.get(number);
         }
@@ -61,6 +61,8 @@ public class ContactHelper {
 
                 return mContacts.get(number);
             }
+        } catch (Exception e) {
+            throw new InternalError(String.format("Error while querying contacts %s", e.getMessage()));
         } finally {
             cursor.close();
         }
