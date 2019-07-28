@@ -39,8 +39,8 @@ public class WhitelistRepository {
         return mDao.findAll(number);
     }
 
-    public void insert(WhitelistEntity entry) {
-        new InsertAsyncTask(mDao).execute(entry);
+    public void insert(WhitelistEntity entity) {
+        new InsertAsyncTask(mDao).execute(entity);
     }
 
     public void delete(WhitelistEntity whitelist) {

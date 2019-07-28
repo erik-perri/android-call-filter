@@ -35,8 +35,8 @@ public class LogRepository {
         return mEntities;
     }
 
-    public void insert(LogEntity entry) {
-        new InsertAsyncTask(mDao).execute(entry);
+    public void insert(LogEntity entity) {
+        new InsertAsyncTask(mDao).execute(entity);
     }
 
     public void clear() {

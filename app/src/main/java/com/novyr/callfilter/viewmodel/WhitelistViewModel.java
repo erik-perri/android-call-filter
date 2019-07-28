@@ -25,8 +25,8 @@ public class WhitelistViewModel extends AndroidViewModel {
         return mRepository.findAll();
     }
 
-    public void insert(WhitelistEntity entry) {
-        mRepository.insert(entry);
+    public void insert(WhitelistEntity entity) {
+        mRepository.insert(entity);
     }
 
     public void delete(WhitelistEntity whitelist) {
