@@ -16,7 +16,7 @@ public class LogRepository {
     private final LiveData<List<LogEntity>> mEntities;
 
     private LogRepository(CallFilterDatabase database) {
-        mDao = database.logEntryDao();
+        mDao = database.logDao();
         mEntities = mDao.findAll();
     }
 

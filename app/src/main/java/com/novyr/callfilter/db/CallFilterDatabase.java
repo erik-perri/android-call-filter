@@ -32,7 +32,7 @@ public abstract class CallFilterDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    public abstract LogDao logEntryDao();
+    public abstract LogDao logDao();
 
     public abstract WhitelistDao whitelistDao();
 }
