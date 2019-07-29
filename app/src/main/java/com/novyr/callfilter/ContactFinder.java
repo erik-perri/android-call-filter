@@ -15,7 +15,7 @@ import java.util.HashMap;
 import androidx.core.content.ContextCompat;
 
 public class ContactFinder {
-    private static final HashMap<String, ContactModel> mContacts = new HashMap<>();
+    private final HashMap<String, ContactModel> mContacts = new HashMap<>();
     private final ContentResolver mContentResolver;
     private final Context mContext;
 
