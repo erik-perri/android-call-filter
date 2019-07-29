@@ -33,11 +33,11 @@ public class WhitelistViewModel extends AndroidViewModel {
         mRepository.delete(whitelist);
     }
 
-    public void setCurrentEntities(List<WhitelistEntity> entities) {
-        mCurrentEntities = entities;
-    }
-
     public List<WhitelistEntity> getCurrentEntities() {
         return mCurrentEntities;
+    }
+
+    public void setCurrentEntities(List<WhitelistEntity> entities) {
+        mCurrentEntities = entities;
     }
 }
