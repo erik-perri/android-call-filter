@@ -43,8 +43,8 @@ public class LogRepository {
         new ClearAsyncTask(mDao).execute();
     }
 
-    public void delete(LogEntity log) {
-        new DeleteAsyncTask(mDao).execute(log);
+    public void delete(LogEntity entity) {
+        new DeleteAsyncTask(mDao).execute(entity);
     }
 
     private static class InsertAsyncTask extends AsyncTask<LogEntity, Void, Void> {

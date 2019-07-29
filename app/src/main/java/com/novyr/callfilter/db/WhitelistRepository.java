@@ -43,8 +43,8 @@ public class WhitelistRepository {
         new InsertAsyncTask(mDao).execute(entity);
     }
 
-    public void delete(WhitelistEntity whitelist) {
-        new DeleteAsyncTask(mDao).execute(whitelist);
+    public void delete(WhitelistEntity entity) {
+        new DeleteAsyncTask(mDao).execute(entity);
     }
 
     private static class InsertAsyncTask extends AsyncTask<WhitelistEntity, Void, Void> {
