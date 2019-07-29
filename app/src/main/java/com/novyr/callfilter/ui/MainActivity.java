@@ -12,10 +12,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.novyr.callfilter.NumberHelper;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
+import com.novyr.callfilter.formatter.LogDateFormatter;
+import com.novyr.callfilter.formatter.LogMessageFormatter;
 import com.novyr.callfilter.managers.PermissionManager;
 import com.novyr.callfilter.managers.permission.CallScreeningRoleChecker;
 import com.novyr.callfilter.viewmodel.LogViewModel;
@@ -52,9 +53,12 @@ public class MainActivity extends AppCompatActivity {
         mLogList = findViewById(R.id.log_list);
 
         final WhitelistViewModel whitelistViewModel = ViewModelProviders.of(this).get(WhitelistViewModel.class);
-        final LogListAdapter adapter = new LogListAdapter(this, whitelistViewModel);
-
-        adapter.setNumberFormatter(new NumberHelper(getApplicationContext()));
+        final LogListAdapter adapter = new LogListAdapter(
+                this,
+                whitelistViewModel,
+                new LogMessageFormatter(getApplicationContext()),
+                new LogDateFormatter()
+        );
 
         mLogList.setAdapter(adapter);
         mLogList.setLayoutManager(new LinearLayoutManager(this));
