@@ -14,12 +14,12 @@ import java.util.HashMap;
 
 import androidx.core.content.ContextCompat;
 
-public class ContactHelper {
+public class ContactFinder {
     private static final HashMap<String, ContactModel> mContacts = new HashMap<>();
     private final ContentResolver mContentResolver;
     private final Context mContext;
 
-    public ContactHelper(Context context) {
+    public ContactFinder(Context context) {
         mContext = context;
         mContentResolver = context.getContentResolver();
     }

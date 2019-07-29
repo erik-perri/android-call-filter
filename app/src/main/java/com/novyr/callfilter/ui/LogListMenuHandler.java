@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.novyr.callfilter.ContactHelper;
+import com.novyr.callfilter.ContactFinder;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
@@ -22,14 +22,14 @@ import java.util.List;
 import androidx.annotation.NonNull;
 
 class LogListMenuHandler implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
-    private final ContactHelper mContactHelper;
+    private final ContactFinder mContactFinder;
     private final Context mContext;
     private final LogViewModel mLogViewModel;
     private final LogViewHolder mHolder;
 
     LogListMenuHandler(Context context, LogViewHolder holder) {
         mContext = context;
-        mContactHelper = new ContactHelper(context);
+        mContactFinder = new ContactFinder(context);
         mHolder = holder;
         mLogViewModel = new LogViewModel((Application) context.getApplicationContext());
     }
@@ -46,7 +46,7 @@ class LogListMenuHandler implements View.OnCreateContextMenuListener, MenuItem.O
         if (log.getNumber() != null) {
             String contactName = null;
             try {
-                contactName = mContactHelper.findContactName(log.getNumber());
+                contactName = mContactFinder.findContactName(log.getNumber());
             } catch (Exception ignored) {
             }
 
@@ -83,7 +83,7 @@ class LogListMenuHandler implements View.OnCreateContextMenuListener, MenuItem.O
         // Open in contacts
         if (contextItemSelected.equals(resources.getString(R.string.context_menu_open_contacts))) {
             try {
-                String contactId = mContactHelper.findContactId(log.getNumber());
+                String contactId = mContactFinder.findContactId(log.getNumber());
                 if (contactId == null) {
                     toastText = "Failed to find contact";
                 } else {

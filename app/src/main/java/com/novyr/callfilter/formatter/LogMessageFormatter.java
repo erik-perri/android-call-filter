@@ -4,16 +4,16 @@ import android.content.Context;
 import android.os.Build;
 import android.telephony.PhoneNumberUtils;
 
-import com.novyr.callfilter.ContactHelper;
+import com.novyr.callfilter.ContactFinder;
 import com.novyr.callfilter.db.entity.LogEntity;
 
 import java.util.Locale;
 
 public class LogMessageFormatter implements MessageFormatter {
-    private final ContactHelper mContactHelper;
+    private final ContactFinder mContactFinder;
 
     public LogMessageFormatter(Context context) {
-        mContactHelper = new ContactHelper(context);
+        mContactFinder = new ContactFinder(context);
     }
 
     public String formatMessage(LogEntity entity) {
@@ -51,7 +51,7 @@ public class LogMessageFormatter implements MessageFormatter {
         }
 
         try {
-            String contactName = mContactHelper.findContactName(number);
+            String contactName = mContactFinder.findContactName(number);
             if (contactName != null) {
                 return contactName;
             }

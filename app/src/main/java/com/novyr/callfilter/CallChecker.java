@@ -13,12 +13,12 @@ class CallChecker {
     private static final String TAG = CallChecker.class.getName();
 
     private final SharedPreferences mSharedPref;
-    private final ContactHelper mContactHelper;
+    private final ContactFinder mContactFinder;
     private final WhitelistRepository mWhitelistRepository;
 
     CallChecker(Context context) {
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        mContactHelper = new ContactHelper(context);
+        mContactFinder = new ContactFinder(context);
         mWhitelistRepository = ((CallFilterApplication) context.getApplicationContext()).getWhitelistRepository();
     }
 
@@ -43,7 +43,7 @@ class CallChecker {
         }
 
         try {
-            return mContactHelper.findContactName(number) != null;
+            return mContactFinder.findContactName(number) != null;
         } catch (Exception e) {
             Log.d(TAG, "Failed to lookup phone number in contacts", e);
 
