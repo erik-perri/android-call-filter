@@ -81,13 +81,16 @@ public class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
                 break;
         }
 
-        String formattedNumber = entity.getNumber();
+        String number = entity.getNumber();
 
         if (mNumberFormatter != null) {
-            formattedNumber = mNumberFormatter.formatNumber(formattedNumber);
+            String formattedNumber = mNumberFormatter.formatNumber(number);
+            if (formattedNumber != null) {
+                number = formattedNumber;
+            }
         }
 
-        return String.format("%s: %s", action, formattedNumber);
+        return String.format("%s: %s", action, number);
     }
 
     private String formatDate(LogEntity entity) {
