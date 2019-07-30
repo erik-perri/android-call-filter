@@ -34,15 +34,18 @@ public class CallReceiver extends BroadcastReceiver {
         }
 
         //noinspection deprecation
-        String number = intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && number == null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !intent.hasExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER)) {
             // Since we request both READ_CALL_LOG and READ_PHONE_STATE permissions our onReceive
-            // will get called twice, the first has a null phone number.
+            // will get called twice, one of them missing the EXTRA_INCOMING_NUMBER data.
             // https://developer.android.com/reference/android/telephony/TelephonyManager#ACTION_PHONE_STATE_CHANGED
             return;
         }
 
-        new ReceiveAsyncTask().execute(new ReceiveTaskParams(context, number));
+        //noinspection deprecation
+        new ReceiveAsyncTask().execute(new ReceiveTaskParams(
+                context,
+                intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER)
+        ));
     }
 
     private static class ReceiveAsyncTask extends AsyncTask<ReceiveTaskParams, Void, Void> {

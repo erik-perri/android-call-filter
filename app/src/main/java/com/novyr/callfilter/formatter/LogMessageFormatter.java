@@ -34,12 +34,9 @@ public class LogMessageFormatter implements MessageFormatter {
         }
 
         String number = entity.getNumber();
-
-        if (number != null) {
-            String formatted = formatNumber(number);
-            if (formatted != null) {
-                number = formatted;
-            }
+        String formatted = formatNumber(number);
+        if (formatted != null) {
+            number = formatted;
         }
 
         return String.format("%s: %s", action, number);
