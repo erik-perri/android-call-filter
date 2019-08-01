@@ -55,12 +55,13 @@ public class MainActivity extends AppCompatActivity {
         mLogViewModel = ViewModelProviders.of(this).get(LogViewModel.class);
 
         final WhitelistViewModel whitelistViewModel = ViewModelProviders.of(this).get(WhitelistViewModel.class);
+        final LogListMenuHandler menuHandler = new LogListMenuHandler(this, mLogViewModel, whitelistViewModel);
+
         final LogListAdapter adapter = new LogListAdapter(
                 this,
-                mLogViewModel,
-                whitelistViewModel,
                 new LogMessageFormatter(getApplicationContext()),
-                new LogDateFormatter()
+                new LogDateFormatter(),
+                menuHandler
         );
 
         mLogList.setAdapter(adapter);

@@ -9,8 +9,6 @@ import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.formatter.DateFormatter;
 import com.novyr.callfilter.formatter.MessageFormatter;
-import com.novyr.callfilter.viewmodel.LogViewModel;
-import com.novyr.callfilter.viewmodel.WhitelistViewModel;
 
 import java.util.List;
 
@@ -20,25 +18,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
     private final LayoutInflater mInflater;
-    private final LogViewModel mLogViewModel;
-    private final WhitelistViewModel mWhitelistViewModel;
     private final MessageFormatter mMessageFormatter;
     private final DateFormatter mDateFormatter;
+    private final LogListMenuHandler mMenuHandler;
 
     private List<LogEntity> mEntries;
 
     public LogListAdapter(
             Context context,
-            LogViewModel logViewModel,
-            WhitelistViewModel whitelistModel,
             MessageFormatter messageFormatter,
-            DateFormatter dateFormatter
+            DateFormatter dateFormatter,
+            LogListMenuHandler menuHandler
     ) {
         mInflater = LayoutInflater.from(context);
-        mLogViewModel = logViewModel;
-        mWhitelistViewModel = whitelistModel;
         mMessageFormatter = messageFormatter;
         mDateFormatter = dateFormatter;
+        mMenuHandler = menuHandler;
     }
 
     public void setEntities(List<LogEntity> entities) {
@@ -51,7 +46,7 @@ public class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
     @Override
     public LogViewHolder onCreateViewHolder(@Nullable ViewGroup parent, int viewType) {
         View itemView = mInflater.inflate(R.layout.log_item, parent, false);
-        return new LogViewHolder(itemView, mLogViewModel, mWhitelistViewModel);
+        return new LogViewHolder(itemView, mMenuHandler);
     }
 
     @Override
