@@ -52,9 +52,12 @@ public class MainActivity extends AppCompatActivity {
         mPermissionManager = new PermissionManager();
         mLogList = findViewById(R.id.log_list);
 
+        mLogViewModel = ViewModelProviders.of(this).get(LogViewModel.class);
+
         final WhitelistViewModel whitelistViewModel = ViewModelProviders.of(this).get(WhitelistViewModel.class);
         final LogListAdapter adapter = new LogListAdapter(
                 this,
+                mLogViewModel,
                 whitelistViewModel,
                 new LogMessageFormatter(getApplicationContext()),
                 new LogDateFormatter()
@@ -65,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
 
         final TextView emptyView = findViewById(R.id.empty_view);
 
-        mLogViewModel = ViewModelProviders.of(this).get(LogViewModel.class);
         mLogViewModel.findAll().observe(this, new Observer<List<LogEntity>>() {
             @Override
             public void onChanged(@Nullable final List<LogEntity> entities) {

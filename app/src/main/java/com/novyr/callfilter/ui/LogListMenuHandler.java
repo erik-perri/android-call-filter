@@ -1,6 +1,5 @@
 package com.novyr.callfilter.ui;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -16,6 +15,7 @@ import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
 import com.novyr.callfilter.viewmodel.LogViewModel;
+import com.novyr.callfilter.viewmodel.WhitelistViewModel;
 
 import java.util.List;
 
@@ -25,13 +25,15 @@ class LogListMenuHandler implements View.OnCreateContextMenuListener, MenuItem.O
     private final ContactFinder mContactFinder;
     private final Context mContext;
     private final LogViewModel mLogViewModel;
+    private final WhitelistViewModel mWhitelistViewModel;
     private final LogViewHolder mHolder;
 
-    LogListMenuHandler(Context context, LogViewHolder holder) {
+    LogListMenuHandler(Context context, LogViewHolder holder, LogViewModel logViewModel, WhitelistViewModel whitelistViewModel) {
         mContext = context;
         mContactFinder = new ContactFinder(context);
         mHolder = holder;
-        mLogViewModel = new LogViewModel((Application) context.getApplicationContext());
+        mLogViewModel = logViewModel;
+        mWhitelistViewModel = whitelistViewModel;
     }
 
     @Override
@@ -137,14 +139,14 @@ class LogListMenuHandler implements View.OnCreateContextMenuListener, MenuItem.O
     private void addToWhitelist(@NonNull String number) {
         WhitelistEntity entity = findEntity(number);
         if (entity == null) {
-            mHolder.getWhitelistViewModel().insert(new WhitelistEntity(number));
+            mWhitelistViewModel.insert(new WhitelistEntity(number));
         }
     }
 
     private void removeFromWhitelist(@NonNull String number) {
         WhitelistEntity entity = findEntity(number);
         if (entity != null) {
-            mHolder.getWhitelistViewModel().delete(entity);
+            mWhitelistViewModel.delete(entity);
         }
     }
 
@@ -153,11 +155,7 @@ class LogListMenuHandler implements View.OnCreateContextMenuListener, MenuItem.O
             return null;
         }
 
-        if (mHolder.getWhitelistViewModel() == null) {
-            return null;
-        }
-
-        List<WhitelistEntity> list = mHolder.getWhitelistViewModel().getCurrentEntities();
+        List<WhitelistEntity> list = mWhitelistViewModel.getCurrentEntities();
         if (list == null) {
             return null;
         }
