@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         whitelistViewModel.findAll().observe(this, new Observer<List<WhitelistEntity>>() {
             @Override
             public void onChanged(@Nullable final List<WhitelistEntity> entities) {
+                // TODO Figure out a better way to make the entities available to LogListMenuHandler
                 whitelistViewModel.setCurrentEntities(entities);
             }
         });
