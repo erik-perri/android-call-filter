@@ -1,8 +1,6 @@
 package com.novyr.callfilter.ui;
 
 import android.view.ContextMenu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.widget.TextView;
 
@@ -29,63 +27,12 @@ class LogViewHolder extends RecyclerView.ViewHolder implements View.OnCreateCont
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        final LogEntity log = getEntity();
-        if (log == null) {
+        final LogEntity entity = getEntity();
+        if (entity == null) {
             return;
         }
 
-        int index = 1, order = 0;
-
-        if (log.getNumber() != null) {
-            final OnMenuItemClickListener removeFromWhitelistHandler = new OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(final MenuItem menuItem) {
-                    mMenuHandler.removeFromWhitelist(log.getNumber());
-                    return true;
-                }
-            };
-
-            if (mMenuHandler.hasContact(log.getNumber())) {
-                menu.add(0, index++, order++, R.string.context_menu_open_contacts).setOnMenuItemClickListener(
-                        new OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(final MenuItem menuItem) {
-                                mMenuHandler.openInContacts(log.getNumber());
-                                return true;
-                            }
-                        });
-
-                if (mMenuHandler.isWhitelisted(log.getNumber())) {
-                    menu.add(0, index++, order++, R.string.context_menu_whitelist_remove)
-                            .setOnMenuItemClickListener(removeFromWhitelistHandler);
-                }
-            } else {
-                if (mMenuHandler.isWhitelisted(log.getNumber())) {
-                    menu.add(0, index++, order++, R.string.context_menu_whitelist_remove).setOnMenuItemClickListener(
-                            new OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(final MenuItem menuItem) {
-                                    mMenuHandler.addToWhitelist(log.getNumber());
-                                    return true;
-                                }
-                            }
-                    );
-                } else {
-                    menu.add(0, index++, order++, R.string.context_menu_whitelist_add)
-                            .setOnMenuItemClickListener(removeFromWhitelistHandler);
-                }
-            }
-        }
-
-        menu.add(0, index, order, R.string.context_menu_log_remove).setOnMenuItemClickListener(
-                new OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(final MenuItem menuItem) {
-                        mMenuHandler.removeLog(log);
-                        return true;
-                    }
-                }
-        );
+        mMenuHandler.createMenu(menu, entity);
     }
 
     LogEntity getEntity() {
