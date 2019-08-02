@@ -13,10 +13,10 @@ import androidx.room.Query;
 @Dao
 public interface LogDao {
     @Insert
-    void insert(LogEntity log);
+    void insert(LogEntity entity);
 
     @Delete
-    void delete(LogEntity log);
+    void delete(LogEntity entity);
 
     @Query("DELETE FROM log_entity")
     void deleteAll();
