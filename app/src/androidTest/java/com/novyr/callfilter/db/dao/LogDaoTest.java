@@ -3,6 +3,7 @@ package com.novyr.callfilter.db.dao;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.filters.MediumTest;
 
 import com.novyr.callfilter.db.CallFilterDatabase;
 import com.novyr.callfilter.db.LiveDataTestUtil;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@MediumTest
 public class LogDaoTest {
 
     @Rule
