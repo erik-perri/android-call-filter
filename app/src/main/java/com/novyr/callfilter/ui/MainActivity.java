@@ -92,8 +92,6 @@ public class MainActivity extends AppCompatActivity {
                 menuHandler.setEntities(entities);
             }
         });
-
-        registerForContextMenu(mLogList);
     }
 
     @Override
