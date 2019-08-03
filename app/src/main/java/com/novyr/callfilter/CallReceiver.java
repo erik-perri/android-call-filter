@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
 
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.enums.Action;
@@ -16,6 +18,8 @@ import java.util.Date;
 import androidx.annotation.NonNull;
 
 public class CallReceiver extends BroadcastReceiver {
+    private static final String TAG = CallReceiver.class.getSimpleName();
+
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -33,19 +37,65 @@ public class CallReceiver extends BroadcastReceiver {
             return;
         }
 
-        //noinspection deprecation
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && !intent.hasExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER)) {
-            // Since we request both READ_CALL_LOG and READ_PHONE_STATE permissions our onReceive
-            // will get called twice, one of them missing the EXTRA_INCOMING_NUMBER data.
-            // https://developer.android.com/reference/android/telephony/TelephonyManager#ACTION_PHONE_STATE_CHANGED
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Call received");
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                for (String key : bundle.keySet()) {
+                    Object value = bundle.get(key);
+                    Log.d(TAG, String.format(
+                            "    %-16s %-16s (%s)",
+                            key,
+                            value != null ? value.toString() : "NULL",
+                            value != null ? value.getClass().getName() : ""
+                    ));
+                }
+            }
+        }
+
+        if (!shouldHandleCall(intent)) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "  Skipping call");
+            }
             return;
         }
 
-        //noinspection deprecation
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "  Handling call");
+        }
+
+        // noinspection deprecation
         new ReceiveAsyncTask().execute(new ReceiveTaskParams(
                 context,
                 intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER)
         ));
+    }
+
+    private boolean shouldHandleCall(Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Since we request both READ_CALL_LOG and READ_PHONE_STATE permissions we will get called twice, one of
+            // the calls missing the EXTRA_INCOMING_NUMBER data.
+            // https://developer.android.com/reference/android/telephony/TelephonyManager#ACTION_PHONE_STATE_CHANGED
+            // noinspection deprecation
+            return intent.hasExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
+        }
+
+        // In Lollipop (API v21 and v22) we get called twice.  The first seems to always have a subscription value of 1,
+        // in the emulator at least.  If we are on Kitkat or below we can continue without checking.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            return true;
+        }
+
+        Bundle bundle = intent.getExtras();
+        Object value = bundle != null ? bundle.get("subscription") : null;
+        if (value == null) {
+            return true;
+        }
+
+        String expectedId = "1";
+        String id = value.toString();
+
+        return id == null || id.equals(expectedId);
     }
 
     private static class ReceiveAsyncTask extends AsyncTask<ReceiveTaskParams, Void, Void> {
