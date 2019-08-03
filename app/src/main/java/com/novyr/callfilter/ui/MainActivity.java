@@ -139,8 +139,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_clear_log:
                 new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.dialog_clear_logs_title))
-                        .setMessage(getString(R.string.dialog_clear_logs_message))
+                        .setTitle(R.string.dialog_clear_logs_title)
+                        .setMessage(R.string.dialog_clear_logs_message)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
