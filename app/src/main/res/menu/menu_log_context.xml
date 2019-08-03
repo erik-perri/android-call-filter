@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/log_context_contacts_open"
+        android:title="@string/context_menu_open_contacts" />
+    <item
+        android:id="@+id/log_context_whitelist_remove"
+        android:title="@string/context_menu_whitelist_remove" />
+    <item
+        android:id="@+id/log_context_whitelist_add"
+        android:title="@string/context_menu_whitelist_add" />
+    <item
+        android:id="@+id/log_context_log_remove"
+        android:title="@string/context_menu_log_remove" />
+</menu>

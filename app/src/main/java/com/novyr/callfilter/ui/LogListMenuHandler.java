@@ -1,6 +1,6 @@
 package com.novyr.callfilter.ui;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -18,23 +18,21 @@ import com.novyr.callfilter.viewmodel.WhitelistViewModel;
 
 import java.util.List;
 
-import static android.view.Menu.NONE;
-
 class LogListMenuHandler {
-    private final static int MENU_CONTACTS_OPEN = 1;
-    private final static int MENU_WHITELIST_ADD = 2;
-    private final static int MENU_WHITELIST_REMOVE = 3;
-    private final static int MENU_LOG_REMOVE = 4;
-
     private final ContactFinder mContactFinder;
-    private final Context mContext;
     private final LogViewModel mLogViewModel;
     private final WhitelistViewModel mWhitelistViewModel;
+    private final Activity mActivity;
     private List<WhitelistEntity> mWhitelistEntities;
 
-    LogListMenuHandler(Context context, LogViewModel logViewModel, WhitelistViewModel whitelistViewModel) {
-        mContext = context;
-        mContactFinder = new ContactFinder(context);
+    LogListMenuHandler(
+            Activity activity,
+            ContactFinder contactFinder,
+            LogViewModel logViewModel,
+            WhitelistViewModel whitelistViewModel
+    ) {
+        mActivity = activity;
+        mContactFinder = contactFinder;
         mLogViewModel = logViewModel;
         mWhitelistViewModel = whitelistViewModel;
     }
@@ -49,49 +47,47 @@ class LogListMenuHandler {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    case MENU_CONTACTS_OPEN:
+                    case R.id.log_context_contacts_open:
                         openInContacts(number);
                         return true;
-                    case MENU_WHITELIST_ADD:
+                    case R.id.log_context_whitelist_add:
                         if (number != null) {
                             addToWhitelist(number);
                         }
                         return true;
-                    case MENU_WHITELIST_REMOVE:
+                    case R.id.log_context_whitelist_remove:
                         if (number != null) {
                             removeFromWhitelist(number);
                         }
                         return true;
-                    case MENU_LOG_REMOVE:
+                    case R.id.log_context_log_remove:
                         removeLog(entity);
                         return true;
                 }
                 return false;
             }
         };
-        int order = 0;
 
-        if (number != null) {
-            if (hasContact(number)) {
-                menu.add(NONE, MENU_CONTACTS_OPEN, order++, R.string.context_menu_open_contacts)
-                        .setOnMenuItemClickListener(listener);
+        mActivity.getMenuInflater().inflate(R.menu.menu_log_context, menu);
 
-                if (isWhitelisted(number)) {
-                    menu.add(NONE, MENU_WHITELIST_REMOVE, order++, R.string.context_menu_whitelist_remove)
-                            .setOnMenuItemClickListener(listener);
-                }
-            } else {
-                if (isWhitelisted(number)) {
-                    menu.add(NONE, MENU_WHITELIST_REMOVE, order++, R.string.context_menu_whitelist_remove)
-                            .setOnMenuItemClickListener(listener);
-                } else {
-                    menu.add(NONE, MENU_WHITELIST_ADD, order++, R.string.context_menu_whitelist_add)
-                            .setOnMenuItemClickListener(listener);
-                }
-            }
-        }
+        boolean numberHasContact = hasContact(number);
+        boolean canAddToWhitelist = !numberHasContact && number != null && !isWhitelisted(number);
+        boolean canRemoveFromWhitelist = number != null && isWhitelisted(number);
 
-        menu.add(NONE, MENU_LOG_REMOVE, order, R.string.context_menu_log_remove)
+        menu.findItem(R.id.log_context_contacts_open)
+                .setVisible(numberHasContact)
+                .setOnMenuItemClickListener(listener);
+
+        menu.findItem(R.id.log_context_whitelist_add)
+                .setVisible(canAddToWhitelist)
+                .setOnMenuItemClickListener(listener);
+
+        menu.findItem(R.id.log_context_whitelist_remove)
+                .setVisible(canRemoveFromWhitelist)
+                .setOnMenuItemClickListener(listener);
+
+        menu.findItem(R.id.log_context_log_remove)
+                .setVisible(true)
                 .setOnMenuItemClickListener(listener);
     }
 
@@ -131,7 +127,7 @@ class LogListMenuHandler {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contactId);
         intent.setData(uri);
-        mContext.startActivity(intent);
+        mActivity.startActivity(intent);
     }
 
     private void removeFromWhitelist(@NonNull String number) {

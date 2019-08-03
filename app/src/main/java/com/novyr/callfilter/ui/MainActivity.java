@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         final ContactFinder contactFinder = new ContactFinder(this);
         final WhitelistViewModel whitelistViewModel = ViewModelProviders.of(this).get(WhitelistViewModel.class);
-        final LogListMenuHandler menuHandler = new LogListMenuHandler(this, mLogViewModel, whitelistViewModel);
+        final LogListMenuHandler menuHandler = new LogListMenuHandler(this, contactFinder, mLogViewModel, whitelistViewModel);
 
         final LogListAdapter adapter = new LogListAdapter(
                 this,
