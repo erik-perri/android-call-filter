@@ -5,25 +5,42 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
     android:background="?android:attr/selectableItemBackground"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:paddingLeft="@dimen/list_horizontal_margin"
     android:paddingTop="@dimen/list_vertical_margin"
     android:paddingRight="@dimen/list_horizontal_margin"
     android:paddingBottom="@dimen/list_vertical_margin">
 
-    <TextView
-        android:id="@+id/log_list_message"
+    <ImageView
+        android:id="@+id/log_list_icon"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="@color/log_list_message"
-        tools:text="Message Placeholder" />
+        android:layout_height="match_parent"
+        android:contentDescription="@string/filter_action_icon"
+        android:paddingStart="0dp"
+        android:paddingLeft="0dp"
+        android:paddingEnd="@dimen/icon_horizontal_margin"
+        android:paddingRight="@dimen/icon_horizontal_margin"
+        android:scaleType="centerInside" />
 
-    <TextView
-        android:id="@+id/log_list_created"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:textColor="@color/log_list_date"
-        tools:text="Date Placeholder" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/log_list_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/log_list_message"
+            tools:text="Message Placeholder" />
+
+        <TextView
+            android:id="@+id/log_list_created"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/log_list_date"
+            tools:text="Date Placeholder" />
+    </LinearLayout>
 </LinearLayout>

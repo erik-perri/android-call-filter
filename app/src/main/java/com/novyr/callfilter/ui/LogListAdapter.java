@@ -60,6 +60,18 @@ class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
         holder.setEntity(entity);
         holder.mMessageView.setText(mMessageFormatter.formatMessage(entity));
         holder.mCreatedView.setText(mDateFormatter.formatDate(entity));
+
+        switch (entity.getAction()) {
+            case ALLOWED:
+                holder.mIcon.setImageResource(R.drawable.ic_check_green_24dp);
+                break;
+            case BLOCKED:
+                holder.mIcon.setImageResource(R.drawable.ic_block_red_24dp);
+                break;
+            case FAILED:
+                holder.mIcon.setImageResource(R.drawable.ic_error_outline_black_24dp);
+                break;
+        }
     }
 
     @Override
