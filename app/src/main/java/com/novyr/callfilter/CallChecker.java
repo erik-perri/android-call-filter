@@ -10,7 +10,7 @@ import com.novyr.callfilter.db.entity.WhitelistEntity;
 import androidx.preference.PreferenceManager;
 
 class CallChecker {
-    private static final String TAG = CallChecker.class.getName();
+    private static final String TAG = CallChecker.class.getSimpleName();
 
     private final SharedPreferences mSharedPref;
     private final ContactFinder mContactFinder;

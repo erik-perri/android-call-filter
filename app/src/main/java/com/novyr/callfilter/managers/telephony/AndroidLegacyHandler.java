@@ -8,7 +8,7 @@ import android.util.Log;
 import java.lang.reflect.Method;
 
 public class AndroidLegacyHandler implements HandlerInterface {
-    private static final String TAG = AndroidLegacyHandler.class.getName();
+    private static final String TAG = AndroidLegacyHandler.class.getSimpleName();
 
     private Object mInterfaceTelephony = null;
     private Method mMethodSilenceRinger = null;
