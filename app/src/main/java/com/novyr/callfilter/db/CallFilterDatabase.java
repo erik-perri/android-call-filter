@@ -2,14 +2,14 @@ package com.novyr.callfilter.db;
 
 import android.content.Context;
 
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+
 import com.novyr.callfilter.db.dao.LogDao;
 import com.novyr.callfilter.db.dao.WhitelistDao;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
-
-import androidx.room.Database;
-import androidx.room.Room;
-import androidx.room.RoomDatabase;
 
 @Database(entities = {LogEntity.class, WhitelistEntity.class}, version = 1)
 public abstract class CallFilterDatabase extends RoomDatabase {

@@ -2,14 +2,14 @@ package com.novyr.callfilter.viewmodel;
 
 import android.app.Application;
 
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+
 import com.novyr.callfilter.CallFilterApplication;
 import com.novyr.callfilter.db.LogRepository;
 import com.novyr.callfilter.db.entity.LogEntity;
 
 import java.util.List;
-
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
 
 public class LogViewModel extends AndroidViewModel {
     private final LogRepository mRepository;

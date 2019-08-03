@@ -7,14 +7,14 @@ import android.os.Build;
 import android.telecom.Call;
 import android.telecom.CallScreeningService;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
 import com.novyr.callfilter.db.LogRepository;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.enums.Action;
 
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class CallFilterService extends CallScreeningService {

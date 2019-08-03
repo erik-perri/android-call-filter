@@ -2,12 +2,12 @@ package com.novyr.callfilter.db;
 
 import android.os.AsyncTask;
 
+import androidx.lifecycle.LiveData;
+
 import com.novyr.callfilter.db.dao.LogDao;
 import com.novyr.callfilter.db.entity.LogEntity;
 
 import java.util.List;
-
-import androidx.lifecycle.LiveData;
 
 public class LogRepository {
     private static LogRepository sInstance;

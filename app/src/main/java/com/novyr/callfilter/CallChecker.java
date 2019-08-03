@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
 import com.novyr.callfilter.db.WhitelistRepository;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
-
-import androidx.preference.PreferenceManager;
 
 class CallChecker {
     private static final String TAG = CallChecker.class.getSimpleName();

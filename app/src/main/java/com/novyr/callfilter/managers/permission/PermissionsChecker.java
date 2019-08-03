@@ -5,14 +5,14 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 public class PermissionsChecker implements CheckerInterface {
     private final List<String> mWantedPermissions;

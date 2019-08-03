@@ -1,17 +1,17 @@
 package com.novyr.callfilter.db.entity;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
 import com.novyr.callfilter.db.converter.ActionConverter;
 import com.novyr.callfilter.db.converter.DateConverter;
 import com.novyr.callfilter.db.entity.enums.Action;
 import com.novyr.callfilter.model.Log;
 
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
 
 @Entity(tableName = "log_entity")
 public class LogEntity implements Log {

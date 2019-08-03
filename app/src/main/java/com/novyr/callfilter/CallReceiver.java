@@ -8,14 +8,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.enums.Action;
 import com.novyr.callfilter.managers.TelephonyManager;
 import com.novyr.callfilter.managers.telephony.HandlerInterface;
 
 import java.util.Date;
-
-import androidx.annotation.NonNull;
 
 public class CallReceiver extends BroadcastReceiver {
     private static final String TAG = CallReceiver.class.getSimpleName();

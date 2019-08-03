@@ -2,12 +2,12 @@ package com.novyr.callfilter.db;
 
 import android.os.AsyncTask;
 
+import androidx.lifecycle.LiveData;
+
 import com.novyr.callfilter.db.dao.WhitelistDao;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
 
 import java.util.List;
-
-import androidx.lifecycle.LiveData;
 
 public class WhitelistRepository {
     private static WhitelistRepository sInstance;

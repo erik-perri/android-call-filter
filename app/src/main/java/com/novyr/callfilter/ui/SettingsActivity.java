@@ -2,10 +2,10 @@ package com.novyr.callfilter.ui;
 
 import android.os.Bundle;
 
-import com.novyr.callfilter.R;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.novyr.callfilter.R;
 
 public class SettingsActivity extends AppCompatActivity {
     @Override

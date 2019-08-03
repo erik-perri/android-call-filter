@@ -5,16 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.formatter.DateFormatter;
 import com.novyr.callfilter.formatter.MessageFormatter;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
     private final LayoutInflater mInflater;

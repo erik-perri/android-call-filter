@@ -7,6 +7,8 @@ import android.provider.ContactsContract;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+
 import com.novyr.callfilter.ContactFinder;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
@@ -15,8 +17,6 @@ import com.novyr.callfilter.viewmodel.LogViewModel;
 import com.novyr.callfilter.viewmodel.WhitelistViewModel;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
 
 import static android.view.Menu.NONE;
 

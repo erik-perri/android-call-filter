@@ -8,11 +8,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 
+import androidx.core.content.ContextCompat;
+
 import com.novyr.callfilter.model.Contact;
 
 import java.util.HashMap;
-
-import androidx.core.content.ContextCompat;
 
 public class ContactFinder {
     private final HashMap<String, ContactModel> mContacts = new HashMap<>();

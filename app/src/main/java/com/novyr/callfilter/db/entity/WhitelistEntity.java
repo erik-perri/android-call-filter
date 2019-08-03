@@ -1,10 +1,10 @@
 package com.novyr.callfilter.db.entity;
 
-import com.novyr.callfilter.model.Whitelist;
-
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.novyr.callfilter.model.Whitelist;
 
 @Entity(tableName = "whitelist_entity")
 public class WhitelistEntity implements Whitelist {

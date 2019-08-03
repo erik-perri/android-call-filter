@@ -1,8 +1,8 @@
 package com.novyr.callfilter.db.converter;
 
-import com.novyr.callfilter.db.entity.enums.Action;
-
 import androidx.room.TypeConverter;
+
+import com.novyr.callfilter.db.entity.enums.Action;
 
 public class ActionConverter {
     @TypeConverter

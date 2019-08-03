@@ -11,7 +11,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.snackbar.Snackbar;
+
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
@@ -23,16 +34,6 @@ import com.novyr.callfilter.viewmodel.LogViewModel;
 import com.novyr.callfilter.viewmodel.WhitelistViewModel;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView mLogList;

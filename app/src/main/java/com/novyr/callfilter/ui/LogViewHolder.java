@@ -4,16 +4,16 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 class LogViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
     final TextView mMessageView;
     final TextView mCreatedView;
-    private LogEntity mEntity;
     private final LogListMenuHandler mMenuHandler;
+    private LogEntity mEntity;
 
     LogViewHolder(View itemView, LogListMenuHandler menuHandler) {
         super(itemView);
