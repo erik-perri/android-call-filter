@@ -13,20 +13,21 @@
 
     <ImageView
         android:id="@+id/log_list_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
         android:contentDescription="@string/filter_action_icon"
-        android:paddingStart="0dp"
-        android:paddingLeft="0dp"
-        android:paddingEnd="@dimen/icon_horizontal_margin"
-        android:paddingRight="@dimen/icon_horizontal_margin"
-        android:scaleType="centerInside"
+        android:scaleType="fitXY"
+        android:translationY="@dimen/icon_top_position"
         tools:srcCompat="@drawable/ic_block_red_24dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingStart="@dimen/icon_list_margin"
+        android:paddingLeft="@dimen/icon_list_margin"
+        android:paddingEnd="0dp"
+        android:paddingRight="0dp">
 
         <TextView
             android:id="@+id/log_list_message"
