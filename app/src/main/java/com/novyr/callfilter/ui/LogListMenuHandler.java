@@ -30,12 +30,17 @@ class LogListMenuHandler {
     private final Context mContext;
     private final LogViewModel mLogViewModel;
     private final WhitelistViewModel mWhitelistViewModel;
+    private List<WhitelistEntity> mWhitelistEntities;
 
     LogListMenuHandler(Context context, LogViewModel logViewModel, WhitelistViewModel whitelistViewModel) {
         mContext = context;
         mContactFinder = new ContactFinder(context);
         mLogViewModel = logViewModel;
         mWhitelistViewModel = whitelistViewModel;
+    }
+
+    void setEntities(List<WhitelistEntity> entities) {
+        mWhitelistEntities = entities;
     }
 
     void createMenu(final ContextMenu menu, final LogEntity entity) {
@@ -137,16 +142,11 @@ class LogListMenuHandler {
     }
 
     private WhitelistEntity findEntity(String number) {
-        if (number == null) {
+        if (number == null || mWhitelistEntities == null || mWhitelistEntities.size() == 0) {
             return null;
         }
 
-        List<WhitelistEntity> list = mWhitelistViewModel.getCurrentEntities();
-        if (list == null) {
-            return null;
-        }
-
-        for (WhitelistEntity entity : list) {
+        for (WhitelistEntity entity : mWhitelistEntities) {
             if (number.equals(entity.getNumber())) {
                 return entity;
             }
