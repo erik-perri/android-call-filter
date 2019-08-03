@@ -16,4 +16,13 @@ public class ActionConverterTest {
         assertNull(ActionConverter.toAction(3));
         assertNull(ActionConverter.toAction(-1));
     }
+
+    @Test
+    public void fromAction() throws Exception {
+        assertEquals((Integer) 0, ActionConverter.fromAction(Action.BLOCKED));
+        assertEquals((Integer) 1, ActionConverter.fromAction(Action.ALLOWED));
+        assertEquals((Integer) 2, ActionConverter.fromAction(Action.FAILED));
+        //noinspection ConstantConditions
+        assertNull(ActionConverter.fromAction(null));
+    }
 }
