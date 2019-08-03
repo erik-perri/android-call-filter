@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import com.novyr.callfilter.ContactFinder;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
@@ -38,7 +39,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private RecyclerView mLogList;
     private LogViewModel mLogViewModel;
-
     private Snackbar mPermissionNotice;
     private PermissionManager mPermissionManager;
 
@@ -55,12 +55,13 @@ public class MainActivity extends AppCompatActivity {
 
         mLogViewModel = ViewModelProviders.of(this).get(LogViewModel.class);
 
+        final ContactFinder contactFinder = new ContactFinder(this);
         final WhitelistViewModel whitelistViewModel = ViewModelProviders.of(this).get(WhitelistViewModel.class);
         final LogListMenuHandler menuHandler = new LogListMenuHandler(this, mLogViewModel, whitelistViewModel);
 
         final LogListAdapter adapter = new LogListAdapter(
                 this,
-                new LogMessageFormatter(getApplicationContext()),
+                new LogMessageFormatter(contactFinder),
                 new LogDateFormatter(),
                 menuHandler
         );

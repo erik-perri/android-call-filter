@@ -1,6 +1,5 @@
 package com.novyr.callfilter.formatter;
 
-import android.content.Context;
 import android.os.Build;
 import android.telephony.PhoneNumberUtils;
 
@@ -12,8 +11,8 @@ import java.util.Locale;
 public class LogMessageFormatter implements MessageFormatter {
     private final ContactFinder mContactFinder;
 
-    public LogMessageFormatter(Context context) {
-        mContactFinder = new ContactFinder(context);
+    public LogMessageFormatter(ContactFinder contactFinder) {
+        mContactFinder = contactFinder;
     }
 
     public String formatMessage(LogEntity entity) {
