@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        tools:listitem="@layout/log_item" />
+        tools:listitem="@layout/content_log_entity" />
 
     <TextView
         android:id="@+id/empty_view"
