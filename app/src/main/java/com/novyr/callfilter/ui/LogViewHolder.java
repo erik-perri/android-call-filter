@@ -19,8 +19,8 @@ class LogViewHolder extends RecyclerView.ViewHolder implements View.OnCreateCont
         super(itemView);
 
         mMenuHandler = menuHandler;
-        mMessageView = itemView.findViewById(R.id.message);
-        mCreatedView = itemView.findViewById(R.id.created);
+        mMessageView = itemView.findViewById(R.id.log_list_message);
+        mCreatedView = itemView.findViewById(R.id.log_list_created);
 
         itemView.setOnCreateContextMenuListener(this);
     }
