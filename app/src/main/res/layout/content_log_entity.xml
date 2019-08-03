@@ -20,7 +20,8 @@
         android:paddingLeft="0dp"
         android:paddingEnd="@dimen/icon_horizontal_margin"
         android:paddingRight="@dimen/icon_horizontal_margin"
-        android:scaleType="centerInside" />
+        android:scaleType="centerInside"
+        tools:srcCompat="@drawable/ic_block_red_24dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
