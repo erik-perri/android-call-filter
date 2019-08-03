@@ -4,6 +4,10 @@
     package="com.novyr.callfilter">
 
     <uses-permission
+        android:name="android.permission.MODIFY_PHONE_STATE"
+        android:maxSdkVersion="19"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission
         android:name="android.permission.ANSWER_PHONE_CALLS"
         android:maxSdkVersion="28" />
     <uses-permission

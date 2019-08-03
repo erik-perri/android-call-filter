@@ -28,11 +28,18 @@ public class PermissionsChecker implements CheckerInterface {
                     Manifest.permission.READ_CONTACTS,
                     Manifest.permission.READ_PHONE_STATE
             ));
-        } else {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mWantedPermissions = new LinkedList<>(Arrays.asList(
                     Manifest.permission.CALL_PHONE,
                     Manifest.permission.READ_CONTACTS,
                     Manifest.permission.READ_PHONE_STATE
+            ));
+        } else {
+            mWantedPermissions = new LinkedList<>(Arrays.asList(
+                    Manifest.permission.CALL_PHONE,
+                    Manifest.permission.READ_CONTACTS,
+                    Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.MODIFY_PHONE_STATE
             ));
         }
     }
