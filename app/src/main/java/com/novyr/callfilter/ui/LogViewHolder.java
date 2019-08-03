@@ -9,40 +9,55 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
+import com.novyr.callfilter.formatter.DateFormatter;
+import com.novyr.callfilter.formatter.MessageFormatter;
 
 class LogViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-    final TextView mMessageView;
-    final TextView mCreatedView;
-    final ImageView mIcon;
+    private final TextView mMessageView;
+    private final TextView mCreatedView;
+    private final ImageView mIcon;
+    private final MessageFormatter mMessageFormatter;
+    private final DateFormatter mDateFormatter;
     private final LogListMenuHandler mMenuHandler;
     private LogEntity mEntity;
 
-    LogViewHolder(View itemView, LogListMenuHandler menuHandler) {
+    LogViewHolder(View itemView, MessageFormatter messageFormatter, DateFormatter dateFormatter, LogListMenuHandler menuHandler) {
         super(itemView);
 
-        mMenuHandler = menuHandler;
         mMessageView = itemView.findViewById(R.id.log_list_message);
         mCreatedView = itemView.findViewById(R.id.log_list_created);
         mIcon = itemView.findViewById(R.id.log_list_icon);
 
+        mMessageFormatter = messageFormatter;
+        mDateFormatter = dateFormatter;
+        mMenuHandler = menuHandler;
+
         itemView.setOnCreateContextMenuListener(this);
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        final LogEntity entity = getEntity();
-        if (entity == null) {
-            return;
-        }
-
-        mMenuHandler.createMenu(menu, entity);
-    }
-
-    private LogEntity getEntity() {
-        return mEntity;
     }
 
     void setEntity(LogEntity entity) {
         mEntity = entity;
+
+        mMessageView.setText(mMessageFormatter.formatMessage(entity));
+        mCreatedView.setText(mDateFormatter.formatDate(entity));
+
+        switch (entity.getAction()) {
+            case ALLOWED:
+                mIcon.setImageResource(R.drawable.ic_check_green_24dp);
+                break;
+            case BLOCKED:
+                mIcon.setImageResource(R.drawable.ic_block_red_24dp);
+                break;
+            case FAILED:
+                mIcon.setImageResource(R.drawable.ic_error_outline_black_24dp);
+                break;
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        if (mEntity != null) {
+            mMenuHandler.createMenu(menu, mEntity);
+        }
     }
 }

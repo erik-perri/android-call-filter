@@ -21,7 +21,6 @@ class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
     private final MessageFormatter mMessageFormatter;
     private final DateFormatter mDateFormatter;
     private final LogListMenuHandler mMenuHandler;
-
     private List<LogEntity> mEntries;
 
     LogListAdapter(
@@ -46,7 +45,8 @@ class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
     @Override
     public LogViewHolder onCreateViewHolder(@Nullable ViewGroup parent, int viewType) {
         View itemView = mInflater.inflate(R.layout.content_log_entity, parent, false);
-        return new LogViewHolder(itemView, mMenuHandler);
+
+        return new LogViewHolder(itemView, mMessageFormatter, mDateFormatter, mMenuHandler);
     }
 
     @Override
@@ -56,21 +56,8 @@ class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
         }
 
         LogEntity entity = mEntries.get(position);
-
-        holder.setEntity(entity);
-        holder.mMessageView.setText(mMessageFormatter.formatMessage(entity));
-        holder.mCreatedView.setText(mDateFormatter.formatDate(entity));
-
-        switch (entity.getAction()) {
-            case ALLOWED:
-                holder.mIcon.setImageResource(R.drawable.ic_check_green_24dp);
-                break;
-            case BLOCKED:
-                holder.mIcon.setImageResource(R.drawable.ic_block_red_24dp);
-                break;
-            case FAILED:
-                holder.mIcon.setImageResource(R.drawable.ic_error_outline_black_24dp);
-                break;
+        if (entity != null) {
+            holder.setEntity(entity);
         }
     }
 
