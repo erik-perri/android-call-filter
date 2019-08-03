@@ -35,7 +35,7 @@ class LogViewHolder extends RecyclerView.ViewHolder implements View.OnCreateCont
         mMenuHandler.createMenu(menu, entity);
     }
 
-    LogEntity getEntity() {
+    private LogEntity getEntity() {
         return mEntity;
     }
 

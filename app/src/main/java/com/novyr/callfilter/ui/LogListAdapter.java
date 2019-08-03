@@ -16,7 +16,7 @@ import com.novyr.callfilter.formatter.MessageFormatter;
 
 import java.util.List;
 
-public class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
+class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
     private final LayoutInflater mInflater;
     private final MessageFormatter mMessageFormatter;
     private final DateFormatter mDateFormatter;
@@ -24,7 +24,7 @@ public class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
 
     private List<LogEntity> mEntries;
 
-    public LogListAdapter(
+    LogListAdapter(
             Context context,
             MessageFormatter messageFormatter,
             DateFormatter dateFormatter,
@@ -36,7 +36,7 @@ public class LogListAdapter extends RecyclerView.Adapter<LogViewHolder> {
         mMenuHandler = menuHandler;
     }
 
-    public void setEntities(List<LogEntity> entities) {
+    void setEntities(List<LogEntity> entities) {
         mEntries = entities;
 
         notifyDataSetChanged();
