@@ -1,5 +1,9 @@
 package com.novyr.callfilter.db.dao;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.room.Room;
+import androidx.test.core.app.ApplicationProvider;
+
 import com.novyr.callfilter.db.CallFilterDatabase;
 import com.novyr.callfilter.db.LiveDataTestUtil;
 import com.novyr.callfilter.db.entity.LogEntity;
@@ -13,19 +17,14 @@ import org.junit.Test;
 import java.util.Date;
 import java.util.List;
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.room.Room;
-import androidx.test.core.app.ApplicationProvider;
-
 import static org.junit.Assert.assertEquals;
 
 public class LogDaoTest {
 
-    private CallFilterDatabase mDatabase;
-    private LogDao mLogDao;
-
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+    private CallFilterDatabase mDatabase;
+    private LogDao mLogDao;
 
     @Before
     public void initDb() throws Exception {

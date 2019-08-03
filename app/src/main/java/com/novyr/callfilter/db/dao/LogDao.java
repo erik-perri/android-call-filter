@@ -1,14 +1,14 @@
 package com.novyr.callfilter.db.dao;
 
-import com.novyr.callfilter.db.entity.LogEntity;
-
-import java.util.List;
-
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+
+import com.novyr.callfilter.db.entity.LogEntity;
+
+import java.util.List;
 
 @Dao
 public interface LogDao {

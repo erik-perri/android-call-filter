@@ -1,9 +1,9 @@
 package com.novyr.callfilter.model;
 
-import java.util.Date;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Date;
 
 public interface Log {
     int getId();
