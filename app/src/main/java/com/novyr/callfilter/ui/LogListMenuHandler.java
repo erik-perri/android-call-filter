@@ -37,7 +37,7 @@ class LogListMenuHandler {
         mWhitelistViewModel = whitelistViewModel;
     }
 
-    void setEntities(List<WhitelistEntity> entities) {
+    void setWhitelistEntities(List<WhitelistEntity> entities) {
         mWhitelistEntities = entities;
     }
 

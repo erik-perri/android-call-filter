@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         whitelistViewModel.findAll().observe(this, new Observer<List<WhitelistEntity>>() {
             @Override
             public void onChanged(@Nullable final List<WhitelistEntity> entities) {
-                menuHandler.setEntities(entities);
+                menuHandler.setWhitelistEntities(entities);
             }
         });
     }
