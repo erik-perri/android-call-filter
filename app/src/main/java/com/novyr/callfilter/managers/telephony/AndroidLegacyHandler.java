@@ -5,6 +5,8 @@ import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.novyr.callfilter.BuildConfig;
+
 import java.lang.reflect.Method;
 
 public class AndroidLegacyHandler implements HandlerInterface {
@@ -31,7 +33,9 @@ public class AndroidLegacyHandler implements HandlerInterface {
                 mMethodSilenceRinger = mInterfaceTelephony.getClass().getDeclaredMethod("silenceRinger");
             }
         } catch (Exception e) {
-            Log.d(TAG, "Failed to find telephony interface or methods", e);
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Failed to find telephony interface or methods", e);
+            }
         }
     }
 
@@ -48,7 +52,9 @@ public class AndroidLegacyHandler implements HandlerInterface {
 
             result = (boolean) mMethodEndCall.invoke(mInterfaceTelephony);
         } catch (Exception e) {
-            Log.d(TAG, "Failed to silence and end call", e);
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Failed to silence and end call", e);
+            }
         }
         return result;
     }
