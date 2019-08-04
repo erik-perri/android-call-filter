@@ -51,7 +51,7 @@ public class LogMessageFormatter implements MessageFormatter {
             if (contactName != null) {
                 return contactName;
             }
-        } catch (Exception ignored) {
+        } catch (InternalError ignored) {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
