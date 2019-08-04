@@ -38,7 +38,7 @@ public class CallReceiver extends BroadcastReceiver {
         }
 
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Call received");
+            Log.i(TAG, "Call received");
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
                 for (String key : bundle.keySet()) {
@@ -55,13 +55,13 @@ public class CallReceiver extends BroadcastReceiver {
 
         if (!shouldHandleCall(intent)) {
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "  Skipping call");
+                Log.i(TAG, "  Skipping call");
             }
             return;
         }
 
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "  Handling call");
+            Log.i(TAG, "  Handling call");
         }
 
         // noinspection deprecation

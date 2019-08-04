@@ -46,7 +46,7 @@ class CallChecker {
             return mContactFinder.findContactName(number) != null;
         } catch (Exception e) {
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Failed to lookup phone number in contacts", e);
+                Log.e(TAG, "Failed to lookup phone number in contacts", e);
             }
 
             // If we failed to check we to return true to prevent blocking anything

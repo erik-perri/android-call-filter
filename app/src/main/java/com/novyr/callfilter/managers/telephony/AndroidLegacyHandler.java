@@ -34,7 +34,7 @@ public class AndroidLegacyHandler implements HandlerInterface {
             }
         } catch (Exception e) {
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Failed to find telephony interface or methods", e);
+                Log.e(TAG, "Failed to find telephony interface or methods", e);
             }
         }
     }
@@ -53,7 +53,7 @@ public class AndroidLegacyHandler implements HandlerInterface {
             result = (boolean) mMethodEndCall.invoke(mInterfaceTelephony);
         } catch (Exception e) {
             if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Failed to silence and end call", e);
+                Log.e(TAG, "Failed to silence and end call", e);
             }
         }
         return result;
