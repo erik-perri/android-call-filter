@@ -9,12 +9,15 @@
     <string name="setting_block_unknown_summary">Block calls from people not in your contacts</string>
     <string name="setting_block_private_title">Block private numbers</string>
     <string name="setting_block_private_summary">Block calls from private numbers</string>
-    <string name="warning_permissions">Failed to acquire permissions</string>
     <string name="warning_empty_log_list">Log is empty</string>
-    <string name="warning_action_retry">RETRY</string>
     <string name="context_menu_open_contacts">Open in Contacts</string>
     <string name="context_menu_whitelist_remove">Remove from whitelist</string>
     <string name="context_menu_whitelist_add">Add to whitelist</string>
     <string name="context_menu_log_remove">Remove from log</string>
     <string name="filter_action_icon">Filter action icon</string>
+    <string name="permission_preferences_file">permissions</string>
+    <string name="permission_request_denied">Permission request denied</string>
+    <string name="permission_screening_denied">Call screening request denied</string>
+    <string name="permission_request_blocked">Permission request blocked</string>
+    <string name="permission_notice_retry">RETRY</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.novyr.callfilter.ui;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,8 +28,8 @@ import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
 import com.novyr.callfilter.formatter.LogDateFormatter;
 import com.novyr.callfilter.formatter.LogMessageFormatter;
-import com.novyr.callfilter.managers.PermissionManager;
-import com.novyr.callfilter.managers.permission.CallScreeningRoleChecker;
+import com.novyr.callfilter.permissions.NotificationHandlerInterface;
+import com.novyr.callfilter.permissions.PermissionChecker;
 import com.novyr.callfilter.viewmodel.LogViewModel;
 import com.novyr.callfilter.viewmodel.WhitelistViewModel;
 
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mLogList;
     private LogViewModel mLogViewModel;
     private Snackbar mPermissionNotice;
-    private PermissionManager mPermissionManager;
+    private PermissionChecker mPermissionChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
-        mPermissionManager = new PermissionManager();
         mLogList = findViewById(R.id.log_list);
 
         mLogViewModel = ViewModelProviders.of(this).get(LogViewModel.class);
@@ -92,37 +90,46 @@ public class MainActivity extends AppCompatActivity {
                 menuHandler.setWhitelistEntities(entities);
             }
         });
+
+        mPermissionChecker = new PermissionChecker(this, new NotificationHandlerInterface() {
+            @Override
+            public void setErrors(List<String> errors) {
+                if (mPermissionNotice != null) {
+                    mPermissionNotice.dismiss();
+                    mPermissionNotice = null;
+                }
+
+                if (errors.size() < 1) {
+                    return;
+                }
+
+                StringBuilder errorMessage = new StringBuilder();
+                for (int i = 0; i < errors.size(); i++) {
+                    if (errorMessage.length() > 0) {
+                        errorMessage.append("\n");
+                    }
+                    errorMessage.append(errors.get(i));
+                }
+
+                mPermissionNotice = Snackbar.make(mLogList, errorMessage, Snackbar.LENGTH_INDEFINITE);
+                mPermissionNotice
+                        .setAction(R.string.permission_notice_retry, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                mPermissionChecker.onStart();
+                            }
+                        })
+                        .show();
+            }
+        });
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        if (!mPermissionManager.hasAccess(this)) {
-            mPermissionManager.requestAccess(this, false);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        showPermissionWarning();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        showPermissionWarning();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == CallScreeningRoleChecker.CALL_SCREENING_REQUEST) {
-            showPermissionWarning();
-        }
+        mPermissionChecker.onStart();
     }
 
     @Override
@@ -155,22 +162,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void showPermissionWarning() {
-        if (mPermissionManager.hasAccess(this)) {
-            if (mPermissionNotice != null) {
-                mPermissionNotice.dismiss();
-                mPermissionNotice = null;
-            }
-            return;
-        }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mPermissionChecker.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 
-        final Activity self = this;
-        mPermissionNotice = Snackbar.make(mLogList, R.string.warning_permissions, Snackbar.LENGTH_INDEFINITE).setAction(R.string.warning_action_retry, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mPermissionManager.requestAccess(self, true);
-            }
-        });
-        mPermissionNotice.show();
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        mPermissionChecker.onActivityResult(requestCode, resultCode, data);
     }
 }
