@@ -41,10 +41,11 @@ public class CallReceiver extends BroadcastReceiver {
             Log.i(TAG, "Call received");
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
+                Log.d(TAG, " - Intent extras:");
                 for (String key : bundle.keySet()) {
                     Object value = bundle.get(key);
                     Log.d(TAG, String.format(
-                            "    %-16s %-16s (%s)",
+                            "   - %-16s %-16s (%s)",
                             key,
                             value != null ? value.toString() : "NULL",
                             value != null ? value.getClass().getName() : ""
@@ -55,13 +56,13 @@ public class CallReceiver extends BroadcastReceiver {
 
         if (!shouldHandleCall(intent)) {
             if (BuildConfig.DEBUG) {
-                Log.i(TAG, "  Skipping call");
+                Log.i(TAG, " - Skipping call");
             }
             return;
         }
 
         if (BuildConfig.DEBUG) {
-            Log.i(TAG, "  Handling call");
+            Log.i(TAG, " - Handling call");
         }
 
         // noinspection deprecation
