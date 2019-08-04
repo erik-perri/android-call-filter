@@ -1,4 +1,4 @@
-package com.novyr.callfilter.managers.telephony;
+package com.novyr.callfilter.telephony;
 
 public interface HandlerInterface {
     /**

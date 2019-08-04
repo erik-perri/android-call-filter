@@ -12,8 +12,8 @@ import androidx.annotation.NonNull;
 
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.enums.Action;
-import com.novyr.callfilter.managers.TelephonyManager;
-import com.novyr.callfilter.managers.telephony.HandlerInterface;
+import com.novyr.callfilter.telephony.HandlerFactory;
+import com.novyr.callfilter.telephony.HandlerInterface;
 
 import java.util.Date;
 
@@ -106,7 +106,7 @@ public class CallReceiver extends BroadcastReceiver {
                 return null;
             }
 
-            HandlerInterface handler = TelephonyManager.findHandler(taskParams.context);
+            HandlerInterface handler = HandlerFactory.create(taskParams.context);
             CallChecker checker = new CallChecker(taskParams.context);
             Action action = Action.ALLOWED;
             if (checker.shouldBlockCall(taskParams.number)) {

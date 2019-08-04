@@ -1,4 +1,4 @@
-package com.novyr.callfilter.managers.telephony;
+package com.novyr.callfilter.telephony;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -16,7 +16,7 @@ public class AndroidLegacyHandler implements HandlerInterface {
     private Method mMethodSilenceRinger = null;
     private Method mMethodEndCall = null;
 
-    public AndroidLegacyHandler(Context context) {
+    AndroidLegacyHandler(Context context) {
         try {
             TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             if (manager == null) {
