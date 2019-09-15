@@ -24,8 +24,8 @@ public class LogViewModel extends AndroidViewModel {
         return mRepository.findAll();
     }
 
-    public void clear() {
-        mRepository.clear();
+    public void deleteAll() {
+        mRepository.deleteAll();
     }
 
     public void delete(LogEntity entity) {

@@ -39,7 +39,7 @@ public class LogRepository {
         new InsertAsyncTask(mDao).execute(entity);
     }
 
-    public void clear() {
+    public void deleteAll() {
         new ClearAsyncTask(mDao).execute();
     }
 

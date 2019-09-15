@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                mLogViewModel.clear();
+                                mLogViewModel.deleteAll();
                             }
                         })
                         .setNegativeButton(android.R.string.no, null)
