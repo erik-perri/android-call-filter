@@ -2,10 +2,6 @@ package com.novyr.callfilter.permissions.checker;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
-import java.util.List;
-
 public interface CheckerInterface {
     /**
      * @param activity The application activity

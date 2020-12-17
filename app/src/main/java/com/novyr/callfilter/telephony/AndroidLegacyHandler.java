@@ -23,7 +23,7 @@ public class AndroidLegacyHandler implements HandlerInterface {
                 throw new Exception("Failed to get TelephonyManager system service.");
             }
 
-            @SuppressLint("PrivateApi")
+            @SuppressLint({"PrivateApi", "SoonBlockedPrivateApi"})
             Method methodGetInterface = manager.getClass().getDeclaredMethod("getITelephony");
             methodGetInterface.setAccessible(true);
 

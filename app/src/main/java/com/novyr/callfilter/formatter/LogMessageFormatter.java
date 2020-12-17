@@ -57,7 +57,7 @@ public class LogMessageFormatter implements MessageFormatter {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return PhoneNumberUtils.formatNumber(number, Locale.getDefault().getCountry());
         } else {
-            //noinspection deprecation
+            // noinspection deprecation
             return PhoneNumberUtils.formatNumber(number);
         }
     }

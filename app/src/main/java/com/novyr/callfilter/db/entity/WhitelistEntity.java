@@ -31,7 +31,6 @@ public class WhitelistEntity implements Whitelist {
         return number;
     }
 
-    @SuppressWarnings("unused")
     public void setNumber(@NonNull String number) {
         this.number = number;
     }

@@ -11,8 +11,6 @@ import androidx.annotation.RequiresApi;
 
 import com.novyr.callfilter.BuildConfig;
 
-import java.util.List;
-
 import static android.app.role.RoleManager.ROLE_CALL_SCREENING;
 import static com.novyr.callfilter.permissions.PermissionChecker.PERMISSION_CHECKER_REQUEST;
 
@@ -22,7 +20,6 @@ public class CallScreeningRoleChecker implements CheckerInterface {
 
     @Override
     public boolean hasAccess(Activity activity) {
-        @SuppressLint("WrongConstant")
         RoleManager roleManager = (RoleManager) activity.getSystemService(Activity.ROLE_SERVICE);
         if (roleManager == null || !roleManager.isRoleAvailable(ROLE_CALL_SCREENING)) {
             if (BuildConfig.DEBUG) {

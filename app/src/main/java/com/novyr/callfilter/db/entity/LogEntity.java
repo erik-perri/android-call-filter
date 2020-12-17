@@ -48,7 +48,6 @@ public class LogEntity implements Log {
         return created;
     }
 
-    @SuppressWarnings("unused")
     public void setCreated(@NonNull Date created) {
         this.created = created;
     }
@@ -58,7 +57,6 @@ public class LogEntity implements Log {
         return action;
     }
 
-    @SuppressWarnings("unused")
     public void setAction(@NonNull Action action) {
         this.action = action;
     }
@@ -68,7 +66,6 @@ public class LogEntity implements Log {
         return number;
     }
 
-    @SuppressWarnings("unused")
     public void setNumber(@Nullable String number) {
         this.number = number;
     }

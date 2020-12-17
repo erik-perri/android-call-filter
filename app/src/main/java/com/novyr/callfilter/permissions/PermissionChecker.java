@@ -46,7 +46,7 @@ public class PermissionChecker {
         mIndex = -1;
         mErrors.clear();
 
-        mNotificationHandler.setErrors(new LinkedList<String>());
+        mNotificationHandler.setErrors(new LinkedList<>());
         checkNext();
     }
 
@@ -54,7 +54,7 @@ public class PermissionChecker {
         mNotificationHandler.setErrors(mErrors);
     }
 
-    public void onRequestPermissionsResult(int requestCode, @SuppressWarnings("unused") @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         CheckerInterface checker = mCheckers.get(mIndex);
         if (requestCode != PERMISSION_CHECKER_REQUEST || checker.getClass() != AndroidPermissionChecker.class) {
             if (BuildConfig.DEBUG) {
@@ -70,7 +70,7 @@ public class PermissionChecker {
         checkNext();
     }
 
-    public void onActivityResult(int requestCode, int resultCode, @SuppressWarnings("unused") Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         CheckerInterface checker = mCheckers.get(mIndex);
         if (requestCode != PERMISSION_CHECKER_REQUEST || checker.getClass() != CallScreeningRoleChecker.class) {
             if (BuildConfig.DEBUG) {

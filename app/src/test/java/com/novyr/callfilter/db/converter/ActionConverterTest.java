@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNull;
 
 public class ActionConverterTest {
     @Test
-    public void toAction() throws Exception {
+    public void toAction() {
         assertEquals(Action.BLOCKED, ActionConverter.toAction(0));
         assertEquals(Action.ALLOWED, ActionConverter.toAction(1));
         assertEquals(Action.FAILED, ActionConverter.toAction(2));
@@ -18,11 +18,10 @@ public class ActionConverterTest {
     }
 
     @Test
-    public void fromAction() throws Exception {
+    public void fromAction() {
         assertEquals((Integer) 0, ActionConverter.fromAction(Action.BLOCKED));
         assertEquals((Integer) 1, ActionConverter.fromAction(Action.ALLOWED));
         assertEquals((Integer) 2, ActionConverter.fromAction(Action.FAILED));
-        //noinspection ConstantConditions
         assertNull(ActionConverter.fromAction(null));
     }
 }

@@ -22,7 +22,6 @@ public abstract class CallFilterDatabase extends RoomDatabase {
     static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-
     public static CallFilterDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (CallFilterDatabase.class) {
