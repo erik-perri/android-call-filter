@@ -77,7 +77,6 @@ public class CallReceiver extends BroadcastReceiver {
             // Since we request both READ_CALL_LOG and READ_PHONE_STATE permissions we will get called twice, one of
             // the calls missing the EXTRA_INCOMING_NUMBER data.
             // https://developer.android.com/reference/android/telephony/TelephonyManager#ACTION_PHONE_STATE_CHANGED
-            // noinspection deprecation
             return intent.hasExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
         }
 
