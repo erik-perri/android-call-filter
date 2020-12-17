@@ -43,29 +43,26 @@ class LogListMenuHandler {
 
     void createMenu(final ContextMenu menu, final LogEntity entity) {
         final String number = entity.getNumber();
-        final MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                int itemId = menuItem.getItemId();
-                if (itemId == R.id.log_context_contacts_open) {
-                    openInContacts(number);
-                    return true;
-                } else if (itemId == R.id.log_context_whitelist_add) {
-                    if (number != null) {
-                        addToWhitelist(number);
-                    }
-                    return true;
-                } else if (itemId == R.id.log_context_whitelist_remove) {
-                    if (number != null) {
-                        removeFromWhitelist(number);
-                    }
-                    return true;
-                } else if (itemId == R.id.log_context_log_remove) {
-                    removeLog(entity);
-                    return true;
+        final MenuItem.OnMenuItemClickListener listener = menuItem -> {
+            int itemId = menuItem.getItemId();
+            if (itemId == R.id.log_context_contacts_open) {
+                openInContacts(number);
+                return true;
+            } else if (itemId == R.id.log_context_whitelist_add) {
+                if (number != null) {
+                    addToWhitelist(number);
                 }
-                return false;
+                return true;
+            } else if (itemId == R.id.log_context_whitelist_remove) {
+                if (number != null) {
+                    removeFromWhitelist(number);
+                }
+                return true;
+            } else if (itemId == R.id.log_context_log_remove) {
+                removeLog(entity);
+                return true;
             }
+            return false;
         };
 
         mActivity.getMenuInflater().inflate(R.menu.menu_log_context, menu);

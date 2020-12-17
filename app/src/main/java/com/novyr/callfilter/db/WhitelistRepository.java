@@ -38,14 +38,10 @@ public class WhitelistRepository {
     }
 
     public void insert(WhitelistEntity entity) {
-        CallFilterDatabase.databaseWriteExecutor.execute(() -> {
-            mDao.insert(entity);
-        });
+        CallFilterDatabase.databaseWriteExecutor.execute(() -> mDao.insert(entity));
     }
 
     public void delete(WhitelistEntity entity) {
-        CallFilterDatabase.databaseWriteExecutor.execute(() -> {
-            mDao.delete(entity);
-        });
+        CallFilterDatabase.databaseWriteExecutor.execute(() -> mDao.delete(entity));
     }
 }

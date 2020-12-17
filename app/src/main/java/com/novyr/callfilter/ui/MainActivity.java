@@ -1,7 +1,6 @@
 package com.novyr.callfilter.ui;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,10 +10,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,16 +21,11 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.novyr.callfilter.ContactFinder;
 import com.novyr.callfilter.R;
-import com.novyr.callfilter.db.entity.LogEntity;
-import com.novyr.callfilter.db.entity.WhitelistEntity;
 import com.novyr.callfilter.formatter.LogDateFormatter;
 import com.novyr.callfilter.formatter.LogMessageFormatter;
-import com.novyr.callfilter.permissions.NotificationHandlerInterface;
 import com.novyr.callfilter.permissions.PermissionChecker;
 import com.novyr.callfilter.viewmodel.LogViewModel;
 import com.novyr.callfilter.viewmodel.WhitelistViewModel;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView mLogList;
@@ -69,60 +61,43 @@ public class MainActivity extends AppCompatActivity {
 
         final TextView emptyView = findViewById(R.id.empty_view);
 
-        mLogViewModel.findAll().observe(this, new Observer<List<LogEntity>>() {
-            @Override
-            public void onChanged(@Nullable final List<LogEntity> entities) {
-                adapter.setEntities(entities);
+        mLogViewModel.findAll().observe(this, entities -> {
+            adapter.setEntities(entities);
 
-                if (adapter.getItemCount() > 0) {
-                    mLogList.setVisibility(View.VISIBLE);
-                    emptyView.setVisibility(View.GONE);
-                } else {
-                    mLogList.setVisibility(View.GONE);
-                    emptyView.setVisibility(View.VISIBLE);
-                }
+            if (adapter.getItemCount() > 0) {
+                mLogList.setVisibility(View.VISIBLE);
+                emptyView.setVisibility(View.GONE);
+            } else {
+                mLogList.setVisibility(View.GONE);
+                emptyView.setVisibility(View.VISIBLE);
             }
         });
 
-        whitelistViewModel.findAll().observe(this, new Observer<List<WhitelistEntity>>() {
-            @Override
-            public void onChanged(@Nullable final List<WhitelistEntity> entities) {
-                menuHandler.setWhitelistEntities(entities);
+        whitelistViewModel.findAll().observe(this, menuHandler::setWhitelistEntities);
+
+        mPermissionChecker = new PermissionChecker(this, errors -> {
+            if (mPermissionNotice != null) {
+                mPermissionNotice.dismiss();
+                mPermissionNotice = null;
             }
-        });
 
-        mPermissionChecker = new PermissionChecker(this, new NotificationHandlerInterface() {
-            @Override
-            public void setErrors(List<String> errors) {
-                if (mPermissionNotice != null) {
-                    mPermissionNotice.dismiss();
-                    mPermissionNotice = null;
-                }
-
-                if (errors.size() < 1) {
-                    return;
-                }
-
-                StringBuilder errorMessage = new StringBuilder();
-                for (int i = 0; i < errors.size(); i++) {
-                    if (errorMessage.length() > 0) {
-                        errorMessage.append("\n");
-                    }
-                    errorMessage.append(errors.get(i));
-                }
-
-                mPermissionNotice = Snackbar.make(mLogList, errorMessage, Snackbar.LENGTH_INDEFINITE);
-                mPermissionNotice
-                        .setAction(R.string.permission_notice_retry, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                mPermissionChecker.onStart();
-                            }
-                        })
-                        .show();
+            if (errors.size() < 1) {
+                return;
             }
-        });
 
+            StringBuilder errorMessage = new StringBuilder();
+            for (int i = 0; i < errors.size(); i++) {
+                if (errorMessage.length() > 0) {
+                    errorMessage.append("\n");
+                }
+                errorMessage.append(errors.get(i));
+            }
+
+            mPermissionNotice = Snackbar.make(mLogList, errorMessage, Snackbar.LENGTH_INDEFINITE);
+            mPermissionNotice
+                    .setAction(R.string.permission_notice_retry, view -> mPermissionChecker.onStart())
+                    .show();
+        });
     }
 
     @Override
@@ -149,11 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle(R.string.dialog_clear_logs_title)
                     .setMessage(R.string.dialog_clear_logs_message)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            mLogViewModel.deleteAll();
-                        }
-                    })
+                    .setPositiveButton(R.string.yes, (dialog, whichButton) -> mLogViewModel.deleteAll())
                     .setNegativeButton(R.string.no, null)
                     .show();
             return true;

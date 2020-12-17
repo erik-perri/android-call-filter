@@ -34,9 +34,7 @@ public class LogRepository {
     }
 
     public void insert(LogEntity entity) {
-        CallFilterDatabase.databaseWriteExecutor.execute(() -> {
-            mDao.insert(entity);
-        });
+        CallFilterDatabase.databaseWriteExecutor.execute(() -> mDao.insert(entity));
     }
 
     public void deleteAll() {
@@ -44,8 +42,6 @@ public class LogRepository {
     }
 
     public void delete(LogEntity entity) {
-        CallFilterDatabase.databaseWriteExecutor.execute(() -> {
-            mDao.delete(entity);
-        });
+        CallFilterDatabase.databaseWriteExecutor.execute(() -> mDao.delete(entity));
     }
 }
