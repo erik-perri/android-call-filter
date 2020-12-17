@@ -149,12 +149,12 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle(R.string.dialog_clear_logs_title)
                     .setMessage(R.string.dialog_clear_logs_message)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             mLogViewModel.deleteAll();
                         }
                     })
-                    .setNegativeButton(android.R.string.no, null)
+                    .setNegativeButton(R.string.no, null)
                     .show();
             return true;
         }

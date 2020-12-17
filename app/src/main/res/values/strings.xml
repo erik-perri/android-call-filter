@@ -20,4 +20,6 @@
     <string name="permission_screening_denied">Call screening request denied</string>
     <string name="permission_request_blocked">Permission request blocked</string>
     <string name="permission_notice_retry">RETRY</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
