@@ -2,10 +2,10 @@ package com.novyr.callfilter;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.telecom.Call;
 import android.telecom.CallScreeningService;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -15,9 +15,14 @@ import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.enums.Action;
 
 import java.util.Date;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @RequiresApi(api = Build.VERSION_CODES.Q)
 public class CallFilterService extends CallScreeningService {
+    private static final String TAG = CallFilterService.class.getSimpleName();
+    private final Executor executor = Executors.newSingleThreadExecutor();
+
     @Override
     public void onScreenCall(@NonNull Call.Details details) {
         CallResponse.Builder response = new CallResponse.Builder();
@@ -31,36 +36,14 @@ public class CallFilterService extends CallScreeningService {
             return;
         }
 
-        Uri handle = details.getHandle();
-        String number = null;
-        if (handle != null) {
-            String scheme = handle.getScheme();
-            if (scheme != null && scheme.equals("tel")) {
-                number = handle.getSchemeSpecificPart();
-            }
-        }
+        Context context = getApplicationContext();
+        String number = getNumberFromDetails(details);
 
-        new ScreenAsyncTask().execute(new ScreenTaskParams(getApplicationContext(), this, details, number));
-    }
-
-    private static class ScreenAsyncTask extends AsyncTask<ScreenTaskParams, Void, Void> {
-        @Override
-        protected Void doInBackground(ScreenTaskParams... params) {
-            ScreenTaskParams taskParams = params[0];
-            if (taskParams == null) {
-                return null;
-            }
-
-            CallResponse.Builder response = new CallResponse.Builder();
-            response.setDisallowCall(false);
-            response.setRejectCall(false);
-            response.setSkipCallLog(false);
-            response.setSkipNotification(false);
-
-            CallChecker checker = new CallChecker(taskParams.context);
+        executor.execute(() -> {
+            CallChecker checker = new CallChecker(context);
             Action action = Action.ALLOWED;
 
-            if (checker.shouldBlockCall(taskParams.number)) {
+            if (checker.shouldBlockCall(number)) {
                 action = Action.BLOCKED;
                 response.setDisallowCall(true);
                 response.setRejectCall(true);
@@ -70,37 +53,26 @@ public class CallFilterService extends CallScreeningService {
                 response.setSkipCallLog(false);
             }
 
-            LogRepository repository = ((CallFilterApplication) taskParams.context.getApplicationContext()).getLogRepository();
-            repository.insert(new LogEntity(new Date(), action, taskParams.number));
+            LogRepository repository = ((CallFilterApplication) context.getApplicationContext()).getLogRepository();
+            repository.insert(new LogEntity(new Date(), action, number));
 
-            taskParams.service.respondToCall(taskParams.details, response.build());
-            return null;
-        }
+            respondToCall(details, response.build());
+        });
     }
 
-    private class ScreenTaskParams {
-        @NonNull
-        final Context context;
-
-        @NonNull
-        final CallFilterService service;
-
-        @NonNull
-        final Call.Details details;
-
-        final String number;
-
-        ScreenTaskParams(
-                @NonNull Context context,
-                @NonNull CallFilterService service,
-                @NonNull Call.Details details,
-                String number
-        ) {
-            this.context = context;
-            this.service = service;
-            this.details = details;
-            this.number = number;
+    private String getNumberFromDetails(@NonNull Call.Details details) {
+        Uri handle = details.getHandle();
+        if (handle == null) {
+            Log.e(TAG, "No handle on incoming call");
+            return null;
         }
 
+        String scheme = handle.getScheme();
+        if (scheme != null && scheme.equals("tel")) {
+            return handle.getSchemeSpecificPart();
+        }
+
+        Log.e(TAG, "Unhandled scheme");
+        return null;
     }
 }

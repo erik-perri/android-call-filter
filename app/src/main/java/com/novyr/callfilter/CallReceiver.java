@@ -3,12 +3,9 @@ package com.novyr.callfilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.enums.Action;
@@ -16,9 +13,12 @@ import com.novyr.callfilter.telephony.HandlerFactory;
 import com.novyr.callfilter.telephony.HandlerInterface;
 
 import java.util.Date;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class CallReceiver extends BroadcastReceiver {
     private static final String TAG = CallReceiver.class.getSimpleName();
+    private final Executor executor = Executors.newSingleThreadExecutor();
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -66,10 +66,23 @@ public class CallReceiver extends BroadcastReceiver {
         }
 
         // noinspection deprecation
-        new ReceiveAsyncTask().execute(new ReceiveTaskParams(
-                context,
-                intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER)
-        ));
+        String number = intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
+
+        executor.execute(() -> {
+            HandlerInterface handler = HandlerFactory.create(context);
+            CallChecker checker = new CallChecker(context);
+            Action action = Action.ALLOWED;
+            if (checker.shouldBlockCall(number)) {
+                if (handler.endCall()) {
+                    action = Action.BLOCKED;
+                } else {
+                    action = Action.FAILED;
+                }
+            }
+
+            CallFilterApplication application = (CallFilterApplication) context.getApplicationContext();
+            application.getLogRepository().insert(new LogEntity(new Date(), action, number));
+        });
     }
 
     private boolean shouldHandleCall(Intent intent) {
@@ -77,6 +90,7 @@ public class CallReceiver extends BroadcastReceiver {
             // Since we request both READ_CALL_LOG and READ_PHONE_STATE permissions we will get called twice, one of
             // the calls missing the EXTRA_INCOMING_NUMBER data.
             // https://developer.android.com/reference/android/telephony/TelephonyManager#ACTION_PHONE_STATE_CHANGED
+            // noinspection deprecation
             return intent.hasExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
         }
 
@@ -96,43 +110,5 @@ public class CallReceiver extends BroadcastReceiver {
         String id = value.toString();
 
         return id == null || id.equals(expectedId);
-    }
-
-    private static class ReceiveAsyncTask extends AsyncTask<ReceiveTaskParams, Void, Void> {
-        @Override
-        protected Void doInBackground(ReceiveTaskParams... params) {
-            ReceiveTaskParams taskParams = params[0];
-            if (taskParams == null) {
-                return null;
-            }
-
-            HandlerInterface handler = HandlerFactory.create(taskParams.context);
-            CallChecker checker = new CallChecker(taskParams.context);
-            Action action = Action.ALLOWED;
-            if (checker.shouldBlockCall(taskParams.number)) {
-                if (handler.endCall()) {
-                    action = Action.BLOCKED;
-                } else {
-                    action = Action.FAILED;
-                }
-            }
-
-            CallFilterApplication application = (CallFilterApplication) taskParams.context.getApplicationContext();
-            application.getLogRepository().insert(new LogEntity(new Date(), action, taskParams.number));
-
-            return null;
-        }
-    }
-
-    private class ReceiveTaskParams {
-        @NonNull
-        final Context context;
-
-        final String number;
-
-        ReceiveTaskParams(@NonNull Context context, String number) {
-            this.context = context;
-            this.number = number;
-        }
     }
 }
