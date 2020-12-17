@@ -26,7 +26,7 @@ Location on Windows:
 
 ```xml
 <toolSet name="External Tools">
-  <tool name="Install as System App" showInMainMenu="false" showInEditor="false" showInProject="false" showInSearchPopup="false" disabled="false" useConsole="true" showConsoleOnStdOut="false" showConsoleOnStdErr="false" synchronizeAfterRun="true">
+  <tool name="Install as system app" showInMainMenu="false" showInEditor="false" showInProject="false" showInSearchPopup="false" disabled="false" useConsole="true" showConsoleOnStdOut="false" showConsoleOnStdErr="false" synchronizeAfterRun="true">
     <exec>
       <option name="COMMAND" value="powershell.exe" />
       <option name="PARAMETERS" value="&amp; Set-ExecutionPolicy Unrestricted -Scope Process -Force; .\install-as-system-app.ps1;" />

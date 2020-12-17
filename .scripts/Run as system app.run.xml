@@ -55,7 +55,7 @@
     <method v="2">
       <option name="Android.Gradle.BeforeRunTask" enabled="true" />
       <option name="Make" enabled="true" />
-      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Install as System App" />
+      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Install as system app" />
     </method>
   </configuration>
 </component>

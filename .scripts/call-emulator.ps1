@@ -51,7 +51,7 @@ foreach ($command in $commands) {
 		Write-Host "Unexpected response during command $command"
 		Write-Host $response
 		Exit 1
-	}    
+	}
 }
 
 $client.Close | Out-Null
