@@ -8,14 +8,14 @@ if ($args[0] -ne $null) {
 }
 
 $tcpConnection = New-Object System.Net.Sockets.TcpClient($emuHost, $emuPort)
-$tcpStream = $tcpConnection.GetStream();
+$tcpStream = $tcpConnection.GetStream()
 $reader = New-Object System.IO.StreamReader($tcpStream)
 $writer = New-Object System.IO.StreamWriter($tcpStream)
 $writer.AutoFlush = $true
 
 if ($tcpConnection.Connected -ne $true) {
 	Write-Host "Failed to connect to $emuHost@$emuPort"
-	Break
+	Exit 1
 }
 
 $response = ""
@@ -25,7 +25,7 @@ while ($tcpStream.DataAvailable -or $reader.Peek() -ne -1) {
 if (!$response.Contains('Authentication required')) {
 	Write-Host "Initial response did not contain expected authentication request"
 	Write-Host $response
-	Break;
+	Exit 1
 }
 
 $commands = @(
@@ -37,7 +37,7 @@ $commands = @(
 foreach ($command in $commands) {
 	if ($tcpConnection.Connected -ne $true) {
 		Write-Host "Lost connection to emulator before running all commands"
-		Break
+		Exit 1
 	}
 
 	$writer.WriteLine($command)
@@ -50,8 +50,9 @@ foreach ($command in $commands) {
 	if ($response.Length -gt 0 -and !$response.Contains("OK")) {
 		Write-Host "Unexpected response during command $command"
 		Write-Host $response
-		Break;
+		Exit 1
 	}    
 }
 
 $client.Close | Out-Null
+Exit 0
