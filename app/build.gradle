@@ -29,6 +29,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -51,8 +52,7 @@ dependencies {
     androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
 
     // Lifecycle components
-    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.archLifecycleVersion"
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:$rootProject.archLifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$rootProject.archLifecycleVersion"
 
 
     // Testing-only dependencies

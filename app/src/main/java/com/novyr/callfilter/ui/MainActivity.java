@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,10 +43,10 @@ public class MainActivity extends AppCompatActivity {
 
         mLogList = findViewById(R.id.log_list);
 
-        mLogViewModel = ViewModelProviders.of(this).get(LogViewModel.class);
+        mLogViewModel = new ViewModelProvider(this).get(LogViewModel.class);
 
         final ContactFinder contactFinder = new ContactFinder(this);
-        final WhitelistViewModel whitelistViewModel = ViewModelProviders.of(this).get(WhitelistViewModel.class);
+        final WhitelistViewModel whitelistViewModel = new ViewModelProvider(this).get(WhitelistViewModel.class);
         final LogListMenuHandler menuHandler = new LogListMenuHandler(this, contactFinder, mLogViewModel, whitelistViewModel);
 
         final LogListAdapter adapter = new LogListAdapter(
