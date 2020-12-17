@@ -1,7 +1,5 @@
 package com.novyr.callfilter.db;
 
-import android.os.AsyncTask;
-
 import androidx.lifecycle.LiveData;
 
 import com.novyr.callfilter.db.dao.WhitelistDao;
@@ -40,38 +38,14 @@ public class WhitelistRepository {
     }
 
     public void insert(WhitelistEntity entity) {
-        new InsertAsyncTask(mDao).execute(entity);
+        CallFilterDatabase.databaseWriteExecutor.execute(() -> {
+            mDao.insert(entity);
+        });
     }
 
     public void delete(WhitelistEntity entity) {
-        new DeleteAsyncTask(mDao).execute(entity);
-    }
-
-    private static class InsertAsyncTask extends AsyncTask<WhitelistEntity, Void, Void> {
-        private final WhitelistDao mAsyncTaskDao;
-
-        InsertAsyncTask(WhitelistDao dao) {
-            mAsyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final WhitelistEntity... params) {
-            mAsyncTaskDao.insert(params[0]);
-            return null;
-        }
-    }
-
-    private static class DeleteAsyncTask extends AsyncTask<WhitelistEntity, Void, Void> {
-        private final WhitelistDao mAsyncTaskDao;
-
-        DeleteAsyncTask(WhitelistDao dao) {
-            mAsyncTaskDao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(final WhitelistEntity... params) {
-            mAsyncTaskDao.delete(params[0]);
-            return null;
-        }
+        CallFilterDatabase.databaseWriteExecutor.execute(() -> {
+            mDao.delete(entity);
+        });
     }
 }

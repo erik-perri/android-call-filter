@@ -11,9 +11,17 @@ import com.novyr.callfilter.db.dao.WhitelistDao;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.WhitelistEntity;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Database(entities = {LogEntity.class, WhitelistEntity.class}, version = 1)
 public abstract class CallFilterDatabase extends RoomDatabase {
     private static volatile CallFilterDatabase INSTANCE;
+    // TODO 4 is from the docs example but seems like a lot for our needs
+    private static final int NUMBER_OF_THREADS = 4;
+    static final ExecutorService databaseWriteExecutor =
+            Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+
 
     public static CallFilterDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
