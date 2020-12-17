@@ -70,7 +70,7 @@ public class ContactFinder {
         return null;
     }
 
-    private class ContactModel implements Contact {
+    private static class ContactModel implements Contact {
         private final String mId;
         private final String mName;
 

@@ -152,7 +152,7 @@ public class AndroidPermissionChecker implements CheckerInterface, CheckerWithEr
         return new PermissionResults(neededPermissions, blockedPermissions);
     }
 
-    private class PermissionResults {
+    private static class PermissionResults {
         private final List<String> mNeededPermissions;
         private final List<String> mBlockedPermissions;
 
