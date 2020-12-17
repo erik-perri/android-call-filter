@@ -140,23 +140,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                return true;
-            case R.id.action_clear_log:
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.dialog_clear_logs_title)
-                        .setMessage(R.string.dialog_clear_logs_message)
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                mLogViewModel.deleteAll();
-                            }
-                        })
-                        .setNegativeButton(android.R.string.no, null)
-                        .show();
-                return true;
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (itemId == R.id.action_clear_log) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.dialog_clear_logs_title)
+                    .setMessage(R.string.dialog_clear_logs_message)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            mLogViewModel.deleteAll();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

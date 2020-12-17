@@ -46,23 +46,23 @@ class LogListMenuHandler {
         final MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.log_context_contacts_open:
-                        openInContacts(number);
-                        return true;
-                    case R.id.log_context_whitelist_add:
-                        if (number != null) {
-                            addToWhitelist(number);
-                        }
-                        return true;
-                    case R.id.log_context_whitelist_remove:
-                        if (number != null) {
-                            removeFromWhitelist(number);
-                        }
-                        return true;
-                    case R.id.log_context_log_remove:
-                        removeLog(entity);
-                        return true;
+                int itemId = menuItem.getItemId();
+                if (itemId == R.id.log_context_contacts_open) {
+                    openInContacts(number);
+                    return true;
+                } else if (itemId == R.id.log_context_whitelist_add) {
+                    if (number != null) {
+                        addToWhitelist(number);
+                    }
+                    return true;
+                } else if (itemId == R.id.log_context_whitelist_remove) {
+                    if (number != null) {
+                        removeFromWhitelist(number);
+                    }
+                    return true;
+                } else if (itemId == R.id.log_context_log_remove) {
+                    removeLog(entity);
+                    return true;
                 }
                 return false;
             }
