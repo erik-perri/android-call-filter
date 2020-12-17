@@ -11,6 +11,7 @@
     <string name="setting_block_private_summary">Block calls from private numbers</string>
     <string name="warning_empty_log_list">Log is empty</string>
     <string name="context_menu_open_contacts">Open in Contacts</string>
+    <string name="context_menu_create_contact">Create Contact</string>
     <string name="context_menu_whitelist_remove">Remove from whitelist</string>
     <string name="context_menu_whitelist_add">Add to whitelist</string>
     <string name="context_menu_log_remove">Remove from log</string>

@@ -3,6 +3,9 @@
         android:id="@+id/log_context_contacts_open"
         android:title="@string/context_menu_open_contacts" />
     <item
+        android:id="@+id/log_context_contact_create"
+        android:title="@string/context_menu_create_contact" />
+    <item
         android:id="@+id/log_context_whitelist_remove"
         android:title="@string/context_menu_whitelist_remove" />
     <item

@@ -57,7 +57,7 @@ class LogViewHolder extends RecyclerView.ViewHolder implements View.OnCreateCont
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         if (mEntity != null) {
-            mMenuHandler.createMenu(menu, mEntity);
+            mMenuHandler.createMenu(v.getContext(), menu, mEntity);
         }
     }
 }

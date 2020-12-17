@@ -1,6 +1,7 @@
 package com.novyr.callfilter.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -41,12 +42,15 @@ class LogListMenuHandler {
         mWhitelistEntities = entities;
     }
 
-    void createMenu(final ContextMenu menu, final LogEntity entity) {
+    void createMenu(Context context, final ContextMenu menu, final LogEntity entity) {
         final String number = entity.getNumber();
         final MenuItem.OnMenuItemClickListener listener = menuItem -> {
             int itemId = menuItem.getItemId();
             if (itemId == R.id.log_context_contacts_open) {
                 openInContacts(number);
+                return true;
+            } else if (itemId == R.id.log_context_contact_create) {
+                createContact(context, number);
                 return true;
             } else if (itemId == R.id.log_context_whitelist_add) {
                 if (number != null) {
@@ -73,6 +77,10 @@ class LogListMenuHandler {
 
         menu.findItem(R.id.log_context_contacts_open)
                 .setVisible(numberHasContact)
+                .setOnMenuItemClickListener(listener);
+
+        menu.findItem(R.id.log_context_contact_create)
+                .setVisible(!numberHasContact)
                 .setOnMenuItemClickListener(listener);
 
         menu.findItem(R.id.log_context_whitelist_add)
@@ -125,6 +133,13 @@ class LogListMenuHandler {
         Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contactId);
         intent.setData(uri);
         mActivity.startActivity(intent);
+    }
+
+    private void createContact(Context context, String number) {
+        Intent intent = new Intent(Intent.ACTION_INSERT);
+        intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
+        intent.putExtra(ContactsContract.Intents.Insert.PHONE, number);
+        context.startActivity(intent);
     }
 
     private void removeFromWhitelist(@NonNull String number) {
