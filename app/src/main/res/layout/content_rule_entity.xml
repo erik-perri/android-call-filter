@@ -11,8 +11,6 @@
     android:paddingStart="0dp"
     android:paddingRight="@dimen/list_horizontal_margin"
     android:paddingEnd="@dimen/list_horizontal_margin"
-    android:paddingTop="@dimen/list_vertical_margin"
-    android:paddingBottom="@dimen/list_vertical_margin"
     android:clickable="true"
     android:focusable="true"
     android:background="?android:attr/selectableItemBackground">
@@ -28,29 +26,31 @@
         app:srcCompat="@drawable/ic_drag_indicator_18dp"
         android:contentDescription="@string/rule_list_drag_handle_desc" />
 
-    <TextView
-        android:id="@+id/rule_action_allow"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:textColor="@color/rule_list_allow"
-        android:text="@string/rule_action_allow" />
-
-    <TextView
-        android:id="@+id/rule_action_block"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:textColor="@color/rule_list_block"
-        android:visibility="gone"
-        android:text="@string/rule_action_block" />
-
     <LinearLayout
+        android:paddingTop="@dimen/list_vertical_margin"
+        android:paddingBottom="@dimen/list_vertical_margin"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="4">
+
+        <TextView
+            android:id="@+id/rule_action_allow"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/rule_list_allow"
+            android:text="@string/rule_action_allow" />
+
+        <TextView
+            android:id="@+id/rule_action_block"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/rule_list_block"
+            android:visibility="gone"
+            android:text="@string/rule_action_block" />
 
         <TextView
             android:id="@+id/rule_type"
@@ -78,7 +78,7 @@
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/rule_enabled_switch"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         tools:text=" "
         android:theme="@style/Theme.AppCompat.DayNight" />
