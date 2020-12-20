@@ -21,4 +21,10 @@
     <string name="permission_notice_retry">RETRY</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="rule_type_unmatched">Anything else</string>
+    <string name="rule_type_recognized">Numbers in contacts</string>
+    <string name="rule_type_unrecognized">Numbers not in contacts</string>
+    <string name="rule_type_private">Private numbers</string>
+    <string name="rule_type_area_code">Numbers in area code</string>
+    <string name="rule_type_match">Numbers matching</string>
 </resources>
