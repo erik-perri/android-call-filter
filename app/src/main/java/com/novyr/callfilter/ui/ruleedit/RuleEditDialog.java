@@ -1,8 +1,10 @@
 package com.novyr.callfilter.ui.ruleedit;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
@@ -111,6 +113,13 @@ public class RuleEditDialog {
                           .setNegativeButton("Cancel", (dialog, id) -> dialog.cancel());
 
         AlertDialog alert = alertDialogBuilder.create();
+        alert.setOnShowListener(dialog -> {
+            // Since we're creating the EditText after the dialog is created we need to clear the
+            // FLAG_ALT_FOCUSABLE_IM flag or the keyboard will not show when activating the input
+            // https://stackoverflow.com/a/62767205
+            ((Dialog) dialog).getWindow()
+                             .clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        });
         alert.show();
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             localRule.setAction(getActionSpinnerValue(actionSpinner));
