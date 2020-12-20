@@ -13,33 +13,23 @@ import androidx.annotation.NonNull;
 import com.novyr.callfilter.ContactFinder;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
-import com.novyr.callfilter.db.entity.WhitelistEntity;
 import com.novyr.callfilter.viewmodel.LogViewModel;
-import com.novyr.callfilter.viewmodel.WhitelistViewModel;
 
 import java.util.List;
 
 class LogListMenuHandler {
     private final ContactFinder mContactFinder;
     private final LogViewModel mLogViewModel;
-    private final WhitelistViewModel mWhitelistViewModel;
     private final Activity mActivity;
-    private List<WhitelistEntity> mWhitelistEntities;
 
     LogListMenuHandler(
             Activity activity,
             ContactFinder contactFinder,
-            LogViewModel logViewModel,
-            WhitelistViewModel whitelistViewModel
+            LogViewModel logViewModel
     ) {
         mActivity = activity;
         mContactFinder = contactFinder;
         mLogViewModel = logViewModel;
-        mWhitelistViewModel = whitelistViewModel;
-    }
-
-    void setWhitelistEntities(List<WhitelistEntity> entities) {
-        mWhitelistEntities = entities;
     }
 
     void createMenu(Context context, final ContextMenu menu, final LogEntity entity) {
@@ -52,16 +42,6 @@ class LogListMenuHandler {
             } else if (itemId == R.id.log_context_contact_create) {
                 createContact(context, number);
                 return true;
-            } else if (itemId == R.id.log_context_whitelist_add) {
-                if (number != null) {
-                    addToWhitelist(number);
-                }
-                return true;
-            } else if (itemId == R.id.log_context_whitelist_remove) {
-                if (number != null) {
-                    removeFromWhitelist(number);
-                }
-                return true;
             } else if (itemId == R.id.log_context_log_remove) {
                 removeLog(entity);
                 return true;
@@ -72,8 +52,6 @@ class LogListMenuHandler {
         mActivity.getMenuInflater().inflate(R.menu.menu_log_context, menu);
 
         boolean numberHasContact = hasContact(number);
-        boolean canAddToWhitelist = !numberHasContact && number != null && !isWhitelisted(number);
-        boolean canRemoveFromWhitelist = number != null && isWhitelisted(number);
 
         menu.findItem(R.id.log_context_contacts_open)
                 .setVisible(numberHasContact)
@@ -81,14 +59,6 @@ class LogListMenuHandler {
 
         menu.findItem(R.id.log_context_contact_create)
                 .setVisible(!numberHasContact)
-                .setOnMenuItemClickListener(listener);
-
-        menu.findItem(R.id.log_context_whitelist_add)
-                .setVisible(canAddToWhitelist)
-                .setOnMenuItemClickListener(listener);
-
-        menu.findItem(R.id.log_context_whitelist_remove)
-                .setVisible(canRemoveFromWhitelist)
                 .setOnMenuItemClickListener(listener);
 
         menu.findItem(R.id.log_context_log_remove)
@@ -110,19 +80,6 @@ class LogListMenuHandler {
         mLogViewModel.delete(entity);
     }
 
-    private boolean isWhitelisted(String number) {
-        WhitelistEntity entity = findEntity(number);
-
-        return entity != null;
-    }
-
-    private void addToWhitelist(String number) {
-        WhitelistEntity entity = findEntity(number);
-        if (entity == null) {
-            mWhitelistViewModel.insert(new WhitelistEntity(number));
-        }
-    }
-
     private void openInContacts(final String number) {
         String contactId = mContactFinder.findContactId(number);
         if (contactId == null) {
@@ -140,26 +97,5 @@ class LogListMenuHandler {
         intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
         intent.putExtra(ContactsContract.Intents.Insert.PHONE, number);
         context.startActivity(intent);
-    }
-
-    private void removeFromWhitelist(@NonNull String number) {
-        WhitelistEntity entity = findEntity(number);
-        if (entity != null) {
-            mWhitelistViewModel.delete(entity);
-        }
-    }
-
-    private WhitelistEntity findEntity(String number) {
-        if (number == null || mWhitelistEntities == null || mWhitelistEntities.size() == 0) {
-            return null;
-        }
-
-        for (WhitelistEntity entity : mWhitelistEntities) {
-            if (number.equals(entity.getNumber())) {
-                return entity;
-            }
-        }
-
-        return null;
     }
 }

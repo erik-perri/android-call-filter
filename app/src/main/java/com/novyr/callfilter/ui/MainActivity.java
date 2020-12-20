@@ -25,7 +25,6 @@ import com.novyr.callfilter.formatter.LogDateFormatter;
 import com.novyr.callfilter.formatter.LogMessageFormatter;
 import com.novyr.callfilter.permissions.PermissionChecker;
 import com.novyr.callfilter.viewmodel.LogViewModel;
-import com.novyr.callfilter.viewmodel.WhitelistViewModel;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView mLogList;
@@ -46,8 +45,7 @@ public class MainActivity extends AppCompatActivity {
         mLogViewModel = new ViewModelProvider(this).get(LogViewModel.class);
 
         final ContactFinder contactFinder = new ContactFinder(this);
-        final WhitelistViewModel whitelistViewModel = new ViewModelProvider(this).get(WhitelistViewModel.class);
-        final LogListMenuHandler menuHandler = new LogListMenuHandler(this, contactFinder, mLogViewModel, whitelistViewModel);
+        final LogListMenuHandler menuHandler = new LogListMenuHandler(this, contactFinder, mLogViewModel);
 
         final LogListAdapter adapter = new LogListAdapter(
                 this,
@@ -72,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 emptyView.setVisibility(View.VISIBLE);
             }
         });
-
-        whitelistViewModel.findAll().observe(this, menuHandler::setWhitelistEntities);
 
         mPermissionChecker = new PermissionChecker(this, errors -> {
             if (mPermissionNotice != null) {
