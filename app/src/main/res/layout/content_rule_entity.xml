@@ -25,7 +25,7 @@
         android:paddingLeft="@dimen/list_horizontal_margin"
         android:paddingEnd="10dp"
         android:paddingRight="10dp"
-        app:srcCompat="@drawable/ic_drag_indicator_grey_500_18dp"
+        app:srcCompat="@drawable/ic_drag_indicator_18dp"
         android:contentDescription="@string/rule_list_drag_handle_desc" />
 
     <TextView

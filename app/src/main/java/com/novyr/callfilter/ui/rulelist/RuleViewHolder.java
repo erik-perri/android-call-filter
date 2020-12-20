@@ -82,9 +82,9 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         }
 
         if (!mRuleListViewModel.canMove(currentRule)) {
-            mDragHandle.setImageResource(R.drawable.ic_drag_indicator_grey_300_18dp);
+            mDragHandle.setImageResource(R.drawable.ic_drag_indicator_disabled_18dp);
         } else {
-            mDragHandle.setImageResource(R.drawable.ic_drag_indicator_grey_500_18dp);
+            mDragHandle.setImageResource(R.drawable.ic_drag_indicator_18dp);
         }
 
         mEnabledSwitch.setChecked(currentRule.isEnabled());
