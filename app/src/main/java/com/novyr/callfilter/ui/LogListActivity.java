@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +23,7 @@ import com.novyr.callfilter.R;
 import com.novyr.callfilter.formatter.LogDateFormatter;
 import com.novyr.callfilter.formatter.LogMessageFormatter;
 import com.novyr.callfilter.permissions.PermissionChecker;
+import com.novyr.callfilter.ui.rulelist.RuleListActivity;
 import com.novyr.callfilter.viewmodel.LogViewModel;
 
 public class LogListActivity extends AppCompatActivity {
@@ -37,8 +37,6 @@ public class LogListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_log_list);
-
-        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
         mLogList = findViewById(R.id.log_list);
 
@@ -119,8 +117,8 @@ public class LogListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+        if (itemId == R.id.action_rules) {
+            startActivity(new Intent(this, RuleListActivity.class));
             return true;
         } else if (itemId == R.id.action_clear_log) {
             new AlertDialog.Builder(this)

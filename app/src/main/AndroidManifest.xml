@@ -46,14 +46,6 @@
                 android:value=".ui.LogListActivity" />
         </activity>
 
-        <activity
-            android:name=".ui.SettingsActivity"
-            android:label="@string/action_settings">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.LogListActivity" />
-        </activity>
-
         <receiver android:name=".CallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />

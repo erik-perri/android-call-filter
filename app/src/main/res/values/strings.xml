@@ -6,10 +6,6 @@
     <string name="action_clear_logs">Clear Logs</string>
     <string name="dialog_clear_logs_title">Clear Logs</string>
     <string name="dialog_clear_logs_message">Are you sure you want to clear the logs? This action cannot be undone.</string>
-    <string name="setting_block_unknown_title">Block unknown numbers</string>
-    <string name="setting_block_unknown_summary">Block calls from people not in your contacts</string>
-    <string name="setting_block_private_title">Block private numbers</string>
-    <string name="setting_block_private_summary">Block calls from private numbers</string>
     <string name="warning_empty_log_list">Log is empty</string>
     <string name="warning_empty_rule_list">No rules exist</string>
     <string name="context_menu_open_contacts">Open in Contacts</string>
