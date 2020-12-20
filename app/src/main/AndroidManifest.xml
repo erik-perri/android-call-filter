@@ -31,7 +31,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name=".ui.LogListActivity">
+        <activity android:name=".ui.loglist.LogListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -43,7 +43,7 @@
             android:label="@string/action_rules">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.LogListActivity" />
+                android:value=".ui.loglist.LogListActivity" />
         </activity>
 
         <receiver android:name=".CallReceiver">

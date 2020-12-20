@@ -1,4 +1,4 @@
-package com.novyr.callfilter.ui;
+package com.novyr.callfilter.ui.loglist;
 
 import android.content.Context;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.novyr.callfilter.ui;
+package com.novyr.callfilter.ui.loglist;
 
 import android.view.ContextMenu;
 import android.view.View;
