@@ -70,9 +70,10 @@ public class CallReceiver extends BroadcastReceiver {
 
         executor.execute(() -> {
             HandlerInterface handler = HandlerFactory.create(context);
-            CallChecker checker = new CallChecker(context);
+            RuleChecker checker = RuleCheckerFactory.create(context);
+
             LogAction action = LogAction.ALLOWED;
-            if (checker.shouldBlockCall(number)) {
+            if (!checker.allowCall(number)) {
                 if (handler.endCall()) {
                     action = LogAction.BLOCKED;
                 } else {

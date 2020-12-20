@@ -40,10 +40,10 @@ public class CallFilterService extends CallScreeningService {
         String number = getNumberFromDetails(details);
 
         executor.execute(() -> {
-            CallChecker checker = new CallChecker(context);
+            RuleChecker checker = RuleCheckerFactory.create(context);
             LogAction action = LogAction.ALLOWED;
 
-            if (checker.shouldBlockCall(number)) {
+            if (!checker.allowCall(number)) {
                 action = LogAction.BLOCKED;
                 response.setDisallowCall(true);
                 response.setRejectCall(true);
