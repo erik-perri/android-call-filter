@@ -32,10 +32,13 @@ public class LogDaoTest {
     public void initDb() {
         // using an in-memory database because the information stored here disappears when the
         // process is killed
-        mDatabase = Room.inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(), CallFilterDatabase.class)
-                // allowing main thread queries, just for testing
-                .allowMainThreadQueries()
-                .build();
+        mDatabase = Room.inMemoryDatabaseBuilder(
+                ApplicationProvider.getApplicationContext(),
+                CallFilterDatabase.class
+        )
+                        // allowing main thread queries, just for testing
+                        .allowMainThreadQueries()
+                        .build();
 
         mLogDao = mDatabase.logDao();
     }

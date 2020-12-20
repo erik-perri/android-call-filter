@@ -6,8 +6,8 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
-import com.novyr.callfilter.db.converter.LogActionConverter;
 import com.novyr.callfilter.db.converter.DateConverter;
+import com.novyr.callfilter.db.converter.LogActionConverter;
 import com.novyr.callfilter.db.entity.enums.LogAction;
 import com.novyr.callfilter.model.Log;
 

@@ -8,14 +8,10 @@ import android.provider.ContactsContract;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
-
 import com.novyr.callfilter.ContactFinder;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.viewmodel.LogViewModel;
-
-import java.util.List;
 
 class LogListMenuHandler {
     private final ContactFinder mContactFinder;
@@ -54,16 +50,16 @@ class LogListMenuHandler {
         boolean numberHasContact = hasContact(number);
 
         menu.findItem(R.id.log_context_contacts_open)
-                .setVisible(numberHasContact)
-                .setOnMenuItemClickListener(listener);
+            .setVisible(numberHasContact)
+            .setOnMenuItemClickListener(listener);
 
         menu.findItem(R.id.log_context_contact_create)
-                .setVisible(!numberHasContact)
-                .setOnMenuItemClickListener(listener);
+            .setVisible(!numberHasContact)
+            .setOnMenuItemClickListener(listener);
 
         menu.findItem(R.id.log_context_log_remove)
-                .setVisible(true)
-                .setOnMenuItemClickListener(listener);
+            .setVisible(true)
+            .setOnMenuItemClickListener(listener);
     }
 
     private boolean hasContact(final String number) {

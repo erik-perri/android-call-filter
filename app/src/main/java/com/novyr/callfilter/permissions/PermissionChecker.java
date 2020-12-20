@@ -54,11 +54,22 @@ public class PermissionChecker {
         mNotificationHandler.setErrors(mErrors);
     }
 
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    ) {
         CheckerInterface checker = mCheckers.get(mIndex);
         if (requestCode != PERMISSION_CHECKER_REQUEST || checker.getClass() != AndroidPermissionChecker.class) {
             if (BuildConfig.DEBUG) {
-                Log.w(TAG, String.format("Unexpected onRequestPermissionsResult call, requestCode: %d, checker: %s", requestCode, checker.getClass().getSimpleName()));
+                Log.w(
+                        TAG,
+                        String.format(
+                                "Unexpected onRequestPermissionsResult call, requestCode: %d, checker: %s",
+                                requestCode,
+                                checker.getClass().getSimpleName()
+                        )
+                );
             }
             return;
         }
@@ -74,7 +85,14 @@ public class PermissionChecker {
         CheckerInterface checker = mCheckers.get(mIndex);
         if (requestCode != PERMISSION_CHECKER_REQUEST || checker.getClass() != CallScreeningRoleChecker.class) {
             if (BuildConfig.DEBUG) {
-                Log.w(TAG, String.format("Unexpected onActivityResult call, requestCode: %d, checker: %s", requestCode, checker.getClass().getSimpleName()));
+                Log.w(
+                        TAG,
+                        String.format(
+                                "Unexpected onActivityResult call, requestCode: %d, checker: %s",
+                                requestCode,
+                                checker.getClass().getSimpleName()
+                        )
+                );
             }
             return;
         }

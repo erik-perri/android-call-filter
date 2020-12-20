@@ -70,20 +70,31 @@ public class AndroidPermissionChecker implements CheckerInterface, CheckerWithEr
     }
 
     private SharedPreferences getSharedPreferences(Context context) {
-        return context.getSharedPreferences(context.getString(R.string.permission_preferences_file), Context.MODE_PRIVATE);
+        return context.getSharedPreferences(
+                context.getString(R.string.permission_preferences_file),
+                Context.MODE_PRIVATE
+        );
     }
 
     private boolean hasRequested(Context context, String permission) {
-        return getSharedPreferences(context).getBoolean(String.format("requested-%s", permission), false);
+        return getSharedPreferences(context).getBoolean(
+                String.format("requested-%s", permission),
+                false
+        );
     }
 
     private void setRequested(Context context, String permission) {
-        getSharedPreferences(context).edit().putBoolean(String.format("requested-%s", permission), true).apply();
+        getSharedPreferences(context).edit()
+                                     .putBoolean(String.format("requested-%s", permission), true)
+                                     .apply();
     }
 
     public boolean hasAccess(Activity activity) {
         for (String item : mWantedPermissions) {
-            if (ContextCompat.checkSelfPermission(activity, item) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    activity,
+                    item
+            ) != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         }
@@ -101,7 +112,11 @@ public class AndroidPermissionChecker implements CheckerInterface, CheckerWithEr
         }
 
         if (permissions.mNeededPermissions.size() > 0) {
-            ActivityCompat.requestPermissions(activity, permissions.mNeededPermissions.toArray(new String[0]), PERMISSION_CHECKER_REQUEST);
+            ActivityCompat.requestPermissions(
+                    activity,
+                    permissions.mNeededPermissions.toArray(new String[0]),
+                    PERMISSION_CHECKER_REQUEST
+            );
 
             for (String permission : permissions.mNeededPermissions) {
                 setRequested(activity, permission);
@@ -124,7 +139,10 @@ public class AndroidPermissionChecker implements CheckerInterface, CheckerWithEr
                 continue;
             }
 
-            if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    activity,
+                    permission
+            ) != PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
                     neededPermissions.add(permission);
                 } else {

@@ -45,7 +45,11 @@ public class LogListActivity extends AppCompatActivity {
         mLogViewModel = new ViewModelProvider(this).get(LogViewModel.class);
 
         final ContactFinder contactFinder = new ContactFinder(this);
-        final LogListMenuHandler menuHandler = new LogListMenuHandler(this, contactFinder, mLogViewModel);
+        final LogListMenuHandler menuHandler = new LogListMenuHandler(
+                this,
+                contactFinder,
+                mLogViewModel
+        );
 
         final LogListAdapter adapter = new LogListAdapter(
                 this,
@@ -91,7 +95,10 @@ public class LogListActivity extends AppCompatActivity {
 
             mPermissionNotice = Snackbar.make(mLogList, errorMessage, Snackbar.LENGTH_INDEFINITE);
             mPermissionNotice
-                    .setAction(R.string.permission_notice_retry, view -> mPermissionChecker.onStart())
+                    .setAction(
+                            R.string.permission_notice_retry,
+                            view -> mPermissionChecker.onStart()
+                    )
                     .show();
         });
     }
@@ -120,7 +127,10 @@ public class LogListActivity extends AppCompatActivity {
                     .setTitle(R.string.dialog_clear_logs_title)
                     .setMessage(R.string.dialog_clear_logs_message)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setPositiveButton(R.string.yes, (dialog, whichButton) -> mLogViewModel.deleteAll())
+                    .setPositiveButton(
+                            R.string.yes,
+                            (dialog, whichButton) -> mLogViewModel.deleteAll()
+                    )
                     .setNegativeButton(R.string.no, null)
                     .show();
             return true;
@@ -130,7 +140,11 @@ public class LogListActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(
+            int requestCode,
+            @NonNull String[] permissions,
+            @NonNull int[] grantResults
+    ) {
         mPermissionChecker.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 

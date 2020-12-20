@@ -30,7 +30,8 @@ public class AndroidLegacyHandler implements HandlerInterface {
             mInterfaceTelephony = methodGetInterface.invoke(manager);
             if (mInterfaceTelephony != null) {
                 mMethodEndCall = mInterfaceTelephony.getClass().getDeclaredMethod("endCall");
-                mMethodSilenceRinger = mInterfaceTelephony.getClass().getDeclaredMethod("silenceRinger");
+                mMethodSilenceRinger = mInterfaceTelephony.getClass()
+                                                          .getDeclaredMethod("silenceRinger");
             }
         } catch (Exception e) {
             if (BuildConfig.DEBUG) {

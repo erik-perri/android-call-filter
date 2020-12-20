@@ -15,7 +15,10 @@ public class AndroidPieHandler implements HandlerInterface {
     private TelecomManager mTelecomManager = null;
 
     AndroidPieHandler(Context context) {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ANSWER_PHONE_CALLS
+        ) == PackageManager.PERMISSION_GRANTED) {
             mTelecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
         }
     }

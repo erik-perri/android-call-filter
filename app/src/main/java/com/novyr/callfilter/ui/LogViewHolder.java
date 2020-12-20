@@ -21,7 +21,12 @@ class LogViewHolder extends RecyclerView.ViewHolder implements View.OnCreateCont
     private final LogListMenuHandler mMenuHandler;
     private LogEntity mEntity;
 
-    LogViewHolder(View itemView, MessageFormatter messageFormatter, DateFormatter dateFormatter, LogListMenuHandler menuHandler) {
+    LogViewHolder(
+            View itemView,
+            MessageFormatter messageFormatter,
+            DateFormatter dateFormatter,
+            LogListMenuHandler menuHandler
+    ) {
         super(itemView);
 
         mMessageView = itemView.findViewById(R.id.log_list_message);
@@ -55,7 +60,11 @@ class LogViewHolder extends RecyclerView.ViewHolder implements View.OnCreateCont
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(
+            ContextMenu menu,
+            View v,
+            ContextMenu.ContextMenuInfo menuInfo
+    ) {
         if (mEntity != null) {
             mMenuHandler.createMenu(v.getContext(), menu, mEntity);
         }

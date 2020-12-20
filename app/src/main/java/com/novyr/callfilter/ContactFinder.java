@@ -41,11 +41,17 @@ public class ContactFinder {
             return mContacts.get(number);
         }
 
-        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                mContext,
+                Manifest.permission.READ_CONTACTS
+        ) != PackageManager.PERMISSION_GRANTED) {
             throw new InternalError("Unable to lookup contacts due to permissions");
         }
 
-        Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
+        Uri lookupUri = Uri.withAppendedPath(
+                ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+                Uri.encode(number)
+        );
         String[] phoneNumberProjection = {ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME};
         Cursor cursor = mContentResolver.query(lookupUri, phoneNumberProjection, null, null, null);
         if (cursor == null) {
@@ -62,7 +68,10 @@ public class ContactFinder {
                 return mContacts.get(number);
             }
         } catch (Exception e) {
-            throw new InternalError(String.format("Error while querying contacts %s", e.getMessage()));
+            throw new InternalError(String.format(
+                    "Error while querying contacts %s",
+                    e.getMessage()
+            ));
         } finally {
             cursor.close();
         }
