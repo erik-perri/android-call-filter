@@ -8,7 +8,7 @@ import androidx.test.filters.MediumTest;
 import com.novyr.callfilter.db.CallFilterDatabase;
 import com.novyr.callfilter.db.LiveDataTestUtil;
 import com.novyr.callfilter.db.entity.LogEntity;
-import com.novyr.callfilter.db.entity.enums.Action;
+import com.novyr.callfilter.db.entity.enums.LogAction;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,7 +47,7 @@ public class LogDaoTest {
 
     @Test
     public void getLogAfterInserted() throws InterruptedException {
-        LogEntity entity = new LogEntity(new Date(), Action.BLOCKED, "5551111");
+        LogEntity entity = new LogEntity(new Date(), LogAction.BLOCKED, "5551111");
 
         mLogDao.insert(entity);
 

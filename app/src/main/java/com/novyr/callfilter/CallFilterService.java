@@ -12,7 +12,7 @@ import androidx.annotation.RequiresApi;
 
 import com.novyr.callfilter.db.LogRepository;
 import com.novyr.callfilter.db.entity.LogEntity;
-import com.novyr.callfilter.db.entity.enums.Action;
+import com.novyr.callfilter.db.entity.enums.LogAction;
 
 import java.util.Date;
 import java.util.concurrent.Executor;
@@ -41,10 +41,10 @@ public class CallFilterService extends CallScreeningService {
 
         executor.execute(() -> {
             CallChecker checker = new CallChecker(context);
-            Action action = Action.ALLOWED;
+            LogAction action = LogAction.ALLOWED;
 
             if (checker.shouldBlockCall(number)) {
-                action = Action.BLOCKED;
+                action = LogAction.BLOCKED;
                 response.setDisallowCall(true);
                 response.setRejectCall(true);
                 response.setSkipNotification(true);

@@ -1,13 +1,13 @@
 package com.novyr.callfilter.db.entity.enums;
 
-public enum Action {
+public enum LogAction {
     BLOCKED(0),
     ALLOWED(1),
     FAILED(2);
 
     private final int code;
 
-    Action(int code) {
+    LogAction(int code) {
         this.code = code;
     }
 

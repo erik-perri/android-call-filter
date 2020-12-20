@@ -2,12 +2,12 @@ package com.novyr.callfilter.db.converter;
 
 import androidx.room.TypeConverter;
 
-import com.novyr.callfilter.db.entity.enums.Action;
+import com.novyr.callfilter.db.entity.enums.LogAction;
 
-public class ActionConverter {
+public class LogActionConverter {
     @TypeConverter
-    public static Action toAction(int numeral) {
-        for (Action action : Action.values()) {
+    public static LogAction toLogAction(int numeral) {
+        for (LogAction action : LogAction.values()) {
             if (action.getCode() == numeral) {
                 return action;
             }
@@ -16,7 +16,7 @@ public class ActionConverter {
     }
 
     @TypeConverter
-    public static Integer fromAction(Action action) {
+    public static Integer fromLogAction(LogAction action) {
         if (action != null) {
             return action.getCode();
         }

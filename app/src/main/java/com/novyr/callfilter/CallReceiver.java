@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.novyr.callfilter.db.entity.LogEntity;
-import com.novyr.callfilter.db.entity.enums.Action;
+import com.novyr.callfilter.db.entity.enums.LogAction;
 import com.novyr.callfilter.telephony.HandlerFactory;
 import com.novyr.callfilter.telephony.HandlerInterface;
 
@@ -71,12 +71,12 @@ public class CallReceiver extends BroadcastReceiver {
         executor.execute(() -> {
             HandlerInterface handler = HandlerFactory.create(context);
             CallChecker checker = new CallChecker(context);
-            Action action = Action.ALLOWED;
+            LogAction action = LogAction.ALLOWED;
             if (checker.shouldBlockCall(number)) {
                 if (handler.endCall()) {
-                    action = Action.BLOCKED;
+                    action = LogAction.BLOCKED;
                 } else {
-                    action = Action.FAILED;
+                    action = LogAction.FAILED;
                 }
             }
 
