@@ -54,7 +54,7 @@ class LogListMenuHandler {
             .setOnMenuItemClickListener(listener);
 
         menu.findItem(R.id.log_context_contact_create)
-            .setVisible(!numberHasContact)
+            .setVisible(!numberHasContact && number != null)
             .setOnMenuItemClickListener(listener);
 
         menu.findItem(R.id.log_context_log_remove)
