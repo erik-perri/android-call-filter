@@ -48,10 +48,10 @@ class LogViewHolder extends RecyclerView.ViewHolder implements View.OnCreateCont
 
         switch (entity.getAction()) {
             case ALLOWED:
-                mIcon.setImageResource(R.drawable.ic_check_green_700_24dp);
+                mIcon.setImageResource(R.drawable.ic_check_green_24dp);
                 break;
             case BLOCKED:
-                mIcon.setImageResource(R.drawable.ic_block_red_900_24dp);
+                mIcon.setImageResource(R.drawable.ic_block_red_24dp);
                 break;
             case FAILED:
                 mIcon.setImageResource(R.drawable.ic_error_outline_black_24dp);

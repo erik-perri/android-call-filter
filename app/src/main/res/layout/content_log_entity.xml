@@ -27,7 +27,7 @@
         android:layout_marginLeft="0dp"
         android:layout_marginRight="@dimen/icon_list_margin"
         android:layout_marginEnd="@dimen/icon_list_margin"
-        tools:srcCompat="@drawable/ic_block_red_900_24dp" />
+        tools:srcCompat="@drawable/ic_block_red_24dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
