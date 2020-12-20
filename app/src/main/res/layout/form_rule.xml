@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/form_rule"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/enabled_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rule_form_label_enabled"
+            android:layout_marginTop="0dp"
+            style="@style/FormLabel" />
+
+        <Spinner
+            android:id="@+id/enabled_spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@android:layout/simple_list_item_1"
+            style="@style/FormInput" />
+
+        <TextView
+            android:id="@+id/action_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rule_form_label_action"
+            style="@style/FormLabel" />
+
+        <Spinner
+            android:id="@+id/action_spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@android:layout/simple_list_item_1"
+            style="@style/FormInput" />
+
+        <TextView
+            android:id="@+id/type_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rule_form_label_type"
+            style="@style/FormLabel" />
+
+        <Spinner
+            android:id="@+id/type_spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@android:layout/simple_list_item_1"
+            style="@style/FormInput" />
+
+        <LinearLayout
+            android:id="@+id/form_rule_extra"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </LinearLayout>
+</ScrollView>

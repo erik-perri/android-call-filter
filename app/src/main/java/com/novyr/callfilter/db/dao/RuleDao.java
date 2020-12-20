@@ -25,6 +25,9 @@ public interface RuleDao {
     @Query("DELETE FROM rule_entity")
     void deleteAll();
 
+    @Query("SELECT MAX(`order`) FROM rule_entity")
+    LiveData<Integer> highestOrder();
+
     @Query("SELECT * from rule_entity ORDER BY `order` DESC")
     LiveData<List<RuleEntity>> findAll();
 

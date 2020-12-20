@@ -48,4 +48,8 @@ public class RuleRepository {
     public void update(RuleEntity entity) {
         CallFilterDatabase.databaseWriteExecutor.execute(() -> mDao.update(entity));
     }
+
+    public LiveData<Integer> highestOrder() {
+        return mDao.highestOrder();
+    }
 }

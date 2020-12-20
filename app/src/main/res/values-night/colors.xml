@@ -2,4 +2,7 @@
 <resources>
     <color name="log_list_message">#FFFFFF</color>
     <color name="log_list_date">#BDBDBD</color> <!-- gray-400 -->
+
+    <color name="rule_list_allow">#81C784</color> <!-- green-300 -->
+    <color name="rule_list_block">#E57373</color> <!-- red-300 -->
 </resources>

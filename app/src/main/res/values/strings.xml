@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Call Filter</string>
+    <string name="action_rules">Filter Rules</string>
     <string name="action_settings">Settings</string>
     <string name="action_clear_logs">Clear Logs</string>
     <string name="dialog_clear_logs_title">Clear Logs</string>
@@ -10,21 +11,35 @@
     <string name="setting_block_private_title">Block private numbers</string>
     <string name="setting_block_private_summary">Block calls from private numbers</string>
     <string name="warning_empty_log_list">Log is empty</string>
+    <string name="warning_empty_rule_list">No rules exist</string>
     <string name="context_menu_open_contacts">Open in Contacts</string>
     <string name="context_menu_create_contact">Create Contact</string>
     <string name="context_menu_log_remove">Remove from log</string>
+    <string name="context_menu_edit_rule">Edit rule</string>
+    <string name="context_menu_delete_rule">Delete rule</string>
     <string name="filter_action_icon">Filter action icon</string>
     <string name="permission_preferences_file">permissions</string>
     <string name="permission_request_denied">Permission request denied</string>
     <string name="permission_screening_denied">Call screening request denied</string>
     <string name="permission_request_blocked">Permission request blocked</string>
     <string name="permission_notice_retry">RETRY</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
+    <string name="add_new_rule">Add new rule</string>
+    <string name="rule_action_block">Block</string>
+    <string name="rule_action_allow">Allow</string>
     <string name="rule_type_unmatched">Anything else</string>
     <string name="rule_type_recognized">Numbers in contacts</string>
     <string name="rule_type_unrecognized">Numbers not in contacts</string>
     <string name="rule_type_private">Private numbers</string>
     <string name="rule_type_area_code">Numbers in area code</string>
     <string name="rule_type_match">Numbers matching</string>
+    <string name="rule_form_label_enabled">Enabled</string>
+    <string name="rule_form_label_action">Action</string>
+    <string name="rule_form_label_type">Match Type</string>
+    <string name="rule_form_label_area_code">Area code</string>
+    <string name="rule_form_label_match">Number</string>
+    <string name="rule_form_invalid">%s invalid</string>
+    <string name="rule_list_drag_handle_desc">Reorder drag handle</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="undo">Undo</string>
 </resources>

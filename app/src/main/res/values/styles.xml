@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.DayNight" />
+
+    <style name="FormLabel">
+        <item name="android:layout_marginTop">@dimen/list_vertical_margin</item>
+        <item name="android:layout_marginBottom">@dimen/list_vertical_margin_small</item>
+    </style>
+
+    <style name="FormInput"></style>
 </resources>

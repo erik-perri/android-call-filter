@@ -2,7 +2,9 @@
 <resources>
     <dimen name="list_horizontal_margin">16dp</dimen>
     <dimen name="list_vertical_margin">16dp</dimen>
+    <dimen name="list_vertical_margin_small">8dp</dimen>
     <dimen name="icon_size">16dp</dimen>
     <dimen name="icon_top_position">5dp</dimen>
     <dimen name="icon_list_margin">4dp</dimen>
+    <dimen name="action_button_margin">16dp</dimen>
 </resources>

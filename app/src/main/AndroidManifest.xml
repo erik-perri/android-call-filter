@@ -39,6 +39,14 @@
         </activity>
 
         <activity
+            android:name=".ui.rulelist.RuleListActivity"
+            android:label="@string/action_rules">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.LogListActivity" />
+        </activity>
+
+        <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/action_settings">
             <meta-data

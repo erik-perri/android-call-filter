@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="0dp"
+    android:paddingStart="0dp"
+    android:paddingRight="@dimen/list_horizontal_margin"
+    android:paddingEnd="@dimen/list_horizontal_margin"
+    android:paddingTop="@dimen/list_vertical_margin"
+    android:paddingBottom="@dimen/list_vertical_margin"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?android:attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/rule_drag_handle"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/list_horizontal_margin"
+        android:paddingLeft="@dimen/list_horizontal_margin"
+        android:paddingEnd="10dp"
+        android:paddingRight="10dp"
+        app:srcCompat="@drawable/ic_drag_indicator_grey_500_18dp"
+        android:contentDescription="@string/rule_list_drag_handle_desc" />
+
+    <TextView
+        android:id="@+id/rule_action_allow"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="@color/rule_list_allow"
+        android:text="@string/rule_action_allow" />
+
+    <TextView
+        android:id="@+id/rule_action_block"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="@color/rule_list_block"
+        android:visibility="gone"
+        android:text="@string/rule_action_block" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="4">
+
+        <TextView
+            android:id="@+id/rule_type"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/rule_list_type"
+            tools:text="Type" />
+
+        <TextView
+            android:id="@+id/rule_value"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/rule_list_value"
+            tools:text="Value" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/rule_enabled_switch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        tools:text=" "
+        android:theme="@style/Theme.AppCompat.DayNight" />
+</LinearLayout>

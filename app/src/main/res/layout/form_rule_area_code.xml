@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/area_code_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/rule_form_label_area_code"
+        style="@style/FormLabel" />
+
+    <EditText
+        android:id="@+id/area_code_input"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:inputType="number"
+        android:hint="Enter the area code here"
+        style="@style/FormInput" />
+</LinearLayout>

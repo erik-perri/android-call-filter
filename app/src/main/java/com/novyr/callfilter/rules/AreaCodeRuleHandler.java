@@ -1,10 +1,15 @@
 package com.novyr.callfilter.rules;
 
+import android.view.View;
+import android.widget.EditText;
+
 import androidx.annotation.Nullable;
 
-import com.novyr.callfilter.rules.renderers.AreaCodeRenderer;
+import com.novyr.callfilter.R;
+import com.novyr.callfilter.db.entity.RuleEntity;
+import com.novyr.callfilter.rules.exception.InvalidValueException;
 
-public class AreaCodeRuleHandler implements RuleHandlerInterface {
+public class AreaCodeRuleHandler implements RuleHandlerInterface, RuleHandlerWithFormInterface {
     @Override
     public boolean isMatch(@Nullable String number, @Nullable String value) {
         if (number == null || value == null) {
@@ -29,5 +34,29 @@ public class AreaCodeRuleHandler implements RuleHandlerInterface {
         }
 
         return foundCode != null && foundCode.equals(value);
+    }
+
+    @Override
+    public int getEditDialogLayout() {
+        return R.layout.form_rule_area_code;
+    }
+
+    @Override
+    public void loadFormValues(View view, RuleEntity rule) {
+        EditText input = view.findViewById(R.id.area_code_input);
+
+        input.setText(rule.getValue());
+    }
+
+    @Override
+    public void saveFormValues(View view, RuleEntity rule) throws InvalidValueException {
+        EditText inputView = view.findViewById(R.id.area_code_input);
+        String code = inputView.getText().toString();
+
+        if (code.isEmpty() || !code.matches("^[0-9]+$")) {
+            throw new InvalidValueException(R.string.rule_form_label_area_code);
+        }
+
+        rule.setValue(code);
     }
 }
