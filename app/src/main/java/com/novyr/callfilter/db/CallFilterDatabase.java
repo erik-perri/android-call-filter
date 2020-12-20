@@ -2,14 +2,18 @@ package com.novyr.callfilter.db;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.novyr.callfilter.db.dao.LogDao;
 import com.novyr.callfilter.db.dao.RuleDao;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.RuleEntity;
+import com.novyr.callfilter.db.entity.enums.RuleAction;
+import com.novyr.callfilter.db.entity.enums.RuleType;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +36,14 @@ public abstract class CallFilterDatabase extends RoomDatabase {
                                     CallFilterDatabase.class,
                                     "call_filter"
                             )
+                            .addCallback(new RoomDatabase.Callback() {
+                                @Override
+                                public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                                    super.onCreate(db);
+
+                                    createDefaultRules();
+                                }
+                            })
                             .build();
                 }
             }
@@ -42,4 +54,42 @@ public abstract class CallFilterDatabase extends RoomDatabase {
     public abstract LogDao logDao();
 
     public abstract RuleDao ruleDao();
+
+    private static void createDefaultRules() {
+        databaseWriteExecutor.execute(() -> {
+            RuleDao dao = INSTANCE.ruleDao();
+            dao.deleteAll();
+
+            int order = 0;
+
+            RuleEntity rule = new RuleEntity(
+                    RuleType.UNMATCHED,
+                    RuleAction.ALLOW,
+                    null,
+                    true,
+                    order
+            );
+            dao.insert(rule);
+            order += 2;
+
+            rule = new RuleEntity(
+                    RuleType.UNRECOGNIZED,
+                    RuleAction.BLOCK,
+                    null,
+                    false,
+                    order
+            );
+            dao.insert(rule);
+            order += 2;
+
+            rule = new RuleEntity(
+                    RuleType.PRIVATE,
+                    RuleAction.BLOCK,
+                    null,
+                    false,
+                    order
+            );
+            dao.insert(rule);
+        });
+    }
 }
