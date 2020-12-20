@@ -103,7 +103,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     @Override
     public void onClick(View view) {
-        // TODO Toggle enabled? Open edit?
+        mEnabledSwitch.toggle();
     }
 
     @Override
