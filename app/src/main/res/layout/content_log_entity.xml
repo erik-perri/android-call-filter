@@ -18,7 +18,7 @@
         android:contentDescription="@string/filter_action_icon"
         android:scaleType="fitXY"
         android:translationY="@dimen/icon_top_position"
-        tools:srcCompat="@drawable/ic_block_red_24dp" />
+        tools:srcCompat="@drawable/ic_block_red_900_24dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
