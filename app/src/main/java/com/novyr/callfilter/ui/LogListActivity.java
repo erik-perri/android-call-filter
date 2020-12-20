@@ -26,7 +26,7 @@ import com.novyr.callfilter.formatter.LogMessageFormatter;
 import com.novyr.callfilter.permissions.PermissionChecker;
 import com.novyr.callfilter.viewmodel.LogViewModel;
 
-public class MainActivity extends AppCompatActivity {
+public class LogListActivity extends AppCompatActivity {
     private RecyclerView mLogList;
     private LogViewModel mLogViewModel;
     private Snackbar mPermissionNotice;
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_log_list);
 
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 
