@@ -18,6 +18,5 @@
         android:layout_height="wrap_content"
         android:autofillHints=""
         android:inputType="number"
-        android:hint="Enter the area code here"
         style="@style/FormInput" />
 </LinearLayout>
