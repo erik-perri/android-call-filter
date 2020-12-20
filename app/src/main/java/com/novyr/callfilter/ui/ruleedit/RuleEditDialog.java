@@ -7,6 +7,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -45,9 +46,16 @@ public class RuleEditDialog {
 
         View formView = mLayoutInflater.inflate(R.layout.form_rule, null);
 
+        final TextView formHeading = formView.findViewById(R.id.form_heading);
         final Spinner actionSpinner = formView.findViewById(R.id.action_spinner);
         final Spinner typeSpinner = formView.findViewById(R.id.type_spinner);
         final Spinner enabledSpinner = formView.findViewById(R.id.enabled_spinner);
+
+        formHeading.setText(
+                rule.getId() > 0
+                        ? R.string.rule_form_heading_edit
+                        : R.string.rule_form_heading_create
+        );
 
         setupSpinner(actionSpinner, getActionValues(), getActionDisplayName(localRule.getAction()));
 
