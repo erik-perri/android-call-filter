@@ -28,35 +28,38 @@ public class RuleCheckerTest {
     @Test
     public void checkNoEntity() {
         RuleChecker ruleChecker = new RuleChecker(
-                new RuleHandlerManager(null),
+                new RuleHandlerManager(createFinderMock()),
                 new RuleEntity[0]
         );
 
         assertTrue(ruleChecker.allowCall(null));
-        assertTrue(ruleChecker.allowCall("8005551234"));
+        assertTrue(ruleChecker.allowCall(RECOGNIZED_NUMBER));
+        assertTrue(ruleChecker.allowCall(UNRECOGNIZED_NUMBER));
     }
 
     @Test
     public void checkUnmatched() {
         RuleChecker ruleChecker = new RuleChecker(
-                new RuleHandlerManager(null),
+                new RuleHandlerManager(createFinderMock()),
                 new RuleEntity[]{
                         new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
                 }
         );
 
         assertTrue(ruleChecker.allowCall(null));
-        assertTrue(ruleChecker.allowCall("8005551234"));
+        assertTrue(ruleChecker.allowCall(RECOGNIZED_NUMBER));
+        assertTrue(ruleChecker.allowCall(UNRECOGNIZED_NUMBER));
 
         ruleChecker = new RuleChecker(
-                new RuleHandlerManager(null),
+                new RuleHandlerManager(createFinderMock()),
                 new RuleEntity[]{
                         new RuleEntity(RuleType.UNMATCHED, RuleAction.BLOCK, null, true, 0)
                 }
         );
 
         assertFalse(ruleChecker.allowCall(null));
-        assertFalse(ruleChecker.allowCall("8005551234"));
+        assertFalse(ruleChecker.allowCall(RECOGNIZED_NUMBER));
+        assertFalse(ruleChecker.allowCall(UNRECOGNIZED_NUMBER));
     }
 
     @Test
