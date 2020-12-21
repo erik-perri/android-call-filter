@@ -7,6 +7,6 @@ import java.text.DateFormat;
 public class LogDateFormatter implements DateFormatter {
     public String formatDate(LogEntity entity) {
         DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        return format.format(entity.getCreated());
+        return format.format(entity.getCreated().getTime());
     }
 }

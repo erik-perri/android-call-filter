@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -50,7 +49,7 @@ public class LogDaoTest {
 
     @Test
     public void getLogAfterInserted() throws InterruptedException {
-        LogEntity entity = new LogEntity(new Date(), LogAction.BLOCKED, "5551111");
+        LogEntity entity = new LogEntity(LogAction.BLOCKED, "5551111");
 
         mLogDao.insert(entity);
 

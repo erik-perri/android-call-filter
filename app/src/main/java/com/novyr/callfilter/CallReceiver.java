@@ -12,7 +12,6 @@ import com.novyr.callfilter.db.entity.enums.LogAction;
 import com.novyr.callfilter.telephony.HandlerFactory;
 import com.novyr.callfilter.telephony.HandlerInterface;
 
-import java.util.Date;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -82,7 +81,7 @@ public class CallReceiver extends BroadcastReceiver {
             }
 
             CallFilterApplication application = (CallFilterApplication) context.getApplicationContext();
-            application.getLogRepository().insert(new LogEntity(new Date(), action, number));
+            application.getLogRepository().insert(new LogEntity(action, number));
         });
     }
 

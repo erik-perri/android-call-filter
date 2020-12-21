@@ -14,7 +14,6 @@ import com.novyr.callfilter.db.LogRepository;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.enums.LogAction;
 
-import java.util.Date;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -54,7 +53,7 @@ public class CallFilterService extends CallScreeningService {
             }
 
             LogRepository repository = ((CallFilterApplication) context.getApplicationContext()).getLogRepository();
-            repository.insert(new LogEntity(new Date(), action, number));
+            repository.insert(new LogEntity(action, number));
 
             respondToCall(details, response.build());
         });
