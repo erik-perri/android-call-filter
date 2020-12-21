@@ -63,6 +63,20 @@ public class RuleCheckerTest {
     }
 
     @Test
+    public void checkOrder() {
+        String code = RECOGNIZED_NUMBER.substring(0, 3);
+        RuleChecker ruleChecker = new RuleChecker(
+                new RuleHandlerManager(createFinderMock()),
+                new RuleEntity[]{
+                        new RuleEntity(RuleType.AREA_CODE, RuleAction.BLOCK, code, true, 2),
+                        new RuleEntity(RuleType.RECOGNIZED, RuleAction.ALLOW, null, true, 0),
+                }
+        );
+
+        assertFalse(ruleChecker.allowCall(RECOGNIZED_NUMBER));
+    }
+
+    @Test
     public void checkWhitelist() {
         RuleChecker ruleChecker = new RuleChecker(
                 new RuleHandlerManager(createFinderMock()),
