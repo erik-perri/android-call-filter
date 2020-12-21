@@ -12,12 +12,12 @@ import com.novyr.callfilter.db.entity.RuleEntity;
 import java.util.List;
 
 public class RuleListAdapter extends RecyclerView.Adapter<RuleViewHolder> {
-    private final RuleListViewModel mRuleListViewModel;
+    private final RuleListActionHelper mRuleListActionHelper;
     private RuleViewHolderFactory mViewHolderFactory;
     private List<RuleEntity> mEntries;
 
-    RuleListAdapter(RuleListViewModel ruleListViewModel) {
-        mRuleListViewModel = ruleListViewModel;
+    RuleListAdapter(RuleListActionHelper ruleListActionHelper) {
+        mRuleListActionHelper = ruleListActionHelper;
     }
 
     public void setViewHolderFactory(RuleViewHolderFactory viewHolderFactory) {
@@ -55,7 +55,7 @@ public class RuleListAdapter extends RecyclerView.Adapter<RuleViewHolder> {
     }
 
     public boolean canMoveItem(int position) {
-        return mRuleListViewModel.canMove(mEntries.get(position));
+        return mRuleListActionHelper.canMove(mEntries.get(position));
     }
 
     public void moveItem(int fromPosition, int toPosition) {
@@ -75,16 +75,16 @@ public class RuleListAdapter extends RecyclerView.Adapter<RuleViewHolder> {
     public void deleteItem(int position) {
         RuleEntity rule = mEntries.get(position);
 
-        if (!mRuleListViewModel.canDelete(rule)) {
+        if (!mRuleListActionHelper.canDelete(rule)) {
             return;
         }
 
         // Delete the item from the database, the item is removed from the list when the LiveData
         // updates
-        mRuleListViewModel.delete(rule);
+        mRuleListActionHelper.delete(rule);
     }
 
     public void onClearView() {
-        mRuleListViewModel.reorder(mEntries.toArray(new RuleEntity[0]));
+        mRuleListActionHelper.reorder(mEntries.toArray(new RuleEntity[0]));
     }
 }

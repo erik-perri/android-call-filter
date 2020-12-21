@@ -18,7 +18,7 @@ import com.novyr.callfilter.db.entity.RuleEntity;
 public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    private final RuleListViewModel mRuleListViewModel;
+    private final RuleListActionHelper mRuleListActionHelper;
 
     private RuleEntity mCurrentRule;
     private final ImageView mDragHandle;
@@ -31,7 +31,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     @SuppressLint("ClickableViewAccessibility")
     RuleViewHolder(
             View itemView,
-            RuleListViewModel ruleListViewModel,
+            RuleListActionHelper ruleListActionHelper,
             OnStartDragListener dragListener
     ) {
         super(itemView);
@@ -39,7 +39,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         itemView.setOnClickListener(this);
         itemView.setOnCreateContextMenuListener(this);
 
-        mRuleListViewModel = ruleListViewModel;
+        mRuleListActionHelper = ruleListActionHelper;
 
         mDragHandle = itemView.findViewById(R.id.rule_drag_handle);
         mAllowView = itemView.findViewById(R.id.rule_action_allow);
@@ -53,7 +53,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             final RuleEntity rule = mCurrentRule;
             // We need to give the switch animation time to run or when we save the entity the
             // view will automatically refresh causing the animation to jump to the next state
-            mHandler.postDelayed(() -> mRuleListViewModel.enable(rule, isChecked), 250);
+            mHandler.postDelayed(() -> mRuleListActionHelper.enable(rule, isChecked), 250);
         });
 
         mDragHandle.setOnTouchListener((v, event) -> {
@@ -81,7 +81,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             mValueView.setText("");
         }
 
-        if (!mRuleListViewModel.canMove(currentRule)) {
+        if (!mRuleListActionHelper.canMove(currentRule)) {
             mDragHandle.setImageResource(R.drawable.ic_drag_indicator_disabled_18dp);
         } else {
             mDragHandle.setImageResource(R.drawable.ic_drag_indicator_18dp);
@@ -112,6 +112,6 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             View view,
             ContextMenu.ContextMenuInfo contextMenuInfo
     ) {
-        mRuleListViewModel.createContextMenu(contextMenu, mCurrentRule);
+        mRuleListActionHelper.createContextMenu(contextMenu, mCurrentRule);
     }
 }

@@ -26,16 +26,19 @@ public class RuleListActivity extends AppCompatActivity {
         final TextView emptyView = findViewById(R.id.empty_view);
 
         final RuleViewModel ruleViewModel = new ViewModelProvider(this).get(RuleViewModel.class);
-        final RuleListViewModel ruleListViewModel = new RuleListViewModel(this, ruleViewModel);
+        final RuleListActionHelper ruleListActionHelper = new RuleListActionHelper(
+                this,
+                ruleViewModel
+        );
 
-        final RuleListAdapter adapter = new RuleListAdapter(ruleListViewModel);
+        final RuleListAdapter adapter = new RuleListAdapter(ruleListActionHelper);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new RuleListAdapterTouchHelper(adapter));
         itemTouchHelper.attachToRecyclerView(ruleList);
 
         final RuleViewHolderFactory holderFactory = new RuleViewHolderFactory(
                 this,
-                ruleListViewModel,
+                ruleListActionHelper,
                 itemTouchHelper::startDrag
         );
 
@@ -48,11 +51,11 @@ public class RuleListActivity extends AppCompatActivity {
         ruleList.setLayoutManager(new LinearLayoutManager(this));
 
         FloatingActionButton fab = findViewById(R.id.add_button);
-        fab.setOnClickListener(view -> ruleListViewModel.showEditDialog());
+        fab.setOnClickListener(view -> ruleListActionHelper.showEditDialog());
 
         ruleViewModel.highestOrder().observe(
                 this,
-                order -> ruleListViewModel.setNextOrder(order + 2)
+                order -> ruleListActionHelper.setNextOrder(order + 2)
         );
 
         ruleViewModel.findAll().observe(this, entities -> {

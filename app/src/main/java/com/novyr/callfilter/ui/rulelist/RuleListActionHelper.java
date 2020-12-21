@@ -13,12 +13,13 @@ import com.novyr.callfilter.db.entity.enums.RuleType;
 import com.novyr.callfilter.ui.ruleedit.RuleEditDialog;
 import com.novyr.callfilter.viewmodel.RuleViewModel;
 
-public class RuleListViewModel {
+// TODO Find a better name
+public class RuleListActionHelper {
     private final Activity mParent;
     private final RuleViewModel mRuleViewModel;
     private int mNextOrder;
 
-    public RuleListViewModel(Activity parent, RuleViewModel ruleViewModel) {
+    public RuleListActionHelper(Activity parent, RuleViewModel ruleViewModel) {
         mParent = parent;
         mRuleViewModel = ruleViewModel;
     }

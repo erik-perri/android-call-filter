@@ -11,22 +11,22 @@ import com.novyr.callfilter.R;
 
 public class RuleViewHolderFactory {
     private final LayoutInflater mInflater;
-    private final RuleListViewModel mRuleListViewModel;
+    private final RuleListActionHelper mRuleListActionHelper;
     private final RuleViewHolder.OnStartDragListener mDragListener;
 
     RuleViewHolderFactory(
             Context context,
-            RuleListViewModel ruleListViewModel,
+            RuleListActionHelper ruleListActionHelper,
             RuleViewHolder.OnStartDragListener dragListener
     ) {
         mInflater = LayoutInflater.from(context);
-        mRuleListViewModel = ruleListViewModel;
+        mRuleListActionHelper = ruleListActionHelper;
         mDragListener = dragListener;
     }
 
     public RuleViewHolder create(@Nullable ViewGroup parent) {
         View itemView = mInflater.inflate(R.layout.content_rule_entity, parent, false);
 
-        return new RuleViewHolder(itemView, mRuleListViewModel, mDragListener);
+        return new RuleViewHolder(itemView, mRuleListActionHelper, mDragListener);
     }
 }
