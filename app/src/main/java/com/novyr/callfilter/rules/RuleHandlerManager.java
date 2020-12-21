@@ -1,6 +1,6 @@
 package com.novyr.callfilter.rules;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import com.novyr.callfilter.ContactFinder;
 import com.novyr.callfilter.db.entity.enums.RuleType;
@@ -10,12 +10,12 @@ import java.util.Hashtable;
 public class RuleHandlerManager {
     private final Hashtable<RuleType, RuleHandlerInterface> mKnownHandlers;
 
-    public RuleHandlerManager(@Nullable ContactFinder contactFinder) {
+    public RuleHandlerManager(@NonNull ContactFinder contactFinder) {
         mKnownHandlers = buildHandlers(contactFinder);
     }
 
     private Hashtable<RuleType, RuleHandlerInterface> buildHandlers(
-            @Nullable ContactFinder contactFinder
+            @NonNull ContactFinder contactFinder
     ) {
         Hashtable<RuleType, RuleHandlerInterface> rules = new Hashtable<>();
 
