@@ -40,4 +40,10 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="undo">Undo</string>
+    <string name="log_action_blocked">Blocked call</string>
+    <string name="log_action_allowed">Allowed call</string>
+    <string name="log_action_failed">Failed to block call</string>
+    <string name="log_action_unknown">Unknown (%d)</string>
+    <string name="log_number_private">Private</string>
+    <string name="log_message_format">%1$s: %2$s</string>
 </resources>

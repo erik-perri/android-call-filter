@@ -1,17 +1,23 @@
 package com.novyr.callfilter.formatter;
 
+import android.content.res.Resources;
 import android.os.Build;
 import android.telephony.PhoneNumberUtils;
 
+import androidx.annotation.NonNull;
+
 import com.novyr.callfilter.ContactFinder;
+import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.LogEntity;
 
 import java.util.Locale;
 
 public class LogMessageFormatter implements MessageFormatter {
+    private final Resources mResources;
     private final ContactFinder mContactFinder;
 
-    public LogMessageFormatter(ContactFinder contactFinder) {
+    public LogMessageFormatter(Resources resources, ContactFinder contactFinder) {
+        mResources = resources;
         mContactFinder = contactFinder;
     }
 
@@ -19,33 +25,39 @@ public class LogMessageFormatter implements MessageFormatter {
         String action;
         switch (entity.getAction()) {
             case BLOCKED:
-                action = "Blocked call";
+                action = mResources.getString(R.string.log_action_blocked);
                 break;
             case ALLOWED:
-                action = "Allowed call";
+                action = mResources.getString(R.string.log_action_allowed);
                 break;
             case FAILED:
-                action = "Failed to block call";
+                action = mResources.getString(R.string.log_action_failed);
                 break;
             default:
-                action = String.format("Unknown (%s)", entity.getAction().getCode());
+                action = String.format(
+                        mResources.getString(R.string.log_action_unknown),
+                        entity.getAction().getCode()
+                );
                 break;
         }
 
         String number = entity.getNumber();
-        String formatted = formatNumber(number);
+        String formatted;
+
+        if (number == null) {
+            formatted = mResources.getString(R.string.log_number_private);
+        } else {
+            formatted = formatNumber(number);
+        }
+
         if (formatted != null) {
             number = formatted;
         }
 
-        return String.format("%s: %s", action, number);
+        return String.format(mResources.getString(R.string.log_message_format), action, number);
     }
 
-    private String formatNumber(String number) {
-        if (number == null) {
-            return "Private";
-        }
-
+    private String formatNumber(@NonNull String number) {
         try {
             String contactName = mContactFinder.findContactName(number);
             if (contactName != null) {

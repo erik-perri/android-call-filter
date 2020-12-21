@@ -51,7 +51,7 @@ public class LogListActivity extends AppCompatActivity {
 
         final LogListAdapter adapter = new LogListAdapter(
                 this,
-                new LogMessageFormatter(contactFinder),
+                new LogMessageFormatter(getResources(), contactFinder),
                 new LogDateFormatter(),
                 menuHandler
         );
