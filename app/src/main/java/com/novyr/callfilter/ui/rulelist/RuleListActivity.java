@@ -43,8 +43,8 @@ public class RuleListActivity extends AppCompatActivity {
         );
 
         // TODO Figure out a better way to handle this.  It is not attached to the constructor since
-        //      it needs to access itemTouchHolder which did not exist yet. This whole class
-        //      structure is a mess that needs to be cleaned up.
+        //      it needs to access itemTouchHolder which did not exist yet (and can't exist until
+        //      after the adapter). This whole class structure is a mess that needs to be cleaned up.
         adapter.setViewHolderFactory(holderFactory);
 
         ruleList.setAdapter(adapter);

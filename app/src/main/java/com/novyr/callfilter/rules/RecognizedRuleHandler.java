@@ -13,6 +13,7 @@ public class RecognizedRuleHandler implements RuleHandlerInterface {
 
     @Override
     public boolean isMatch(@Nullable String number, @Nullable String value) {
+        // TODO Should this return true if no contact finder is available?
         if (mContactFinder == null || number == null) {
             return false;
         }

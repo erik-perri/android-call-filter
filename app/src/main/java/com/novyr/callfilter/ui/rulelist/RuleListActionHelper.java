@@ -73,12 +73,12 @@ public class RuleListActionHelper {
                 Snackbar.LENGTH_LONG
         )
                 .setAction(R.string.undo, v -> {
-                    // Remove the ID so when it is re-added on undo the view model does
-                    // not attempt to update the now deleted row
+                    // Remove the ID so when it is re-added on undo the view model does not attempt
+                    // to update the now deleted row
                     rule.setId(0);
 
-                    // Reduce the order, placing it before whatever replaced it in the
-                    // delete reorder
+                    // Reduce the order, placing it before whatever replaced it in the on-delete
+                    // reorder
                     rule.setOrder(Math.max(1, rule.getOrder() - 1));
 
                     mRuleViewModel.save(rule);
