@@ -1,13 +1,15 @@
 package com.novyr.callfilter.rules;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.novyr.callfilter.ContactFinder;
 
 public class UnrecognizedRuleHandler implements RuleHandlerInterface {
+    @NonNull
     private final ContactFinder mContactFinder;
 
-    public UnrecognizedRuleHandler(ContactFinder contactFinder) {
+    public UnrecognizedRuleHandler(@NonNull ContactFinder contactFinder) {
         mContactFinder = contactFinder;
     }
 

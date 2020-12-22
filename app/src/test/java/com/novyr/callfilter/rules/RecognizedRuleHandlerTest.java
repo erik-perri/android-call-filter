@@ -23,15 +23,6 @@ public class RecognizedRuleHandlerTest {
     }
 
     @Test
-    public void checkNoFinder() {
-        RecognizedRuleHandler checker = new RecognizedRuleHandler(null);
-
-        assertFalse(checker.isMatch(null, null));
-        assertFalse(checker.isMatch(UNRECOGNIZED_NUMBER, null));
-        assertFalse(checker.isMatch(RECOGNIZED_NUMBER, null));
-    }
-
-    @Test
     public void checkPrivateMatch() {
         RecognizedRuleHandler checker = new RecognizedRuleHandler(createFinderMock());
 
