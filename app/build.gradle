@@ -53,6 +53,8 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.2.1'
 
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
+
     // Room components
     implementation "androidx.room:room-runtime:$rootProject.roomVersion"
     annotationProcessor "androidx.room:room-compiler:$rootProject.roomVersion"
