@@ -56,7 +56,7 @@ public class AreaCodeRuleHandler implements RuleHandlerInterface, RuleHandlerWit
         EditText inputView = view.findViewById(R.id.area_code_input);
         String code = inputView.getText().toString();
 
-        if (code.isEmpty() || !code.matches("^[0-9]+$")) {
+        if (code.isEmpty() || !code.matches("^[0-9]{3}$")) {
             throw new InvalidValueException(R.string.rule_form_label_area_code);
         }
 
