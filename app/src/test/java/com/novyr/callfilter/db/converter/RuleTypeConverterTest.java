@@ -12,7 +12,7 @@ public class RuleTypeConverterTest {
     public void testToType() {
         assertEquals(RuleType.UNMATCHED, RuleTypeConverter.toRuleType(1));
         assertEquals(RuleType.MATCH, RuleTypeConverter.toRuleType(6));
-        assertNull(RuleTypeConverter.toRuleType(7));
+        assertNull(RuleTypeConverter.toRuleType(99));
         assertNull(RuleTypeConverter.toRuleType(-1));
     }
 
@@ -20,6 +20,5 @@ public class RuleTypeConverterTest {
     public void testFromType() {
         assertEquals((Integer) 1, RuleTypeConverter.fromRuleType(RuleType.UNMATCHED));
         assertEquals((Integer) 6, RuleTypeConverter.fromRuleType(RuleType.MATCH));
-        assertNull(RuleTypeConverter.fromRuleType(null));
     }
 }

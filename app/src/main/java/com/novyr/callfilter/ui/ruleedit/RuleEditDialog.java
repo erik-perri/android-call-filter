@@ -2,6 +2,7 @@ package com.novyr.callfilter.ui.ruleedit;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -224,6 +225,10 @@ public class RuleEditDialog {
         List<CharSequence> types = new LinkedList<>();
         for (RuleType type : RuleType.values()) {
             if (type == RuleType.UNMATCHED && !includeUnmatched) {
+                continue;
+            }
+
+            if (type.getMinSdkVersion() > Build.VERSION.SDK_INT) {
                 continue;
             }
 

@@ -1,6 +1,7 @@
 package com.novyr.callfilter.db;
 
 import android.content.Context;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -90,6 +91,29 @@ public abstract class CallFilterDatabase extends RoomDatabase {
                     order
             );
             dao.insert(rule);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                order += 2;
+
+                rule = new RuleEntity(
+                        RuleType.VERIFICATION_FAILED,
+                        RuleAction.BLOCK,
+                        null,
+                        false,
+                        order
+                );
+                dao.insert(rule);
+                order += 2;
+
+                rule = new RuleEntity(
+                        RuleType.VERIFICATION_PASSED,
+                        RuleAction.ALLOW,
+                        null,
+                        false,
+                        order
+                );
+                dao.insert(rule);
+            }
         });
     }
 }

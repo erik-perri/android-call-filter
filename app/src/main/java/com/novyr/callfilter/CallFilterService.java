@@ -43,6 +43,8 @@ public class CallFilterService extends CallScreeningService {
             RuleChecker checker = RuleCheckerFactory.create(context);
             LogAction action = LogAction.ALLOWED;
 
+            // TODO Figure out how Samsung is setting this in versions before R, assuming they are.
+            //      My phone has some incoming calls marked as verified but is on Q, not R.
             int verificationStatus = Connection.VERIFICATION_STATUS_NOT_VERIFIED;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 verificationStatus = details.getCallerNumberVerificationStatus();

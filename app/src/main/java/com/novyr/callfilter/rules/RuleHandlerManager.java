@@ -1,5 +1,7 @@
 package com.novyr.callfilter.rules;
 
+import android.os.Build;
+
 import androidx.annotation.NonNull;
 
 import com.novyr.callfilter.ContactFinder;
@@ -25,6 +27,11 @@ public class RuleHandlerManager {
         rules.put(RuleType.RECOGNIZED, new RecognizedRuleHandler(contactFinder));
         rules.put(RuleType.AREA_CODE, new AreaCodeRuleHandler());
         rules.put(RuleType.MATCH, new MatchRuleHandler());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            rules.put(RuleType.VERIFICATION_FAILED, new VerificationFailedRuleHandler());
+            rules.put(RuleType.VERIFICATION_PASSED, new VerificationPassedRuleHandler());
+        }
 
         return rules;
     }

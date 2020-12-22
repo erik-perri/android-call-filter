@@ -28,6 +28,8 @@
     <string name="rule_type_private">Private numbers</string>
     <string name="rule_type_area_code">Numbers in area code</string>
     <string name="rule_type_match">Numbers matching</string>
+    <string name="rule_type_verification_failed">Network Verification Failed</string>
+    <string name="rule_type_verification_passed">Network Verification Passed</string>
     <string name="rule_form_heading_edit">Edit Rule</string>
     <string name="rule_form_heading_create">Create Rule</string>
     <string name="rule_form_label_enabled">Enabled</string>
