@@ -14,7 +14,7 @@ public class RuleChecker {
         mRules = rules;
     }
 
-    public boolean allowCall(String number) {
+    public boolean allowCall(CallDetails details) {
         for (RuleEntity rule : mRules) {
             if (!rule.isEnabled()) {
                 continue;
@@ -25,7 +25,7 @@ public class RuleChecker {
                 continue;
             }
 
-            if (ruleHandler.isMatch(number, rule.getValue())) {
+            if (ruleHandler.isMatch(details, rule.getValue())) {
                 return rule.getAction() == RuleAction.ALLOW;
             }
         }

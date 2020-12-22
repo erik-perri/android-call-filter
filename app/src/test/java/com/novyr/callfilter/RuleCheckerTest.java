@@ -32,9 +32,9 @@ public class RuleCheckerTest {
                 new RuleEntity[0]
         );
 
-        assertTrue(ruleChecker.allowCall(null));
-        assertTrue(ruleChecker.allowCall(RECOGNIZED_NUMBER));
-        assertTrue(ruleChecker.allowCall(UNRECOGNIZED_NUMBER));
+        assertTrue(ruleChecker.allowCall(new CallDetails(null)));
+        assertTrue(ruleChecker.allowCall(new CallDetails(RECOGNIZED_NUMBER)));
+        assertTrue(ruleChecker.allowCall(new CallDetails(UNRECOGNIZED_NUMBER)));
     }
 
     @Test
@@ -46,9 +46,9 @@ public class RuleCheckerTest {
                 }
         );
 
-        assertTrue(ruleChecker.allowCall(null));
-        assertTrue(ruleChecker.allowCall(RECOGNIZED_NUMBER));
-        assertTrue(ruleChecker.allowCall(UNRECOGNIZED_NUMBER));
+        assertTrue(ruleChecker.allowCall(new CallDetails(null)));
+        assertTrue(ruleChecker.allowCall(new CallDetails(RECOGNIZED_NUMBER)));
+        assertTrue(ruleChecker.allowCall(new CallDetails(UNRECOGNIZED_NUMBER)));
 
         ruleChecker = new RuleChecker(
                 new RuleHandlerManager(createFinderMock()),
@@ -57,9 +57,9 @@ public class RuleCheckerTest {
                 }
         );
 
-        assertFalse(ruleChecker.allowCall(null));
-        assertFalse(ruleChecker.allowCall(RECOGNIZED_NUMBER));
-        assertFalse(ruleChecker.allowCall(UNRECOGNIZED_NUMBER));
+        assertFalse(ruleChecker.allowCall(new CallDetails(null)));
+        assertFalse(ruleChecker.allowCall(new CallDetails(RECOGNIZED_NUMBER)));
+        assertFalse(ruleChecker.allowCall(new CallDetails(UNRECOGNIZED_NUMBER)));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class RuleCheckerTest {
                 }
         );
 
-        assertFalse(ruleChecker.allowCall(RECOGNIZED_NUMBER));
+        assertFalse(ruleChecker.allowCall(new CallDetails(RECOGNIZED_NUMBER)));
     }
 
     @Test
@@ -86,9 +86,9 @@ public class RuleCheckerTest {
                 }
         );
 
-        assertFalse(ruleChecker.allowCall(null));
-        assertFalse(ruleChecker.allowCall(UNRECOGNIZED_NUMBER));
-        assertTrue(ruleChecker.allowCall(RECOGNIZED_NUMBER));
+        assertFalse(ruleChecker.allowCall(new CallDetails(null)));
+        assertFalse(ruleChecker.allowCall(new CallDetails(UNRECOGNIZED_NUMBER)));
+        assertTrue(ruleChecker.allowCall(new CallDetails(RECOGNIZED_NUMBER)));
     }
 
     @Test
@@ -102,9 +102,9 @@ public class RuleCheckerTest {
                 }
         );
 
-        assertFalse(ruleChecker.allowCall(null));
-        assertFalse(ruleChecker.allowCall(UNRECOGNIZED_NUMBER));
-        assertTrue(ruleChecker.allowCall(RECOGNIZED_NUMBER));
+        assertFalse(ruleChecker.allowCall(new CallDetails(null)));
+        assertFalse(ruleChecker.allowCall(new CallDetails(UNRECOGNIZED_NUMBER)));
+        assertTrue(ruleChecker.allowCall(new CallDetails(RECOGNIZED_NUMBER)));
     }
 
     @Test
@@ -119,8 +119,8 @@ public class RuleCheckerTest {
                 }
         );
 
-        assertTrue(ruleChecker.allowCall(null));
-        assertTrue(ruleChecker.allowCall(UNRECOGNIZED_NUMBER));
-        assertTrue(ruleChecker.allowCall(RECOGNIZED_NUMBER));
+        assertTrue(ruleChecker.allowCall(new CallDetails(null)));
+        assertTrue(ruleChecker.allowCall(new CallDetails(UNRECOGNIZED_NUMBER)));
+        assertTrue(ruleChecker.allowCall(new CallDetails(RECOGNIZED_NUMBER)));
     }
 }

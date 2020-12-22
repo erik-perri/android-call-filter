@@ -4,20 +4,23 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.novyr.callfilter.CallDetails;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.RuleEntity;
 import com.novyr.callfilter.rules.exception.InvalidValueException;
 
 public class MatchRuleHandler implements RuleHandlerInterface, RuleHandlerWithFormInterface {
     @Override
-    public boolean isMatch(@Nullable String number, @Nullable String value) {
-        if (number == null || value == null) {
+    public boolean isMatch(@NonNull CallDetails details, @Nullable String ruleValue) {
+        String number = details.getPhoneNumber();
+        if (number == null || ruleValue == null) {
             return false;
         }
 
-        return normalizeNumber(number).equals(normalizeNumber(value));
+        return normalizeNumber(number).equals(normalizeNumber(ruleValue));
     }
 
     private String normalizeNumber(String number) {

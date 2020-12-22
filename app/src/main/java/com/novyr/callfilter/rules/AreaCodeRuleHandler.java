@@ -3,21 +3,24 @@ package com.novyr.callfilter.rules;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.novyr.callfilter.CallDetails;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.RuleEntity;
 import com.novyr.callfilter.rules.exception.InvalidValueException;
 
 public class AreaCodeRuleHandler implements RuleHandlerInterface, RuleHandlerWithFormInterface {
     @Override
-    public boolean isMatch(@Nullable String number, @Nullable String value) {
-        if (number == null || value == null) {
+    public boolean isMatch(@NonNull CallDetails details, @Nullable String ruleValue) {
+        String number = details.getPhoneNumber();
+        if (number == null || ruleValue == null) {
             return false;
         }
 
         String foundCode = null;
-        String areaCode = value.replaceAll("[^\\d]", "");
+        String areaCode = ruleValue.replaceAll("[^\\d]", "");
         String normalized = number.replaceAll("[^\\d]", "");
 
         // Since we don't prevent the user from entering an area code longer than expected we'll
@@ -33,7 +36,7 @@ public class AreaCodeRuleHandler implements RuleHandlerInterface, RuleHandlerWit
             foundCode = normalized.substring(0, Math.min(normalized.length(), areaCodeLength));
         }
 
-        return foundCode != null && foundCode.equals(value);
+        return foundCode != null && foundCode.equals(ruleValue);
     }
 
     @Override

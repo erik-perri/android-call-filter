@@ -3,6 +3,7 @@ package com.novyr.callfilter.rules;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.novyr.callfilter.CallDetails;
 import com.novyr.callfilter.ContactFinder;
 
 public class RecognizedRuleHandler implements RuleHandlerInterface {
@@ -14,9 +15,9 @@ public class RecognizedRuleHandler implements RuleHandlerInterface {
     }
 
     @Override
-    public boolean isMatch(@Nullable String number, @Nullable String value) {
-        // TODO Should this return true if no contact finder is available?
-        if (mContactFinder == null || number == null) {
+    public boolean isMatch(@NonNull CallDetails details, @Nullable String ruleValue) {
+        String number = details.getPhoneNumber();
+        if (number == null) {
             return false;
         }
 

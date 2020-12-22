@@ -72,7 +72,7 @@ public class CallReceiver extends BroadcastReceiver {
             RuleChecker checker = RuleCheckerFactory.create(context);
 
             LogAction action = LogAction.ALLOWED;
-            if (!checker.allowCall(number)) {
+            if (!checker.allowCall(new CallDetails(number))) {
                 if (handler.endCall()) {
                     action = LogAction.BLOCKED;
                 } else {

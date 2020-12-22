@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.telecom.Call;
 import android.telecom.CallScreeningService;
+import android.telecom.Connection;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -42,13 +43,19 @@ public class CallFilterService extends CallScreeningService {
             RuleChecker checker = RuleCheckerFactory.create(context);
             LogAction action = LogAction.ALLOWED;
 
-            if (!checker.allowCall(number)) {
+            int verificationStatus = Connection.VERIFICATION_STATUS_NOT_VERIFIED;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                verificationStatus = details.getCallerNumberVerificationStatus();
+            }
+
+            if (!checker.allowCall(new CallDetails(number, verificationStatus))) {
                 action = LogAction.BLOCKED;
                 response.setDisallowCall(true);
                 response.setRejectCall(true);
                 response.setSkipNotification(true);
 
-                // TODO Doesn't work?
+                // TODO Figure out why this doesn't seem to work with Google's phone app in the
+                //      emulator. It works as expected with Samsung's dialer on a real phone.
                 response.setSkipCallLog(false);
             }
 

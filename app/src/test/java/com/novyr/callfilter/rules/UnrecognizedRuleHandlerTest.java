@@ -1,5 +1,6 @@
 package com.novyr.callfilter.rules;
 
+import com.novyr.callfilter.CallDetails;
 import com.novyr.callfilter.ContactFinder;
 
 import org.junit.Test;
@@ -26,14 +27,14 @@ public class UnrecognizedRuleHandlerTest {
     public void checkPrivateMatch() {
         UnrecognizedRuleHandler checker = new UnrecognizedRuleHandler(createFinderMock());
 
-        assertFalse(checker.isMatch(null, null));
+        assertFalse(checker.isMatch(new CallDetails(null), null));
     }
 
     @Test
     public void checkNormalMatch() {
         UnrecognizedRuleHandler checker = new UnrecognizedRuleHandler(createFinderMock());
 
-        assertTrue(checker.isMatch(UNRECOGNIZED_NUMBER, null));
-        assertFalse(checker.isMatch(RECOGNIZED_NUMBER, null));
+        assertTrue(checker.isMatch(new CallDetails(UNRECOGNIZED_NUMBER), null));
+        assertFalse(checker.isMatch(new CallDetails(RECOGNIZED_NUMBER), null));
     }
 }

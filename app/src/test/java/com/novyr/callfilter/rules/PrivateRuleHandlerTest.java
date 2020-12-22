@@ -1,5 +1,7 @@
 package com.novyr.callfilter.rules;
 
+import com.novyr.callfilter.CallDetails;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -10,7 +12,7 @@ public class PrivateRuleHandlerTest {
     public void checkNormalMatch() {
         PrivateRuleHandler checker = new PrivateRuleHandler();
 
-        assertFalse(checker.isMatch("8005551234", null));
-        assertTrue(checker.isMatch(null, null));
+        assertFalse(checker.isMatch(new CallDetails("8005551234"), null));
+        assertTrue(checker.isMatch(new CallDetails(null), null));
     }
 }
