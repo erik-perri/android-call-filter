@@ -1,6 +1,6 @@
 $appPackage = "com.novyr.callfilter"
 $appName = "AndroidCallFilter"
-$appMainActivity = "ui.MainActivity"
+#$appMainActivity = "ui.loglist.LogListActivity"
 $adbPath = "adb"
 $apkFileName = "$appName.apk"
 $apkPathHost = "..\app\build\outputs\apk\debug\app-debug.apk"
