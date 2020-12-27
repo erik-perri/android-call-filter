@@ -17,19 +17,10 @@ public class CallDetails {
     public CallDetails(@Nullable String phoneNumber, int networkVerificationStatus) {
         mPhoneNumber = phoneNumber;
         mNetworkVerificationStatus = networkVerificationStatus;
-
-        if (mNetworkVerificationStatus != Connection.VERIFICATION_STATUS_FAILED &&
-                mNetworkVerificationStatus != Connection.VERIFICATION_STATUS_PASSED &&
-                mNetworkVerificationStatus != Connection.VERIFICATION_STATUS_NOT_VERIFIED) {
-            Log.w(
-                    TAG,
-                    String.format("Unexpected verification status %d", networkVerificationStatus)
-            );
-        }
     }
 
     public CallDetails(@Nullable String phoneNumber) {
-        this(phoneNumber, Connection.VERIFICATION_STATUS_NOT_VERIFIED);
+        this(phoneNumber, 0 /* Connection.VERIFICATION_STATUS_NOT_VERIFIED */);
     }
 
     @Nullable
@@ -39,6 +30,15 @@ public class CallDetails {
 
     @RequiresApi(api = Build.VERSION_CODES.R)
     public boolean isNotVerified() {
+        if (mNetworkVerificationStatus != Connection.VERIFICATION_STATUS_FAILED &&
+                mNetworkVerificationStatus != Connection.VERIFICATION_STATUS_PASSED &&
+                mNetworkVerificationStatus != Connection.VERIFICATION_STATUS_NOT_VERIFIED) {
+            Log.w(
+                    TAG,
+                    String.format("Unexpected verification status %d", mNetworkVerificationStatus)
+            );
+        }
+
         return mNetworkVerificationStatus != Connection.VERIFICATION_STATUS_PASSED &&
                 mNetworkVerificationStatus != Connection.VERIFICATION_STATUS_FAILED;
     }
