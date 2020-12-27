@@ -15,7 +15,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 
@@ -48,17 +50,69 @@ public class LogDaoTest {
     }
 
     @Test
-    public void getLogAfterInserted() throws InterruptedException {
-        LogEntity entity = new LogEntity(LogAction.BLOCKED, "5551111");
+    public void insertSavesData() throws InterruptedException {
+        LogEntity[] entities = createEntities(1);
+        mLogDao.insert(entities[0]);
 
-        mLogDao.insert(entity);
+        List<LogEntity> fetched = LiveDataTestUtil.getValue(mLogDao.findAll());
+        assertEquals(1, fetched.size());
+    }
 
-        List<LogEntity> entities = LiveDataTestUtil.getValue(mLogDao.findAll());
+    @Test
+    public void deleteRemovesData() throws InterruptedException {
+        LogEntity[] entities = createEntities(1);
+        mLogDao.insert(entities[0]);
 
-        assertEquals(1, entities.size());
+        List<LogEntity> fetched = LiveDataTestUtil.getValue(mLogDao.findAll());
+        assertEquals(1, fetched.size());
 
-        assertEquals(entity.getCreated().getTime(), entities.get(0).getCreated().getTime());
-        assertEquals(entity.getAction(), entities.get(0).getAction());
-        assertEquals(entity.getNumber(), entities.get(0).getNumber());
+        mLogDao.delete(fetched.get(0));
+
+        assertEquals(0, LiveDataTestUtil.getValue(mLogDao.findAll()).size());
+    }
+
+    @Test
+    public void deleteAllClearsData() throws InterruptedException {
+        LogEntity[] entities = createEntities(10);
+        for (LogEntity entity : entities) {
+            mLogDao.insert(entity);
+        }
+
+        assertEquals(10, LiveDataTestUtil.getValue(mLogDao.findAll()).size());
+
+        mLogDao.deleteAll();
+
+        assertEquals(0, LiveDataTestUtil.getValue(mLogDao.findAll()).size());
+    }
+
+    @Test
+    public void findAllRetrievesData() throws InterruptedException {
+        LogEntity[] entities = createEntities(10);
+        for (LogEntity entity : entities) {
+            mLogDao.insert(entity);
+        }
+
+        List<LogEntity> fetched = LiveDataTestUtil.getValue(mLogDao.findAll());
+        assertEquals(10, fetched.size());
+
+        // Find all should retrieve in the reverse order they are added, so the first fetched
+        // is the last entity
+        assertEquals(entities[entities.length - 1].getNumber(), fetched.get(0).getNumber());
+        assertEquals(entities[0].getNumber(), fetched.get(fetched.size() - 1).getNumber());
+    }
+
+    private LogEntity[] createEntities(int count) {
+        LinkedList<LogEntity> entities = new LinkedList<>();
+        Random random = new Random();
+
+        for (int i = 0; i < count; i++) {
+            int number = random.nextInt(8999999) + 1000000;
+            entities.add(new LogEntity(
+                    random.nextInt(1) > 0 ? LogAction.BLOCKED : LogAction.ALLOWED,
+                    String.valueOf(number)
+            ));
+        }
+
+        return entities.toArray(new LogEntity[0]);
     }
 }
