@@ -12,12 +12,19 @@ import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.RuleEntity;
 import com.novyr.callfilter.rules.exception.InvalidValueException;
 
+import io.github.azagniotov.matcher.AntPathMatcher;
+
 public class MatchRuleHandler implements RuleHandlerInterface, RuleHandlerWithFormInterface {
     @Override
     public boolean isMatch(@NonNull CallDetails details, @Nullable String ruleValue) {
         String number = details.getPhoneNumber();
         if (number == null || ruleValue == null) {
             return false;
+        }
+
+        if (ruleValue.contains("*") || ruleValue.contains("?")) {
+            AntPathMatcher pathMatcher = new AntPathMatcher.Builder().build();
+            return pathMatcher.isMatch(ruleValue, normalizeNumber(number));
         }
 
         return normalizeNumber(number).equals(normalizeNumber(ruleValue));
