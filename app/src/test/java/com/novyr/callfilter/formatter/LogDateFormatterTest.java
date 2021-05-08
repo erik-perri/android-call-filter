@@ -15,20 +15,25 @@ import static org.junit.Assert.assertEquals;
 
 public class LogDateFormatterTest {
     private Locale mOriginalLocale;
+    private TimeZone mOriginalTimezone;
 
     @Before
     public void setUp() {
         mOriginalLocale = Locale.getDefault();
+        mOriginalTimezone = TimeZone.getDefault();
     }
 
     @After
     public void tearDown() {
         Locale.setDefault(mOriginalLocale);
+        TimeZone.setDefault(mOriginalTimezone);
     }
 
     @Test
     public void testFormatter() {
         LogDateFormatter formatter = new LogDateFormatter();
+
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
         Locale locale = new Locale("en");
         Locale.setDefault(locale);
@@ -39,14 +44,14 @@ public class LogDateFormatterTest {
                 null
         );
 
-        assertEquals("6/8/80 5:22 AM", formatter.formatDate(log));
+        assertEquals("6/8/80 9:22 AM", formatter.formatDate(log));
 
         locale = new Locale("ja");
         Locale.setDefault(locale);
 
-        log.setCreated(buildCalendar(2020, 12, 25, 12, 5, 59));
+        log.setCreated(buildCalendar(2020, 11, 25, 12, 5, 59));
 
-        assertEquals("21/01/25 7:05", formatter.formatDate(log));
+        assertEquals("20/12/25 12:05", formatter.formatDate(log));
     }
 
     private Calendar buildCalendar(int year, int month, int day, int hour, int minute, int second) {
