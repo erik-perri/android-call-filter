@@ -18,14 +18,11 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Run emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          script: ./gradlew assembleDebug
-
       - name: Install Appium
         run: npm install -g appium
+
+      - name: Install UIAutomator2
+        run: appium driver install uiautomator2
 
       - name: Install dependencies
         run: npm install
@@ -34,6 +31,8 @@ jobs:
       - name: Start Appium server
         run: appium &
 
-      - name: Run tests
-        run: npm run test
-        working-directory: ./tests
+      - name: Run emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: cd tests && npm run test
