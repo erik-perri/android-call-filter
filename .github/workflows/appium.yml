@@ -31,8 +31,8 @@ jobs:
       - name: Start Appium server
         run: appium &
 
-      - name: Run emulator
+      - name: Run emulator and tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          script: cd tests && npm run test
+          script: ./gradlew assembleDebug && cd tests && npm run test
