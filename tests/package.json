@@ -1,0 +1,16 @@
+{
+  "name": "android-call-filter-tests",
+  "version": "1.0.0",
+  "description": "Tests for Android Call Filter App",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "3.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6",
+    "webdriverio": "^8.16.22"
+  },
+  "scripts": {
+    "test": "vitest run"
+  }
+}
