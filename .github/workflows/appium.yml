@@ -49,3 +49,12 @@ jobs:
         with:
           api-level: 29
           script: ./gradlew assembleDebug && cd tests && npm run test
+
+      - name: Upload artifacts
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            tests/failures
+            !tests/failures/sources/.gitignore
+            !tests/failures/screenshots/.gitignore
