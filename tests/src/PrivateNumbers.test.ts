@@ -1,10 +1,11 @@
-import { describe, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import allowPermissions from '../utilities/allowPermissions';
-import itWithDriver from '../utilities/itWithDriver';
 import { Browser } from 'webdriverio';
+import { initializeDriver } from '../utilities/driver';
 
 describe('PrivateNumbers', () => {
-  itWithDriver('should block private numbers if specified', async (browser) => {
+  it('should block private numbers if specified', async () => {
+    const browser = await initializeDriver();
     await allowPermissions(browser);
 
     const emptyView = await browser.$('id:com.novyr.callfilter:id/empty_view');

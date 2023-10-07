@@ -1,6 +1,5 @@
 import { Browser, remote, RemoteOptions } from 'webdriverio';
 import { Capabilities } from '@wdio/types';
-import { it } from 'vitest';
 import path from 'path';
 import getEnv from './getEnv';
 
@@ -23,17 +22,20 @@ const wdOpts: RemoteOptions = {
   capabilities,
 };
 
-export default async function itWithDriver(
-  description: string,
-  callback: (browser: Browser) => Promise<void>,
-): Promise<void> {
-  it(description, async () => {
-    const driver = await remote(wdOpts);
+let currentDriver: Browser | undefined;
 
-    try {
-      await callback(driver);
-    } finally {
-      await driver.deleteSession();
-    }
-  });
+export function getCurrentDriver(): Browser | undefined {
+  return currentDriver;
+}
+
+export async function initializeDriver(): Promise<Browser> {
+  currentDriver ??= await remote(wdOpts);
+  return currentDriver;
+}
+
+export async function closeDriver(): Promise<void> {
+  if (currentDriver) {
+    await currentDriver.deleteSession();
+    currentDriver = undefined;
+  }
 }
