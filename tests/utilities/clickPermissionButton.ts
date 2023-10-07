@@ -7,7 +7,8 @@ export default async function clickPermissionButton(
 ): Promise<void> {
   const button = driver.$(
     `//*[@text="${dialogText}"]` +
-      '/ancestor::*[@resource-id="com.android.permissioncontroller:id/grant_dialog"]' +
+      '/ancestor::*[@resource-id="com.android.permissioncontroller:id/content_container"]' +
+      '/following-sibling::*' +
       `//*[@text="${buttonText}"]`,
   );
 
