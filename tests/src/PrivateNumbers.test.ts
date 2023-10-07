@@ -17,7 +17,6 @@ describe('PrivateNumbers', () => {
     await browser.gsmCall('#', 'call');
     await browser.pause(500);
     await browser.gsmCall('#', 'cancel');
-    await browser.pause(500);
     await waitForLog(browser, 'Allowed call: Private');
 
     await openSettings(browser);
@@ -25,7 +24,6 @@ describe('PrivateNumbers', () => {
     expect(await getPrivateNumberSetting(browser)).toBe(true);
     await goBack(browser);
     await browser.gsmCall('#', 'call');
-    await browser.pause(500);
     await waitForLog(browser, 'Blocked call: Private');
   });
 });
