@@ -8,10 +8,10 @@ jobs:
   test:
     runs-on: macos-latest
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: run tests
+      - name: Run emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
@@ -20,13 +20,13 @@ jobs:
       - name: Install Appium
         run: npm install -g appium
 
-      - name: Install Test Dependencies
+      - name: Install dependencies
         run: npm install
         working-directory: ./tests
 
-      - name: Start Appium Server
+      - name: Start Appium server
         run: appium &
 
-      - name: Run Appium Tests
+      - name: Run tests
         run: npm run test
         working-directory: ./tests
