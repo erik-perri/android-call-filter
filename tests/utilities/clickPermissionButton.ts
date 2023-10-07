@@ -7,10 +7,8 @@ export default async function clickPermissionButton(
 ): Promise<void> {
   const button = driver.$(
     `//*[@text="${dialogText}"]` +
-      '/parent::android.widget.LinearLayout' +
-      '/parent::android.widget.LinearLayout' +
-      '/following-sibling::android.widget.LinearLayout' +
-      `/android.widget.Button[@text="${buttonText}"]`,
+      '/ancestor::*[@resource-id="com.android.permissioncontroller:id/grant_dialog"]' +
+      `//*[@text="${buttonText}"]`,
   );
 
   await button.waitForDisplayed();
