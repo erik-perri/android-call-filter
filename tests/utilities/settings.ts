@@ -1,13 +1,13 @@
 import { Browser } from 'webdriverio';
 
-export enum Setting {
+export enum RuleMatchType {
+  NumbersNotInContacts = 'Numbers not in contacts',
   PrivateNumbers = 'Private numbers',
-  UnknownNumbers = 'Numbers not in contacts',
 }
 
 export async function getSetting(
   browser: Browser,
-  setting: Setting,
+  setting: RuleMatchType,
 ): Promise<boolean> {
   const privateNumbersSwitch = await browser.$(
     `//android.widget.TextView[@text="${setting}"]` +
@@ -37,7 +37,7 @@ export async function openSettings(browser: Browser) {
 
 export async function toggleSetting(
   browser: Browser,
-  setting: Setting,
+  setting: RuleMatchType,
 ): Promise<void> {
   const privateNumbersText = await browser.$(
     `//android.widget.TextView[@text="${setting}"]`,

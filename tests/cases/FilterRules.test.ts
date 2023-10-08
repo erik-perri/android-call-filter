@@ -5,7 +5,7 @@ import goBack from '../utilities/goBack';
 import {
   getSetting,
   openSettings,
-  Setting,
+  RuleMatchType,
   toggleSetting,
 } from '../utilities/settings';
 import { waitForEmptyLog, waitForLogEntry } from '../utilities/log';
@@ -13,14 +13,14 @@ import { waitForEmptyLog, waitForLogEntry } from '../utilities/log';
 describe('FilterRules', () => {
   it.each([
     [
-      Setting.PrivateNumbers,
+      RuleMatchType.PrivateNumbers,
       {
         log: 'Blocked call: Private',
         number: '#',
       },
     ],
     [
-      Setting.UnknownNumbers,
+      RuleMatchType.NumbersNotInContacts,
       {
         log: 'Blocked call: (555) 123-4657',
         number: '5551234657',
@@ -41,14 +41,14 @@ describe('FilterRules', () => {
 
   it.each([
     [
-      Setting.PrivateNumbers,
+      RuleMatchType.PrivateNumbers,
       {
         log: 'Allowed call: Private',
         number: '#',
       },
     ],
     [
-      Setting.UnknownNumbers,
+      RuleMatchType.NumbersNotInContacts,
       {
         log: 'Allowed call: (555) 123-4657',
         number: '5551234657',
