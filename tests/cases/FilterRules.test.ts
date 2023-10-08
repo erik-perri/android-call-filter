@@ -5,10 +5,14 @@ import goBack from '../utilities/goBack';
 import {
   getSetting,
   openSettings,
+  RuleAction,
+  RuleEnabled,
   RuleMatchType,
   toggleSetting,
 } from '../utilities/settings';
 import { waitForEmptyLog, waitForLogEntry } from '../utilities/log';
+import createMockContact from '../utilities/mockContact';
+import addNewRule from '../utilities/addNewRule';
 
 describe('FilterRules', () => {
   it.each([
@@ -67,5 +71,52 @@ describe('FilterRules', () => {
     await browser.gsmCall(number, 'cancel');
     await browser.pause(1000);
     await waitForLogEntry(browser, log);
+  });
+
+  it('should allow calls by contacts if set', async () => {
+    const driver = await initializeDriver();
+    await allowPermissions(driver);
+    await waitForEmptyLog(driver);
+
+    const mockContactNumber = '5551234';
+    const mockContactName = 'Mock User';
+    await createMockContact(driver, mockContactName, mockContactNumber);
+
+    await openSettings(driver);
+    await toggleSetting(driver, RuleMatchType.NumbersNotInContacts);
+    expect(await getSetting(driver, RuleMatchType.NumbersNotInContacts)).toBe(
+      true,
+    );
+    await goBack(driver);
+    await driver.gsmCall(mockContactNumber, 'call');
+    await driver.pause(1000);
+    await driver.gsmCall(mockContactNumber, 'cancel');
+    await driver.pause(1000);
+    await waitForLogEntry(driver, `Allowed call: ${mockContactName}`);
+  });
+
+  it('should block calls by contacts if set', async () => {
+    const driver = await initializeDriver();
+    await allowPermissions(driver);
+    await waitForEmptyLog(driver);
+
+    const mockContactNumber = '5551234';
+    const mockContactName = 'Mock User';
+    await createMockContact(driver, mockContactName, mockContactNumber);
+
+    await openSettings(driver);
+    await addNewRule(
+      driver,
+      RuleEnabled.Yes,
+      RuleAction.Block,
+      RuleMatchType.NumbersInContacts,
+    );
+
+    expect(await getSetting(driver, RuleMatchType.NumbersInContacts)).toBe(
+      true,
+    );
+    await goBack(driver);
+    await driver.gsmCall(mockContactNumber, 'call');
+    await waitForLogEntry(driver, `Blocked call: ${mockContactName}`);
   });
 });

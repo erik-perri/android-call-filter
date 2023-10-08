@@ -1,8 +1,23 @@
 import { Browser } from 'webdriverio';
 
+export enum RuleAction {
+  Allow = 'Allow',
+  Block = 'Block',
+}
+
+export enum RuleEnabled {
+  No = 'No',
+  Yes = 'Yes',
+}
+
 export enum RuleMatchType {
+  NumbersInContacts = 'Numbers in contacts',
   NumbersNotInContacts = 'Numbers not in contacts',
   PrivateNumbers = 'Private numbers',
+  NumbersInAreaCode = 'Numbers in area code',
+  NumbersMatching = 'Numbers matching',
+  NetworkVerificationFailed = 'Network verification failed',
+  NetworkVerificationPassed = 'Network verification passed',
 }
 
 export async function getSetting(
