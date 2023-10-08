@@ -38,6 +38,17 @@ export default async function createMockContact(
     },
   ]);
 
+  await driver.pause(250);
+
+  const accountModalCancelButton = await driver.$(
+    '//*[@text="Take a minute to add an account that will back up your contacts to Google."]' +
+      '/ancestor::*[@resource-id="android:id/content"]' +
+      '//android.widget.Button[@text="CANCEL"]',
+  );
+  if (await accountModalCancelButton.isDisplayed()) {
+    await accountModalCancelButton.click();
+  }
+
   const saveButton = await driver.$(
     'id:com.android.contacts:id/editor_menu_save_button',
   );
