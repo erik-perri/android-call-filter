@@ -19,7 +19,7 @@ export async function getSetting(
 }
 
 export async function openSettings(browser: Browser) {
-  const optionsButton = await browser.$('//*[@content-desc="More options"]');
+  const optionsButton = await browser.$('accessibility id:More options');
   await optionsButton.waitForDisplayed();
   await optionsButton.click();
 
