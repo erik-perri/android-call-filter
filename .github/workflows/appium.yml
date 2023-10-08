@@ -39,7 +39,7 @@ jobs:
           npm install
 
       - name: Start Appium server
-        run: appium &
+        run: appium --allow-insecure=adb_shell &
 
       - name: Run emulator and tests
         uses: reactivecircus/android-emulator-runner@v2
