@@ -15,18 +15,18 @@ async function hasMockContact(
 }
 
 export default async function createMockContact(
-  browser: Browser,
+  driver: Browser,
   name: string,
   phoneNumber: string,
 ): Promise<void> {
-  if (await hasMockContact(browser, phoneNumber)) {
+  if (await hasMockContact(driver, phoneNumber)) {
     return;
   }
 
-  const originalPackage = await browser.getCurrentPackage();
-  const originalActivity = await browser.getCurrentActivity();
+  const originalPackage = await driver.getCurrentPackage();
+  const originalActivity = await driver.getCurrentActivity();
 
-  await browser.executeScript('mobile: shell', [
+  await driver.executeScript('mobile: shell', [
     {
       command: 'am',
       args:
@@ -38,11 +38,11 @@ export default async function createMockContact(
     },
   ]);
 
-  const saveButton = await browser.$(
+  const saveButton = await driver.$(
     'id:com.android.contacts:id/editor_menu_save_button',
   );
   await saveButton.click();
-  await browser.pause(500);
+  await driver.pause(500);
 
-  await browser.startActivity(originalPackage, originalActivity);
+  await driver.startActivity(originalPackage, originalActivity);
 }

@@ -2,40 +2,38 @@ import { Browser } from 'webdriverio';
 import { RuleAction, RuleEnabled, RuleMatchType } from './settings';
 
 export default async function addNewRule(
-  browser: Browser,
+  driver: Browser,
   status: RuleEnabled,
   action: RuleAction,
   matchType: RuleMatchType,
 ) {
-  const addRuleButton = browser.$('accessibility id:Add new rule');
+  const addRuleButton = driver.$('accessibility id:Add new rule');
   await addRuleButton.click();
 
-  const enabledSpinner = browser.$(
-    'id:com.novyr.callfilter:id/enabled_spinner',
-  );
+  const enabledSpinner = driver.$('id:com.novyr.callfilter:id/enabled_spinner');
   await enabledSpinner.click();
 
-  const enabledOption = browser.$(
+  const enabledOption = driver.$(
     `//android.widget.CheckedTextView[@text="${status}"]`,
   );
   await enabledOption.click();
 
-  const actionSpinner = browser.$('id:com.novyr.callfilter:id/action_spinner');
+  const actionSpinner = driver.$('id:com.novyr.callfilter:id/action_spinner');
   await actionSpinner.click();
 
-  const actionOption = browser.$(
+  const actionOption = driver.$(
     `//android.widget.CheckedTextView[@text="${action}"]`,
   );
   await actionOption.click();
 
-  const typeSpinner = browser.$('id:com.novyr.callfilter:id/type_spinner');
+  const typeSpinner = driver.$('id:com.novyr.callfilter:id/type_spinner');
   await typeSpinner.click();
 
-  const typeOption = browser.$(
+  const typeOption = driver.$(
     `//android.widget.CheckedTextView[@text="${matchType}"]`,
   );
   await typeOption.click();
 
-  const okButton = browser.$('id:android:id/button1');
+  const okButton = driver.$('id:android:id/button1');
   await okButton.click();
 }

@@ -21,10 +21,10 @@ export enum RuleMatchType {
 }
 
 export async function getSetting(
-  browser: Browser,
+  driver: Browser,
   setting: RuleMatchType,
 ): Promise<boolean> {
-  const privateNumbersSwitch = await browser.$(
+  const privateNumbersSwitch = await driver.$(
     `//android.widget.TextView[@text="${setting}"]` +
       '/parent::android.widget.LinearLayout' +
       '/following-sibling::android.widget.Switch',
@@ -33,28 +33,28 @@ export async function getSetting(
   return (await privateNumbersSwitch.getAttribute('checked')) === 'true';
 }
 
-export async function openSettings(browser: Browser) {
-  const optionsButton = await browser.$('accessibility id:More options');
+export async function openSettings(driver: Browser) {
+  const optionsButton = await driver.$('accessibility id:More options');
   await optionsButton.waitForDisplayed();
   await optionsButton.click();
 
-  const settingsButton = await browser.$(
+  const settingsButton = await driver.$(
     '//android.widget.TextView[@text="Settings"]',
   );
   await settingsButton.waitForDisplayed();
   await settingsButton.click();
 
-  const filterRulesHeading = await browser.$(
+  const filterRulesHeading = await driver.$(
     '//android.widget.TextView[@text="Filter Rules"]',
   );
   await filterRulesHeading.waitForDisplayed();
 }
 
 export async function toggleSetting(
-  browser: Browser,
+  driver: Browser,
   setting: RuleMatchType,
 ): Promise<void> {
-  const privateNumbersText = await browser.$(
+  const privateNumbersText = await driver.$(
     `//android.widget.TextView[@text="${setting}"]`,
   );
   await privateNumbersText.waitForDisplayed();

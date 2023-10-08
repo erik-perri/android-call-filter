@@ -31,16 +31,16 @@ describe('FilterRules', () => {
       },
     ],
   ])('should block %s if set', async (setting, { log, number }) => {
-    const browser = await initializeDriver();
-    await allowPermissions(browser);
-    await waitForEmptyLog(browser);
+    const driver = await initializeDriver();
+    await allowPermissions(driver);
+    await waitForEmptyLog(driver);
 
-    await openSettings(browser);
-    await toggleSetting(browser, setting);
-    expect(await getSetting(browser, setting)).toBe(true);
-    await goBack(browser);
-    await browser.gsmCall(number, 'call');
-    await waitForLogEntry(browser, log);
+    await openSettings(driver);
+    await toggleSetting(driver, setting);
+    expect(await getSetting(driver, setting)).toBe(true);
+    await goBack(driver);
+    await driver.gsmCall(number, 'call');
+    await waitForLogEntry(driver, log);
   });
 
   it.each([
@@ -59,18 +59,18 @@ describe('FilterRules', () => {
       },
     ],
   ])('should allow %s if not set', async (setting, { log, number }) => {
-    const browser = await initializeDriver();
-    await allowPermissions(browser);
-    await waitForEmptyLog(browser);
+    const driver = await initializeDriver();
+    await allowPermissions(driver);
+    await waitForEmptyLog(driver);
 
-    await openSettings(browser);
-    expect(await getSetting(browser, setting)).toBe(false);
-    await goBack(browser);
-    await browser.gsmCall(number, 'call');
-    await browser.pause(1000);
-    await browser.gsmCall(number, 'cancel');
-    await browser.pause(1000);
-    await waitForLogEntry(browser, log);
+    await openSettings(driver);
+    expect(await getSetting(driver, setting)).toBe(false);
+    await goBack(driver);
+    await driver.gsmCall(number, 'call');
+    await driver.pause(1000);
+    await driver.gsmCall(number, 'cancel');
+    await driver.pause(1000);
+    await waitForLogEntry(driver, log);
   });
 
   it('should allow calls by contacts if set', async () => {
