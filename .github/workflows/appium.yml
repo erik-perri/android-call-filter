@@ -7,6 +7,9 @@ on:
 jobs:
   test:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        api-level: [21, 28, 29, 33]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,7 +47,7 @@ jobs:
       - name: Run emulator and tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: ${{ matrix.api-level }}
           script: ./gradlew assembleDebug && cd tests && npm run test
 
       - name: Upload artifacts
