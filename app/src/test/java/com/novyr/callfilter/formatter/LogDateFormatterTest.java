@@ -29,9 +29,22 @@ public class LogDateFormatterTest {
         TimeZone.setDefault(mOriginalTimezone);
     }
 
+    private static int getJavaVersion() {
+        String version = System.getProperty("java.specification.version");
+        if (version.startsWith("1.")) {
+            version = version.substring(2);
+        }
+        int dotIndex = version.indexOf('.');
+        if (dotIndex != -1) {
+            version = version.substring(0, dotIndex);
+        }
+        return Integer.parseInt(version);
+    }
+
     @Test
     public void testFormatter() {
         LogDateFormatter formatter = new LogDateFormatter();
+        int jdkVersion = getJavaVersion();
 
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
@@ -44,14 +57,28 @@ public class LogDateFormatterTest {
                 null
         );
 
-        assertEquals("6/8/80 9:22 AM", formatter.formatDate(log));
+        String expectedEn;
+        if (jdkVersion >= 20) {
+            expectedEn = "6/8/80, 9:22\u202FAM";
+        } else if (jdkVersion >= 9) {
+            expectedEn = "6/8/80, 9:22 AM";
+        } else {
+            expectedEn = "6/8/80 9:22 AM";
+        }
+        assertEquals(expectedEn, formatter.formatDate(log));
 
         locale = new Locale("ja");
         Locale.setDefault(locale);
 
         log.setCreated(buildCalendar(2020, 11, 25, 12, 5, 59));
 
-        assertEquals("20/12/25 12:05", formatter.formatDate(log));
+        String expectedJa;
+        if (jdkVersion >= 9) {
+            expectedJa = "2020/12/25 12:05";
+        } else {
+            expectedJa = "20/12/25 12:05";
+        }
+        assertEquals(expectedJa, formatter.formatDate(log));
     }
 
     private Calendar buildCalendar(int year, int month, int day, int hour, int minute, int second) {
