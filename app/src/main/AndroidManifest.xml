@@ -30,7 +30,8 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name=".ui.loglist.LogListActivity">
+        <activity android:name=".ui.loglist.LogListActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -45,7 +46,8 @@
                 android:value=".ui.loglist.LogListActivity" />
         </activity>
 
-        <receiver android:name=".CallReceiver">
+        <receiver android:name=".CallReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
@@ -53,6 +55,7 @@
 
         <service
             android:name="com.novyr.callfilter.CallFilterService"
+            android:exported="true"
             android:permission="android.permission.BIND_SCREENING_SERVICE">
             <intent-filter>
                 <action android:name="android.telecom.CallScreeningService" />

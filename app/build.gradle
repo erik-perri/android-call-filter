@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.novyr.callfilter"
-        minSdkVersion 15
-        targetSdkVersion 30
+        minSdk 15
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -73,7 +73,7 @@ dependencies {
 
     // Integration tests
     // Needed for InstantTaskExecutorRule
-    androidTestImplementation "android.arch.core:core-testing:1.1.1"
+    androidTestImplementation "androidx.arch.core:core-testing:2.2.0"
 
     // AndroidX
     // Core library
