@@ -1,5 +1,11 @@
 name: Setup Java
 
+inputs:
+  include-emulator-cache:
+    description: 'Whether to cache/restore Android emulator images'
+    required: false
+    default: 'false'
+
 runs:
   using: composite
   steps:
@@ -8,14 +14,27 @@ runs:
         distribution: temurin
         java-version: '17'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-
-    - uses: actions/cache@v5
+    - name: Cache Gradle & Android SDK
+      uses: actions/cache@v5
       with:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
-        key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          /usr/local/lib/android/sdk/platforms
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
-          gradle-
+          ${{ runner.os }}-gradle-
+
+    - name: Cache Android System Images
+      if: ${{ inputs.include-emulator-cache == 'true' }}
+      uses: actions/cache@v5
+      with:
+        path: |
+          ~/.android/avd
+          /usr/local/lib/android/sdk/system-images
+        key: ${{ runner.os }}-android-images-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-android-images-
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3

@@ -28,6 +28,8 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: ./.github/actions/setup-java
+        with:
+          include-emulator-cache: 'true'
 
       - name: Enable KVM
         run: |
@@ -38,14 +40,6 @@ jobs:
             echo "KVM is NOT available on this runner. Tests will be extremely slow."
             exit 1
           fi
-
-      - name: Cache GMD System Images
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.android/avd
-            ~/.android/adb*
-          key: gmd-images-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
       - name: Run tests
         run: ./gradlew allDevicesDebugAndroidTest -PtestMinSdk=21 -Pandroid.testoptions.manageddevices.maxparallel=1
