@@ -11,25 +11,27 @@ permissions:
   attestations: write
 
 jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
   release:
     runs-on: ubuntu-latest
+    needs: test
 
     steps:
       - uses: actions/checkout@v6
 
       - uses: ./.github/actions/setup-java
 
-      - run: ./gradlew testDebugUnitTest
-
       - name: Extract version from tag
         id: version
         run: |
           TAG="${GITHUB_REF#refs/tags/v}"
           echo "VERSION_NAME=$TAG" >> "$GITHUB_OUTPUT"
-          
+
           CODE=$(echo "$TAG" | awk -F. '{print $1 * 1000000 + $2 * 1000 + $3}')
           echo "VERSION_CODE=$CODE" >> "$GITHUB_OUTPUT"
-          
+
           echo "Version name: $TAG"
           echo "Version code: $CODE"
 
