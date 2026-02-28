@@ -67,7 +67,7 @@ jobs:
       # supported.
       - name: Attest build provenance
         if: ${{ !github.event.repository.private }}
-        uses: actions/attest-build-provenance@v3
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: ${{ steps.apk.outputs.APK_NAME }}
 
