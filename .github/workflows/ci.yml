@@ -10,9 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '17'
+      - uses: ./.github/actions/setup-java
 
       - run: ./gradlew testDebugUnitTest
