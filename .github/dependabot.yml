@@ -5,6 +5,10 @@ updates:
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 3
+    ignore:
+      # uses-sdk:minSdkVersion 15 cannot be smaller than version 21 declared in library [androidx.constraintlayout:constraintlayout:2.2.1]
+      - dependency-name: "androidx.constraintlayout:constraintlayout"
+        versions: [">=2.2.0"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
