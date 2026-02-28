@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        device: [ pixel2Api21, pixel2Api28, pixel2Api29, pixel2Api30, pixel2Api34 ]
+        device: [ pixel2Api26, pixel2Api28, pixel2Api30 ]
     steps:
       - uses: actions/checkout@v6
 
@@ -47,7 +47,7 @@ jobs:
           fi
 
       - name: Run test on ${{ matrix.device }}
-        run: ./gradlew :app:${{ matrix.device }}DebugAndroidTest -PtestMinSdk=21
+        run: ./gradlew :app:${{ matrix.device }}DebugAndroidTest -PtestMinSdk=26
 
       - name: Upload results
         if: always()

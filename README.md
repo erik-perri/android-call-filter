@@ -31,14 +31,14 @@ Unit tests run without an emulator:
 ./gradlew testDebugUnitTest
 ```
 
-Instrumented tests use [Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices) to automatically provision emulators. Because the test libraries require a higher minSdk than the app itself, pass `-PtestMinSdk=21`:
+Instrumented tests use [Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices) to automatically provision emulators. Because the test libraries require a higher minSdk than the app itself, pass `-PtestMinSdk=26`:
 
 ```bash
-# Run on a single device (e.g. API 34)
-./gradlew pixel2Api34DebugAndroidTest -PtestMinSdk=21
+# Run on a single device (e.g. API 30)
+./gradlew pixel2Api30DebugAndroidTest -PtestMinSdk=26
 
-# Run on all configured devices (API 21, 28, 29, 30, 34)
-./gradlew allDevicesDebugAndroidTest -PtestMinSdk=21
+# Run on all configured devices (API 26, 28, 30)
+./gradlew allDevicesDebugAndroidTest -PtestMinSdk=26
 ```
 
 To avoid passing the property every time, add `testMinSdk=21` to your local `gradle.properties` (this file is not committed).
