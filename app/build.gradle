@@ -78,7 +78,7 @@ dependencies {
     // Testing-only dependencies
 
     // Unit tests
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:2.19.0'
 
     // Integration tests
