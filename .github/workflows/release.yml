@@ -6,9 +6,14 @@ on:
       - 'v*'
 
 permissions:
-  contents: write      # Required to create the GitHub release and upload the APK
-  id-token: write      # Required to request the OIDC token for build attestation
-  attestations: write  # Required to persist the build provenance attestation
+  # Required to create the GitHub release and upload the APK
+  contents: write
+  # Required to request the OIDC token for build attestation
+  id-token: write
+  # Required to persist the build provenance attestation
+  attestations: write
+  # Required for artifact storage record creation
+  artifact-metadata: write
 
 jobs:
   test:
@@ -67,7 +72,7 @@ jobs:
       # supported.
       - name: Attest build provenance
         if: ${{ !github.event.repository.private }}
-        uses: actions/attest-build-provenance@v4
+        uses: actions/attest@v4
         with:
           subject-path: ${{ steps.apk.outputs.APK_NAME }}
 
