@@ -5,6 +5,10 @@ inputs:
     description: 'Whether to cache/restore Android emulator images'
     required: false
     default: 'false'
+  device-name:
+    description: 'Name of the device to specify the cache key'
+    required: false
+    default: 'generic'
 
 runs:
   using: composite
@@ -14,16 +18,8 @@ runs:
         distribution: temurin
         java-version: '17'
 
-    - name: Cache Gradle & Android SDK
-      uses: actions/cache@v5
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-          /usr/local/lib/android/sdk/platforms
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v5
 
     - name: Cache Android System Images
       if: ${{ inputs.include-emulator-cache == 'true' }}
@@ -31,10 +27,8 @@ runs:
       with:
         path: |
           ~/.android/avd
-          /usr/local/lib/android/sdk/system-images
-        key: ${{ runner.os }}-android-images-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-android-images-
+          ~/.android/adb*
+        key: emu-${{ inputs.device-name }}-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
