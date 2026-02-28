@@ -42,7 +42,9 @@ jobs:
           fi
 
       - name: Run tests
-        run: ./gradlew allDevicesDebugAndroidTest -PtestMinSdk=21 -Pandroid.testoptions.manageddevices.maxparallel=1
+        run: |
+          ./gradlew :app:pixel2Api21Setup :app:pixel2Api28Setup :app:pixel2Api29Setup :app:pixel2Api30Setup :app:pixel2Api34Setup --no-parallel
+          ./gradlew allDevicesDebugAndroidTest -PtestMinSdk=21 -Pandroid.testoptions.manageddevices.maxparallel=1
 
       - name: Upload results
         if: always()
