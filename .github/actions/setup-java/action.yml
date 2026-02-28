@@ -28,7 +28,9 @@ runs:
         path: |
           ~/.android/avd
           ~/.android/adb*
-        key: emu-${{ inputs.device-name }}-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
+          ~/.gradle/managed-devices
+          /usr/local/lib/android/sdk/system-images
+        key: emu-${{ inputs.device-name }}-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
