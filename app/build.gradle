@@ -61,7 +61,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.google.android.material:material:1.6.1'
 
     implementation 'com.googlecode.libphonenumber:libphonenumber:9.0.25'
     implementation 'io.github.azagniotov:ant-style-path-matcher:1.0.0'

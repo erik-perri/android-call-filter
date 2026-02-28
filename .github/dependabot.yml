@@ -18,6 +18,9 @@ updates:
       # uses-sdk:minSdkVersion 15 cannot be smaller than version 23 declared in library [androidx.lifecycle:lifecycle-livedata-core-ktx:2.10.0]
       - dependency-name: "androidx.lifecycle:lifecycle-*"
         versions: [ ">=2.5.0" ]
+      # uses-sdk:minSdkVersion 15 cannot be smaller than version 21 declared in library [com.google.android.material:material:1.13.0]
+      - dependency-name: "com.google.android.material:material"
+        versions: [ ">=1.7.0" ]
 
   - package-ecosystem: "github-actions"
     directory: "/"
