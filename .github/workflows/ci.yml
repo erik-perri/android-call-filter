@@ -4,9 +4,12 @@ on:
   push:
     branches:
       - '**'
+    # Tags are ignored since the release workflow calls this workflow
+    # directly.
     tags-ignore:
       - '**'
   pull_request:
+  # Allow this workflow to be called by other workflows.
   workflow_call:
 
 jobs:
