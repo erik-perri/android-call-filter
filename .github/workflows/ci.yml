@@ -8,7 +8,6 @@ on:
     # directly.
     tags-ignore:
       - '**'
-  pull_request:
   # Allow this workflow to be called by other workflows.
   workflow_call:
 
@@ -21,3 +20,39 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - run: ./gradlew testDebugUnitTest
+
+  instrumented-test:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-java
+
+      - name: Enable KVM
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chmod 666 /dev/kvm
+            echo "KVM is available and accessible."
+          else
+            echo "KVM is NOT available on this runner. Tests will be extremely slow."
+            exit 1
+          fi
+
+      - name: Cache GMD System Images
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.android/avd
+            ~/.android/adb*
+          key: gmd-images-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+
+      - name: Run instrumented tests
+        run: ./gradlew allDevicesDebugAndroidTest -PtestMinSdk=21 -Pandroid.testoptions.manageddevices.maxparallel=1
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: app/build/outputs/androidTest-results/managedDevice/

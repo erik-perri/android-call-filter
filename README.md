@@ -23,6 +23,32 @@ gh attestation verify call-filter-<version>.apk -R erik-perri/android-call-filte
  * On Android versions before Q (API v29) the app does not always get notified about a call to reject it before the ringer can start.  This is fixed in Q with the [CallScreeningService](https://developer.android.com/reference/android/telecom/CallScreeningService.html) API.
  * On Android versions before Lollipop (API v21) the app must run as a system app to block calls.
 
+## Testing
+
+Unit tests run without an emulator:
+
+```bash
+./gradlew testDebugUnitTest
+```
+
+Instrumented tests use [Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices) to automatically provision emulators. Because the test libraries require a higher minSdk than the app itself, pass `-PtestMinSdk=21`:
+
+```bash
+# Run on a single device (e.g. API 34)
+./gradlew pixel2Api34DebugAndroidTest -PtestMinSdk=21
+
+# Run on all configured devices (API 21, 28, 29, 30, 34)
+./gradlew allDevicesDebugAndroidTest -PtestMinSdk=21
+```
+
+To avoid passing the property every time, add `testMinSdk=21` to your local `gradle.properties` (this file is not committed).
+
+You can also run against a connected emulator or device directly:
+
+```bash
+./gradlew connectedDebugAndroidTest -PtestMinSdk=21
+```
+
 ## License
 
 [MIT](https://opensource.org/licenses/MIT)
