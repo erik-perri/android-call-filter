@@ -6,36 +6,39 @@ on:
       - 'v*'
 
 permissions:
-  contents: write
-  id-token: write
-  attestations: write
+  contents: write      # Required to create the GitHub release and upload the APK
+  id-token: write      # Required to request the OIDC token for build attestation
+  attestations: write  # Required to persist the build provenance attestation
 
 jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
   release:
     runs-on: ubuntu-latest
+    needs: test
 
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '17'
+      - uses: ./.github/actions/setup-java
 
+      # Extract VERSION_NAME (e.g. "1.2.3") and VERSION_CODE (e.g. 1002003)
+      # from the git tag (e.g. "v1.2.3"). VERSION_CODE uses the formula
+      # major*1000000 + minor*1000 + patch so it is always increasing.
       - name: Extract version from tag
         id: version
         run: |
           TAG="${GITHUB_REF#refs/tags/v}"
           echo "VERSION_NAME=$TAG" >> "$GITHUB_OUTPUT"
-          
+
           CODE=$(echo "$TAG" | awk -F. '{print $1 * 1000000 + $2 * 1000 + $3}')
           echo "VERSION_CODE=$CODE" >> "$GITHUB_OUTPUT"
-          
+
           echo "Version name: $TAG"
           echo "Version code: $CODE"
 
-      - run: ./gradlew testDebugUnitTest
-
+      # The keystore is stored as a base64-encoded environment secret
       - name: Decode keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release-keystore.jks"
@@ -59,6 +62,9 @@ jobs:
           mv app/build/outputs/apk/release/app-release.apk "$APK_NAME"
           echo "APK_NAME=$APK_NAME" >> "$GITHUB_OUTPUT"
 
+      # Generates attestation for the APK, allowing users to verify the binary
+      # was built by this workflow. Skipped for private repos since that is not
+      # supported.
       - name: Attest build provenance
         if: ${{ !github.event.repository.private }}
         uses: actions/attest-build-provenance@v3
