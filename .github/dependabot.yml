@@ -12,6 +12,9 @@ updates:
       # uses-sdk:minSdkVersion 15 cannot be smaller than version 21 declared in library [androidx.appcompat:appcompat-resources:1.7.1]
       - dependency-name: "androidx.appcompat:appcompat"
         versions: [ ">=1.7.0" ]
+      # uses-sdk:minSdkVersion 15 cannot be smaller than version 23 declared in library [androidx.room:room-runtime-android:2.8.4]
+      - dependency-name: "androidx.room:room-*"
+        versions: [ ">=2.5.0" ]
 
   - package-ecosystem: "github-actions"
     directory: "/"
