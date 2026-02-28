@@ -47,13 +47,10 @@ jobs:
             ~/.android/adb*
           key: gmd-images-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
-      - name: Accept Android SDK Licenses
-        run: yes | sdkmanager --licenses
-
-      - name: Run instrumented tests
+      - name: Run tests
         run: ./gradlew allDevicesDebugAndroidTest -PtestMinSdk=21 -Pandroid.testoptions.manageddevices.maxparallel=1
 
-      - name: Upload test results
+      - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
