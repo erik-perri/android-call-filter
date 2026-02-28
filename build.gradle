@@ -2,7 +2,7 @@
 
 ext {
     roomVersion = '2.4.3'
-    archLifecycleVersion = '2.2.0'
+    archLifecycleVersion = '2.10.0'
 }
 
 buildscript {
