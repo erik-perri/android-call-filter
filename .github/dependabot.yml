@@ -9,6 +9,9 @@ updates:
       # uses-sdk:minSdkVersion 15 cannot be smaller than version 21 declared in library [androidx.constraintlayout:constraintlayout:2.2.1]
       - dependency-name: "androidx.constraintlayout:constraintlayout"
         versions: [">=2.2.0"]
+      # uses-sdk:minSdkVersion 15 cannot be smaller than version 21 declared in library [androidx.appcompat:appcompat-resources:1.7.1]
+      - dependency-name: "androidx.appcompat:appcompat"
+        versions: [ ">=1.7.0" ]
 
   - package-ecosystem: "github-actions"
     directory: "/"
