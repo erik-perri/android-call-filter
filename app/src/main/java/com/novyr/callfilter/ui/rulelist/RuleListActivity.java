@@ -55,7 +55,7 @@ public class RuleListActivity extends AppCompatActivity {
 
         ruleViewModel.highestOrder().observe(
                 this,
-                order -> ruleListActionHelper.setNextOrder(order + 2)
+                order -> ruleListActionHelper.setNextOrder(order != null ? order + 2 : 2)
         );
 
         ruleViewModel.findAll().observe(this, entities -> {
