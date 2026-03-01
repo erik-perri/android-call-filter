@@ -62,18 +62,22 @@ android {
 
         managedDevices {
             devices {
+                // Pre-Pie: tests AndroidLegacyHandler (ITelephony reflection).
+                // API 26 is skipped — MODIFY_PHONE_STATE is strictly enforced.
                 pixel2Api27(com.android.build.api.dsl.ManagedVirtualDevice) {
                     device = "Pixel 2"
                     apiLevel = 27
-                    systemImageSource = "google"
+                    systemImageSource = "aosp"
                     testedAbi = "x86"
                 }
+                // Pie: tests AndroidPieHandler (TelecomManager.endCall).
                 pixel2Api28(com.android.build.api.dsl.ManagedVirtualDevice) {
                     device = "Pixel 2"
                     apiLevel = 28
                     systemImageSource = "aosp"
                     testedAbi = "x86"
                 }
+                // Q+: tests CallFilterService (CallScreeningService API).
                 pixel2Api30(com.android.build.api.dsl.ManagedVirtualDevice) {
                     device = "Pixel 2"
                     apiLevel = 30
