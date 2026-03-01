@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.novyr.callfilter.db.entity.LogEntity;
@@ -12,60 +12,46 @@ import com.novyr.callfilter.db.entity.enums.LogAction;
 import com.novyr.callfilter.telephony.HandlerFactory;
 import com.novyr.callfilter.telephony.HandlerInterface;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class CallReceiver extends BroadcastReceiver {
     private static final String TAG = CallReceiver.class.getSimpleName();
-    private final Executor executor = Executors.newSingleThreadExecutor();
+
+    /**
+     * Time window to prevent processing the same call multiple times.
+     * In some cases Android sends duplicate broadcasts for a single ringing event.
+     */
+    private static final long DUPLICATE_WINDOW_MS = 2000;
+    private static long sLastHandledTimeMs = 0;
+    private static String sLastHandledNumber = null;
+
+    /**
+     * Offload database and telephony operations to a background thread.
+     * Static to ensure the thread pool persists for the duration of the process,
+     * even if this specific Receiver instance is short-lived.
+     */
+    private static final Executor executor = Executors.newSingleThreadExecutor();
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        // API 29+ is handled by CallScreeningService
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // If we are on Q+ we use the CallScreeningService API instead
             return;
         }
 
         String intentAction = intent.getAction();
-        if (intentAction == null || !intentAction.equals("android.intent.action.PHONE_STATE")) {
+        if (intentAction == null || !intentAction.equals(TelephonyManager.ACTION_PHONE_STATE_CHANGED)) {
             return;
-        }
-
-        String state = intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_STATE);
-        if (state == null || !state.equals(android.telephony.TelephonyManager.EXTRA_STATE_RINGING)) {
-            return;
-        }
-
-        if (BuildConfig.DEBUG) {
-            Log.i(TAG, "Call received");
-            Bundle bundle = intent.getExtras();
-            if (bundle != null) {
-                Log.d(TAG, " - Intent extras:");
-                for (String key : bundle.keySet()) {
-                    Object value = bundle.get(key);
-                    Log.d(TAG, String.format(
-                            "   - %-16s %-16s (%s)",
-                            key,
-                            value != null ? value.toString() : "NULL",
-                            value != null ? value.getClass().getName() : ""
-                    ));
-                }
-            }
         }
 
         if (!shouldHandleCall(intent)) {
-            if (BuildConfig.DEBUG) {
-                Log.i(TAG, " - Skipping call");
-            }
             return;
         }
 
-        if (BuildConfig.DEBUG) {
-            Log.i(TAG, " - Handling call");
-        }
-
         // noinspection deprecation
-        String number = intent.getStringExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
+        final String number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
         executor.execute(() -> {
             HandlerInterface handler = HandlerFactory.create(context);
@@ -73,11 +59,10 @@ public class CallReceiver extends BroadcastReceiver {
 
             LogAction action = LogAction.ALLOWED;
             if (!checker.allowCall(new CallDetails(number))) {
-                if (handler.endCall()) {
-                    action = LogAction.BLOCKED;
-                } else {
-                    action = LogAction.FAILED;
-                }
+                // If the rule says block, attempt to end the call and log the result.
+                action = handler.endCall()
+                        ? LogAction.BLOCKED
+                        : LogAction.FAILED;
             }
 
             CallFilterApplication application = (CallFilterApplication) context.getApplicationContext();
@@ -85,30 +70,59 @@ public class CallReceiver extends BroadcastReceiver {
         });
     }
 
+    public static void resetState() {
+        sLastHandledTimeMs = 0;
+        sLastHandledNumber = null;
+    }
+
     private boolean shouldHandleCall(Intent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Since we request both READ_CALL_LOG and READ_PHONE_STATE permissions we will get called twice, one of
-            // the calls missing the EXTRA_INCOMING_NUMBER data.
-            // https://developer.android.com/reference/android/telephony/TelephonyManager#ACTION_PHONE_STATE_CHANGED
-            // noinspection deprecation
-            return intent.hasExtra(android.telephony.TelephonyManager.EXTRA_INCOMING_NUMBER);
+        String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
+        if (!TelephonyManager.EXTRA_STATE_RINGING.equals(state)) {
+            return false;
         }
 
-        // In Lollipop (API v21 and v22) we get called twice.  The first seems to always have a subscription value of 1,
-        // in the emulator at least.  If we are on Kitkat or below we can continue without checking.
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+        // On Android 9 (P), the system sends two broadcasts if READ_CALL_LOG is granted:
+        // 1. One without the phone number (via READ_PHONE_STATE permission).
+        // 2. One with the phone number (via READ_CALL_LOG permission).
+        // We ignore the numberless broadcast to ensure the RuleChecker has data to work with.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (!intent.hasExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "Skipping restricted API 28 broadcast (no number)");
+                }
+                return false;
+            }
+        }
+
+        // noinspection deprecation
+        String number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+
+        return !isDuplicateBroadcast(number);
+    }
+    private synchronized boolean isDuplicateBroadcast(String number) {
+        long now = System.currentTimeMillis();
+
+        if (now - sLastHandledTimeMs > DUPLICATE_WINDOW_MS) {
+            sLastHandledTimeMs = now;
+            sLastHandledNumber = number;
+            return false;
+        }
+
+        // If previous broadcast was restricted (null number) but this one has it,
+        // treat this as an update/enrichment rather than a duplicate.
+        if (sLastHandledNumber == null && number != null) {
+            sLastHandledTimeMs = now;
+            sLastHandledNumber = number;
+            return false;
+        }
+
+        // Receiving the same number within the time window is a duplicate.
+        if (Objects.equals(sLastHandledNumber, number)) {
             return true;
         }
 
-        Bundle bundle = intent.getExtras();
-        Object value = bundle != null ? bundle.get("subscription") : null;
-        if (value == null) {
-            return true;
-        }
-
-        String expectedId = "1";
-        String id = value.toString();
-
-        return id == null || id.equals(expectedId);
+        sLastHandledTimeMs = now;
+        sLastHandledNumber = number;
+        return false;
     }
 }
