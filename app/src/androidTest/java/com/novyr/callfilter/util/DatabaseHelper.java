@@ -36,8 +36,12 @@ public class DatabaseHelper {
         logDao = db.logDao();
         ruleDao = db.ruleDao();
 
-        // Drain the write executor so any pending onCreate callbacks (e.g. createDefaultRules)
-        // complete before tests manipulate data.
+        // Force the database to open so any onCreate callbacks (e.g. createDefaultRules)
+        // are queued on the write executor before we drain it. Room defers opening until
+        // the first DAO call, so without this the drain would complete before the callback
+        // is even submitted, causing a race with test data setup.
+        ruleDao.deleteAll();
+
         drainWriteExecutor();
     }
 

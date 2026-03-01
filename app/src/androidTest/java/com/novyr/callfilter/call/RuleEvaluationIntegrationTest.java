@@ -197,9 +197,13 @@ public class RuleEvaluationIntegrationTest {
 
     @After
     public void tearDown() {
-        dbHelper.clearLogs();
-        dbHelper.resetRules();
-        contactHelper.cleanupContacts();
+        if (dbHelper != null) {
+            dbHelper.clearLogs();
+            dbHelper.resetRules();
+        }
+        if (contactHelper != null) {
+            contactHelper.cleanupContacts();
+        }
     }
 
     @Test

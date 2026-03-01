@@ -80,12 +80,12 @@ public class RuleListActivityTest {
     }
 
     @Test
-    public void ruleList_defaultRules_showsRecyclerView() {
+    public void ruleList_emptyRules_showsEmptyView() {
         launchActivity();
 
-        onView(withId(R.id.rule_list))
-                .check(matches(isDisplayed()));
         onView(withId(R.id.empty_view))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.rule_list))
                 .check(matches(not(isDisplayed())));
     }
 

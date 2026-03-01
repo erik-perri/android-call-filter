@@ -291,12 +291,10 @@ public class RuleEditDialogTest {
 
         onView(withId(R.id.type_spinner)).perform(click());
 
-        // On pre-R devices, the verification type should not be in the spinner at all.
-        // Since onData().check(doesNotExist()) doesn't work, verify by checking the
-        // spinner text after closing the dropdown — it should not contain the value.
-        onView(withId(R.id.type_spinner))
-                .check(matches(not(withSpinnerText(
-                        containsString(getStringResource(R.string.rule_type_verification_failed))))));
+        // On pre-R devices, the verification type should not be in the spinner popup.
+        onView(withText(getStringResource(R.string.rule_type_verification_failed)))
+                .inRoot(isPlatformPopup())
+                .check(doesNotExist());
     }
 
     private String getStringResource(int resId) {
