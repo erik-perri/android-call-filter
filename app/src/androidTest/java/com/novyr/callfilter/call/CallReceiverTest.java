@@ -4,6 +4,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.novyr.callfilter.CallReceiver;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.RuleEntity;
 import com.novyr.callfilter.db.entity.enums.LogAction;
@@ -45,6 +46,7 @@ public class CallReceiverTest {
     @Before
     public void setUp() {
         ApiLevelAssumptions.assumePreQ();
+        CallReceiver.resetState();
         dbHelper = new DatabaseHelper();
         dbHelper.clearLogs();
         contactHelper = new ContactHelper();
