@@ -62,6 +62,13 @@ android {
 
         managedDevices {
             devices {
+                // Lollipop: tests AndroidLegacyHandler with subscription-based dedup.
+                pixel2Api25(com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Pixel 2"
+                    apiLevel = 25
+                    systemImageSource = "aosp"
+                    testedAbi = "x86"
+                }
                 // Pre-Pie: tests AndroidLegacyHandler (ITelephony reflection).
                 // API 26 is skipped — MODIFY_PHONE_STATE is strictly enforced.
                 pixel2Api27(com.android.build.api.dsl.ManagedVirtualDevice) {
@@ -87,6 +94,7 @@ android {
             }
             groups {
                 allDevices {
+                    targetDevices.add(devices.pixel2Api25)
                     targetDevices.add(devices.pixel2Api27)
                     targetDevices.add(devices.pixel2Api28)
                     targetDevices.add(devices.pixel2Api30)

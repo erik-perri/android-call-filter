@@ -38,7 +38,7 @@ Instrumented tests use [Gradle Managed Devices](https://developer.android.com/st
 # Run on a specific device (e.g. API 30)
 ./gradlew pixel2Api30DebugAndroidTest
 
-# Run on all configured devices (API 27, 28, 30)
+# Run on all configured devices (API 25, 27, 28, 30)
 # We limit parallel devices to 1 to save local system resources
 ./gradlew allDevicesDebugAndroidTest -Dandroid.testoptions.manageddevices.maxparallel=1
 ```
