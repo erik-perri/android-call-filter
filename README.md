@@ -11,6 +11,7 @@ Use [Android Studio](https://developer.android.com/studio)
 ## Issues
 
 * On Android versions before Q (API v29) the app does not always get notified about a call to reject it before the ringer can start.  This is fixed in Q with the [CallScreeningService](https://developer.android.com/reference/android/telecom/CallScreeningService.html) API.
+* On Android Oreo 8.0 (API v26) the app cannot block calls. `ITelephony.endCall()` strictly requires `MODIFY_PHONE_STATE` on this version. API v27 refactored `TelecomService` for the new public call APIs, which allowed the legacy reflection to work again.
 * On Android versions before Lollipop (API v21) the app must run as a system app to block calls.
 
 ## Releases
@@ -37,7 +38,7 @@ Instrumented tests use [Gradle Managed Devices](https://developer.android.com/st
 # Run on a specific device (e.g. API 30)
 ./gradlew pixel2Api30DebugAndroidTest
 
-# Run on all configured devices (API 26, 28, 30)
+# Run on all configured devices (API 27, 28, 30)
 # We limit parallel devices to 1 to save local system resources
 ./gradlew allDevicesDebugAndroidTest -Dandroid.testoptions.manageddevices.maxparallel=1
 ```

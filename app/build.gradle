@@ -62,9 +62,9 @@ android {
 
         managedDevices {
             devices {
-                pixel2Api26(com.android.build.api.dsl.ManagedVirtualDevice) {
+                pixel2Api27(com.android.build.api.dsl.ManagedVirtualDevice) {
                     device = "Pixel 2"
-                    apiLevel = 26
+                    apiLevel = 27
                     systemImageSource = "google"
                     testedAbi = "x86"
                 }
@@ -83,7 +83,7 @@ android {
             }
             groups {
                 allDevices {
-                    targetDevices.add(devices.pixel2Api26)
+                    targetDevices.add(devices.pixel2Api27)
                     targetDevices.add(devices.pixel2Api28)
                     targetDevices.add(devices.pixel2Api30)
                 }

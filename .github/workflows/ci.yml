@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        device: [ pixel2Api26, pixel2Api28, pixel2Api30 ]
+        device: [ pixel2Api27, pixel2Api28, pixel2Api30 ]
     steps:
       - uses: actions/checkout@v6
 
