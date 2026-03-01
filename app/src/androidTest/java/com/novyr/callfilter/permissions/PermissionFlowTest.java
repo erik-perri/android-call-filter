@@ -1,6 +1,7 @@
 package com.novyr.callfilter.permissions;
 
 import android.app.Instrumentation;
+import android.content.Context;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
 
@@ -21,11 +22,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -38,15 +34,23 @@ import static org.junit.Assert.assertNotNull;
 public class PermissionFlowTest {
     private static final long DIALOG_TIMEOUT_MS = 5000;
     private static final long SHORT_TIMEOUT_MS = 1500;
+    private static final long SNACKBAR_TIMEOUT_MS = 5000;
     private static final String PACKAGE = "com.novyr.callfilter";
 
     private UiDevice device;
     private ActivityScenario<LogListActivity> scenario;
+    private String permissionDeniedText;
+    private String retryText;
 
     @Before
     public void setUp() {
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         device = UiDevice.getInstance(instrumentation);
+
+        // Resolve string resources for Snackbar assertions
+        Context targetContext = instrumentation.getTargetContext();
+        permissionDeniedText = targetContext.getString(R.string.permission_request_denied);
+        retryText = targetContext.getString(R.string.permission_notice_retry);
 
         // Revoke runtime permissions so the dialog will appear on launch
         revokePermissions(instrumentation);
@@ -100,9 +104,13 @@ public class PermissionFlowTest {
             dismissCallScreeningDialogIfPresent();
         }
 
-        // The Snackbar should appear with the denied message
-        onView(withText(R.string.permission_request_denied))
-                .check(matches(isDisplayed()));
+        // Wait for the Snackbar to appear with the denied message.
+        // Use textContains because on Q+ the Snackbar may include multiple errors
+        // (e.g. "Permission request denied\nCall screening request denied").
+        UiObject2 snackbar = device.wait(
+                Until.findObject(By.textContains(permissionDeniedText)),
+                SNACKBAR_TIMEOUT_MS);
+        assertNotNull("Snackbar should show permission denied message", snackbar);
     }
 
     @Test
@@ -118,12 +126,13 @@ public class PermissionFlowTest {
             dismissCallScreeningDialogIfPresent();
         }
 
-        // Verify Snackbar is shown, then click RETRY
-        onView(withText(R.string.permission_notice_retry))
-                .check(matches(isDisplayed()));
+        // Wait for the RETRY button on the Snackbar
+        UiObject2 retryButton = device.wait(
+                Until.findObject(By.text(retryText)),
+                SNACKBAR_TIMEOUT_MS);
+        assertNotNull("Snackbar RETRY button should appear", retryButton);
 
-        onView(withText(R.string.permission_notice_retry))
-                .perform(click());
+        retryButton.click();
 
         // Permission dialog should reappear
         UiObject2 retryDialog = findPermissionDialog();
