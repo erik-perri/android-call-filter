@@ -20,6 +20,7 @@ public class PermissionHelper {
         List<String> permissions = new ArrayList<>();
 
         permissions.add(Manifest.permission.READ_CONTACTS);
+        permissions.add(Manifest.permission.WRITE_CONTACTS);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             permissions.add(Manifest.permission.CALL_PHONE);
