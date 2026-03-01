@@ -200,6 +200,24 @@ public class CallReceiverTest {
         }
     }
 
+    @Test
+    public void upgradeSequenceProducesOneEntry() throws Exception {
+        ApiLevelAssumptions.assumePieOrHigher();
+        dbHelper.resetRules(
+                new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
+        );
+
+        CallSimulator.simulateIncomingCall("5557777");
+        try {
+            List<LogEntity> entries = pollForStableLogCount();
+            assertEquals("Expected exactly one log entry for the upgrade sequence", 1, entries.size());
+            assertEquals("5557777", entries.get(0).getNumber());
+            assertEquals(LogAction.ALLOWED, entries.get(0).getAction());
+        } finally {
+            cancelCallSilently("5557777");
+        }
+    }
+
     private LogEntity pollForLogEntry() throws Exception {
         long deadline = System.currentTimeMillis() + POLL_TIMEOUT_MS;
         while (System.currentTimeMillis() < deadline) {
@@ -212,6 +230,31 @@ public class CallReceiverTest {
         List<LogEntity> entries = dbHelper.getLogEntries();
         assertFalse("No log entry appeared within timeout", entries == null || entries.isEmpty());
         return entries.get(0);
+    }
+
+    /**
+     * Polls until the log entry count has not changed for STABLE_MS consecutive milliseconds.
+     * This avoids a fixed sleep while still catching late spurious entries (e.g. from duplicate
+     * broadcasts on API 28).
+     */
+    private List<LogEntity> pollForStableLogCount() throws Exception {
+        final int STABLE_MS = 2000;
+        long stableSince = System.currentTimeMillis();
+        int lastCount = dbHelper.getLogEntries().size();
+        long deadline = System.currentTimeMillis() + POLL_TIMEOUT_MS;
+
+        while (System.currentTimeMillis() < deadline) {
+            Thread.sleep(POLL_INTERVAL_MS);
+            int currentCount = dbHelper.getLogEntries().size();
+            if (currentCount != lastCount) {
+                lastCount = currentCount;
+                stableSince = System.currentTimeMillis();
+            } else if (System.currentTimeMillis() - stableSince >= STABLE_MS) {
+                return dbHelper.getLogEntries();
+            }
+        }
+
+        return dbHelper.getLogEntries();
     }
 
     private void cancelCallSilently(String number) {
