@@ -55,6 +55,10 @@ public class DatabaseHelper {
         return getValueFromLiveData(logDao.findAll());
     }
 
+    public List<RuleEntity> getRuleEntries() throws InterruptedException {
+        return getValueFromLiveData(ruleDao.findAll());
+    }
+
     private static <T> T getValueFromLiveData(LiveData<T> liveData) throws InterruptedException {
         AtomicReference<T> result = new AtomicReference<>();
         CountDownLatch latch = new CountDownLatch(1);
