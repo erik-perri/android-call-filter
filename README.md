@@ -35,10 +35,10 @@ Unit tests run without an emulator:
 Instrumented tests use [Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices) to automatically provision emulators.
 
 ```bash
-# Run on a specific device (e.g. API 30)
-./gradlew pixel2Api30DebugAndroidTest
+# Run on a specific device (e.g. API 29)
+./gradlew pixel2Api29DebugAndroidTest
 
-# Run on all configured devices (API 27, 28, 30)
+# Run on all configured devices (API 27, 28, 29, 35)
 # We limit parallel devices to 1 to save local system resources
 ./gradlew allDevicesDebugAndroidTest -Dandroid.testoptions.manageddevices.maxparallel=1
 ```

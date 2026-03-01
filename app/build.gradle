@@ -77,19 +77,28 @@ android {
                     systemImageSource = "aosp"
                     testedAbi = "x86"
                 }
-                // Q+: tests CallFilterService (CallScreeningService API).
-                pixel2Api30(com.android.build.api.dsl.ManagedVirtualDevice) {
+                // Q: tests CallFilterService (CallScreeningService API).
+                pixel2Api29(com.android.build.api.dsl.ManagedVirtualDevice) {
                     device = "Pixel 2"
-                    apiLevel = 30
-                    systemImageSource = "aosp-atd"
+                    apiLevel = 29
+                    systemImageSource = "aosp"
                     testedAbi = "x86"
+                }
+                // API 35: tests modern restrictions (notification permissions,
+                // stricter background execution).
+                pixel2Api35(com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Pixel 2"
+                    apiLevel = 35
+                    systemImageSource = "aosp-atd"
+                    testedAbi = "x86_64"
                 }
             }
             groups {
                 allDevices {
                     targetDevices.add(devices.pixel2Api27)
                     targetDevices.add(devices.pixel2Api28)
-                    targetDevices.add(devices.pixel2Api30)
+                    targetDevices.add(devices.pixel2Api29)
+                    targetDevices.add(devices.pixel2Api35)
                 }
             }
         }

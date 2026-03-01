@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         # These must match the managed devices defined in app/build.gradle
-        device: [ pixel2Api27, pixel2Api28, pixel2Api30 ]
+        device: [ pixel2Api27, pixel2Api28, pixel2Api29, pixel2Api35 ]
     steps:
       - uses: actions/checkout@v6
 
