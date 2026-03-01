@@ -46,6 +46,9 @@ jobs:
             exit 1
           fi
 
+      - name: Set emulator console auth token
+        run: echo "ci-auth-token" > ~/.emulator_console_auth_token
+
       - name: Run test on ${{ matrix.device }}
         run: ./gradlew :app:${{ matrix.device }}DebugAndroidTest -PtestMinSdk=26
 
