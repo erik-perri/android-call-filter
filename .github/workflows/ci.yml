@@ -12,7 +12,7 @@ on:
   workflow_call:
 
 jobs:
-  test:
+  unit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -21,9 +21,9 @@ jobs:
 
       - run: ./gradlew testDebugUnitTest
 
-  instrumented-test:
+  instrumentation:
     runs-on: ubuntu-latest
-    needs: test
+    needs: unit
     strategy:
       fail-fast: false
       matrix:
