@@ -35,6 +35,13 @@ jobs:
 
       - run: ./gradlew testDebugUnitTest
 
+      - name: Upload Unit Test Coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-unit
+          path: app/build/**/*.exec
+
   instrumentation:
     runs-on: ubuntu-latest
     needs: unit
@@ -76,11 +83,75 @@ jobs:
         run: echo "ci-auth-token" > ~/.emulator_console_auth_token
 
       - name: Run test on ${{ matrix.device }}
-        run: ./gradlew :app:${{ matrix.device }}DebugAndroidTest -PtestMinSdk=26
+        run: >
+          ./gradlew :app:${{ matrix.device }}DebugAndroidTest
+          -PtestMinSdk=26
+          -Pandroid.testInstrumentationRunnerArguments.useTestStorageService=true
 
-      - name: Upload results
+      - name: Upload Instrumentation Coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.device }}
+          path: "**/build/**/*.ec"
+
+      - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: results-${{ matrix.device }}
-          path: app/build/outputs/androidTest-results/managedDevice/
+          path: app/build/test-results/managedDevice/
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: [unit, instrumentation]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-java
+
+      - name: Download all coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: coverage-data/
+
+      # We need to compile the debug classes so JaCoCo has something to analyze against
+      - name: Compile Debug Classes
+        run: ./gradlew compileDebugJavaWithJavac
+
+      - name: Generate Unified JaCoCo Report
+        run: ./gradlew generateUnifiedCoverageReport
+
+      - name: Generate Job Summary
+        run: |
+          # Path to the generated XML report
+          REPORT_PATH="app/build/reports/jacoco/generateUnifiedCoverageReport/generateUnifiedCoverageReport.xml"
+
+          # Extract the last INSTRUCTION counter (the overall total) from the JaCoCo XML.
+          # Use \K to avoid variable-length lookbehind issues on older PCRE versions.
+          LINE=$(grep 'type="INSTRUCTION"' "$REPORT_PATH" | tail -1)
+          MISSED=$(echo "$LINE" | grep -oP 'missed="\K[0-9]+')
+          COVERED=$(echo "$LINE" | grep -oP 'covered="\K[0-9]+')
+
+          TOTAL=$((MISSED + COVERED))
+          if [ $TOTAL -gt 0 ]; then
+            PERCENTAGE=$(echo "scale=2; ($COVERED / $TOTAL) * 100" | bc)
+          else
+            PERCENTAGE="0"
+          fi
+
+          # Write to the GitHub Summary
+          echo "## Code Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total Instructions** | $TOTAL |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Covered** | $COVERED |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Missed** | $MISSED |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Percentage** | **$PERCENTAGE%** |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Full HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-coverage-report-html
+          path: app/build/reports/jacoco/generateUnifiedCoverageReport/html/

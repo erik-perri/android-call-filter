@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'jacoco'
 }
 
 android {
@@ -19,7 +20,7 @@ android {
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunnerArguments clearPackageData: 'true'
+        testInstrumentationRunnerArguments clearPackageData: 'true', useTestStorageService: 'true'
 
         // Pass the emulator console auth token to instrumentation tests
         def authTokenFile = new File(System.getProperty("user.home"), ".emulator_console_auth_token")
@@ -106,6 +107,9 @@ android {
                 }
             }
         }
+
+        resultsDir = layout.buildDirectory.dir("test-results").get().asFile.absolutePath
+        reportDir = layout.buildDirectory.dir("reports/tests").get().asFile.absolutePath
     }
     namespace 'com.novyr.callfilter'
 }
@@ -165,10 +169,48 @@ dependencies {
 
     // Test Orchestrator (runs each test in its own process to clear data and permissions)
     androidTestUtil 'androidx.test:orchestrator:1.5.1'
+
+    // Required to persist coverage files when using Orchestrator
+    androidTestUtil 'androidx.test.services:test-services:1.5.0'
 }
 
 allprojects {
     tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
     }
+}
+
+tasks.register('generateUnifiedCoverageReport', JacocoReport) {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports for Debug build"
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    def fileFilter = [
+            '**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+            '**/*Test*.*', 'android/**/*.*',
+            '**/*_Impl*.*', '**/*Dao_Impl*.*', '**/db/schemas/**'
+    ]
+
+    // Use the Layout API for class directories
+    def javaTree = fileTree(
+            dir: layout.buildDirectory.dir("intermediates/javac/debug/compileDebugJavaWithJavac/classes"),
+            excludes: fileFilter
+    )
+    def kotlinTree = fileTree(
+            dir: layout.buildDirectory.dir("tmp/kotlin-classes/debug"),
+            excludes: fileFilter
+    )
+
+    sourceDirectories.setFrom(files(["${project.projectDir}/src/main/java"]))
+    classDirectories.setFrom(files([javaTree, kotlinTree]))
+
+    // Search from the workspace root so CI-downloaded coverage-data/ is included
+    executionData.setFrom(fileTree(
+            dir: rootDir,
+            includes: ['**/*.exec', '**/*.ec']
+    ))
 }

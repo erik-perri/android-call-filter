@@ -20,9 +20,9 @@ runs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v5
-      # TODO Remove
       with:
-        cache-read-only: false
+        add-job-summary: 'on-failure'
+        cache-read-only: false # TODO Remove
 
     - name: Cache Android System Images
       if: ${{ inputs.include-emulator-cache == 'true' }}
