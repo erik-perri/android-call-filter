@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class CallSimulator {
@@ -31,7 +32,8 @@ public class CallSimulator {
     }
 
     private static void simulateViaEmulatorConsole(String command) throws Exception {
-        try (Socket socket = new Socket("10.0.2.2", 5554)) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress("10.0.2.2", 5554), 5000);
             socket.setSoTimeout(5000);
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(socket.getInputStream()));
