@@ -11,8 +11,10 @@ import com.novyr.callfilter.db.entity.enums.LogAction;
 import com.novyr.callfilter.db.entity.enums.RuleAction;
 import com.novyr.callfilter.db.entity.enums.RuleType;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -30,6 +32,10 @@ public class DatabaseHelper {
         db = CallFilterDatabase.getDatabase(context);
         logDao = db.logDao();
         ruleDao = db.ruleDao();
+
+        // Drain the write executor so any pending onCreate callbacks (e.g. createDefaultRules)
+        // complete before tests manipulate data.
+        drainWriteExecutor();
     }
 
     public void insertRule(RuleType type, RuleAction action, String value, boolean enabled, int order) {
@@ -57,6 +63,19 @@ public class DatabaseHelper {
 
     public List<RuleEntity> getRuleEntries() throws InterruptedException {
         return getValueFromLiveData(ruleDao.findAll());
+    }
+
+    private void drainWriteExecutor() {
+        try {
+            Field field = CallFilterDatabase.class.getDeclaredField("databaseWriteExecutor");
+            field.setAccessible(true);
+            ExecutorService executor = (ExecutorService) field.get(null);
+            if (executor != null) {
+                executor.submit(() -> {}).get(5, TimeUnit.SECONDS);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to drain database write executor", e);
+        }
     }
 
     private static <T> T getValueFromLiveData(LiveData<T> liveData) throws InterruptedException {
