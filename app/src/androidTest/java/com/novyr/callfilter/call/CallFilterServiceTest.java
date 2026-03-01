@@ -71,7 +71,7 @@ public class CallFilterServiceTest {
     }
 
     @Test
-    public void unrecognizedBlocked() throws Exception {
+    public void allowCall_unrecognizedNumber_callBlocked() throws Exception {
         dbHelper.resetRules(
                 new RuleEntity(RuleType.UNRECOGNIZED, RuleAction.BLOCK, null, true, 4),
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
@@ -88,7 +88,7 @@ public class CallFilterServiceTest {
     }
 
     @Test
-    public void privateBlocked() throws Exception {
+    public void allowCall_privateBlockRule_callBlocked() throws Exception {
         dbHelper.resetRules(
                 new RuleEntity(RuleType.PRIVATE, RuleAction.BLOCK, null, true, 4),
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
@@ -105,7 +105,7 @@ public class CallFilterServiceTest {
     }
 
     @Test
-    public void privateAllowed() throws Exception {
+    public void allowCall_noPrivateRule_callAllowed() throws Exception {
         dbHelper.resetRules(
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
         );
@@ -121,7 +121,7 @@ public class CallFilterServiceTest {
     }
 
     @Test
-    public void noMatchingRulesAllowed() throws Exception {
+    public void allowCall_noMatchingRules_callAllowed() throws Exception {
         dbHelper.resetRules(
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
         );
@@ -137,7 +137,7 @@ public class CallFilterServiceTest {
     }
 
     @Test
-    public void contactAllowed() throws Exception {
+    public void allowCall_contactNumber_callAllowed() throws Exception {
         dbHelper.resetRules(
                 new RuleEntity(RuleType.UNRECOGNIZED, RuleAction.BLOCK, null, true, 4),
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
@@ -155,7 +155,7 @@ public class CallFilterServiceTest {
     }
 
     @Test
-    public void areaCodeBlocked() throws Exception {
+    public void allowCall_areaCodeRule_callBlocked() throws Exception {
         dbHelper.resetRules(
                 new RuleEntity(RuleType.AREA_CODE, RuleAction.BLOCK, "800", true, 4),
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
@@ -172,7 +172,7 @@ public class CallFilterServiceTest {
     }
 
     @Test
-    public void patternBlocked() throws Exception {
+    public void allowCall_patternRule_callBlocked() throws Exception {
         dbHelper.resetRules(
                 new RuleEntity(RuleType.MATCH, RuleAction.BLOCK, "555*", true, 4),
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
@@ -189,7 +189,7 @@ public class CallFilterServiceTest {
     }
 
     @Test
-    public void disabledRuleIgnored() throws Exception {
+    public void allowCall_disabledRule_callAllowed() throws Exception {
         dbHelper.resetRules(
                 new RuleEntity(RuleType.UNRECOGNIZED, RuleAction.BLOCK, null, false, 4),
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)

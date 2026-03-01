@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 public class PrivateRuleHandlerTest {
     @Test
-    public void checkNormalMatch() {
+    public void isMatch_nullAndNonNullNumber_matchesOnlyNull() {
         PrivateRuleHandler checker = new PrivateRuleHandler();
 
         assertFalse(checker.isMatch(new CallDetails("8005551234"), null));

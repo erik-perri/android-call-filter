@@ -50,7 +50,7 @@ public class LogDaoTest {
     }
 
     @Test
-    public void insertSavesData() throws InterruptedException {
+    public void insert_singleEntity_savesToDatabase() throws InterruptedException {
         LogEntity[] entities = createEntities(1);
         mLogDao.insert(entities[0]);
 
@@ -59,7 +59,7 @@ public class LogDaoTest {
     }
 
     @Test
-    public void deleteRemovesData() throws InterruptedException {
+    public void delete_singleEntity_removesFromDatabase() throws InterruptedException {
         LogEntity[] entities = createEntities(1);
         mLogDao.insert(entities[0]);
 
@@ -72,7 +72,7 @@ public class LogDaoTest {
     }
 
     @Test
-    public void deleteAllClearsData() throws InterruptedException {
+    public void deleteAll_multipleEntities_clearsDatabase() throws InterruptedException {
         LogEntity[] entities = createEntities(10);
         for (LogEntity entity : entities) {
             mLogDao.insert(entity);
@@ -86,7 +86,7 @@ public class LogDaoTest {
     }
 
     @Test
-    public void findAllRetrievesData() throws InterruptedException {
+    public void findAll_multipleEntities_returnsInReverseOrder() throws InterruptedException {
         LogEntity[] entities = createEntities(10);
         for (LogEntity entity : entities) {
             mLogDao.insert(entity);

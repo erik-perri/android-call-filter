@@ -9,14 +9,14 @@ import static org.junit.Assert.assertTrue;
 
 public class MatchRuleHandlerTest {
     @Test
-    public void checkPrivateMatch() {
+    public void isMatch_privateNumber_returnsFalse() {
         MatchRuleHandler checker = new MatchRuleHandler();
 
         assertFalse(checker.isMatch(new CallDetails(null), "8005551234"));
     }
 
     @Test
-    public void checkInvalidMatch() {
+    public void isMatch_invalidNumber_returnsFalse() {
         MatchRuleHandler checker = new MatchRuleHandler();
 
         assertFalse(checker.isMatch(new CallDetails("1"), "8005551234"));
@@ -24,7 +24,7 @@ public class MatchRuleHandlerTest {
     }
 
     @Test
-    public void checkNormalMatch() {
+    public void isMatch_exactNumber_matchesCorrectly() {
         MatchRuleHandler checker = new MatchRuleHandler();
 
         assertTrue(checker.isMatch(new CallDetails("8005551234"), "8005551234"));
@@ -32,7 +32,7 @@ public class MatchRuleHandlerTest {
     }
 
     @Test
-    public void checkWildcardMatch() {
+    public void isMatch_wildcardPattern_matchesCorrectly() {
         MatchRuleHandler checker = new MatchRuleHandler();
 
         assertTrue(checker.isMatch(new CallDetails("8005551234"), "*8005551234*"));
@@ -53,7 +53,7 @@ public class MatchRuleHandlerTest {
     }
 
     @Test
-    public void checkVariant() {
+    public void isMatch_formattedNumber_matchesNormalized() {
         MatchRuleHandler checker = new MatchRuleHandler();
 
         assertTrue(checker.isMatch(new CallDetails("18005551234"), "8005551234"));

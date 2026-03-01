@@ -67,13 +67,13 @@ public class PermissionFlowTest {
     }
 
     @Test
-    public void onStartRequestsPermissions() {
+    public void permissionCheck_onStart_showsPermissionDialog() {
         UiObject2 dialog = findPermissionDialog();
         assertNotNullWithDump("System permission dialog should appear on launch", dialog);
     }
 
     @Test
-    public void permissionDeniedShowsSnackBar() {
+    public void permissionCheck_denied_showsSnackBar() {
         UiObject2 dialog = findPermissionDialog();
         assertNotNullWithDump("System permission dialog should appear", dialog);
 
@@ -94,7 +94,7 @@ public class PermissionFlowTest {
     }
 
     @Test
-    public void snackBarRetryRequestsAgain() {
+    public void permissionCheck_retryClicked_showsDialogAgain() {
         UiObject2 dialog = findPermissionDialog();
         assertNotNullWithDump("System permission dialog should appear", dialog);
 

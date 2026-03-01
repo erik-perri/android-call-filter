@@ -26,7 +26,7 @@ public class RuleCheckerTest {
     }
 
     @Test
-    public void checkNoEntity() {
+    public void allowCall_noRules_returnsTrue() {
         RuleChecker ruleChecker = new RuleChecker(
                 new RuleHandlerManager(createFinderMock()),
                 new RuleEntity[0]
@@ -38,7 +38,7 @@ public class RuleCheckerTest {
     }
 
     @Test
-    public void checkUnmatched() {
+    public void allowCall_unmatchedRule_matchesAllCalls() {
         RuleChecker ruleChecker = new RuleChecker(
                 new RuleHandlerManager(createFinderMock()),
                 new RuleEntity[]{
@@ -63,7 +63,7 @@ public class RuleCheckerTest {
     }
 
     @Test
-    public void checkOrder() {
+    public void allowCall_higherPriorityBlockRule_blocksCall() {
         String code = RECOGNIZED_NUMBER.substring(0, 3);
         RuleChecker ruleChecker = new RuleChecker(
                 new RuleHandlerManager(createFinderMock()),
@@ -77,7 +77,7 @@ public class RuleCheckerTest {
     }
 
     @Test
-    public void checkWhitelist() {
+    public void allowCall_whitelistConfig_allowsRecognizedOnly() {
         RuleChecker ruleChecker = new RuleChecker(
                 new RuleHandlerManager(createFinderMock()),
                 new RuleEntity[]{
@@ -92,7 +92,7 @@ public class RuleCheckerTest {
     }
 
     @Test
-    public void checkBlacklist() {
+    public void allowCall_blacklistConfig_blocksPrivateAndUnrecognized() {
         RuleChecker ruleChecker = new RuleChecker(
                 new RuleHandlerManager(createFinderMock()),
                 new RuleEntity[]{
@@ -108,7 +108,7 @@ public class RuleCheckerTest {
     }
 
     @Test
-    public void checkIgnoreDisabled() {
+    public void allowCall_disabledRules_allowsAllCalls() {
         RuleChecker ruleChecker = new RuleChecker(
                 new RuleHandlerManager(createFinderMock()),
                 new RuleEntity[]{

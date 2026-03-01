@@ -24,14 +24,14 @@ public class RecognizedRuleHandlerTest {
     }
 
     @Test
-    public void checkPrivateMatch() {
+    public void isMatch_privateNumber_returnsFalse() {
         RecognizedRuleHandler checker = new RecognizedRuleHandler(createFinderMock());
 
         assertFalse(checker.isMatch(new CallDetails(null), null));
     }
 
     @Test
-    public void checkNormalMatch() {
+    public void isMatch_contactNumber_matchesRecognizedOnly() {
         RecognizedRuleHandler checker = new RecognizedRuleHandler(createFinderMock());
 
         assertFalse(checker.isMatch(new CallDetails(UNRECOGNIZED_NUMBER), null));

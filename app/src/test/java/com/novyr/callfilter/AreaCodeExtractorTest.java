@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNull;
 
 public class AreaCodeExtractorTest {
     @Test
-    public void checkInvalid() {
+    public void extract_invalidNumber_returnsNull() {
         AreaCodeExtractor extractor = new AreaCodeExtractor(PhoneNumberUtil.getInstance());
 
         assertNull(extractor.extract(null));
@@ -19,14 +19,14 @@ public class AreaCodeExtractorTest {
     }
 
     @Test
-    public void checkLocal() {
+    public void extract_localNumber_returnsNull() {
         AreaCodeExtractor extractor = new AreaCodeExtractor(PhoneNumberUtil.getInstance());
 
         assertNull(extractor.extract("5551234"));
     }
 
     @Test
-    public void checkVariant() {
+    public void extract_formattedNumber_returnsAreaCode() {
         AreaCodeExtractor extractor = new AreaCodeExtractor(PhoneNumberUtil.getInstance());
 
         assertEquals(extractor.extract("18005551234"), "800");

@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 public class VerificationPassedRuleHandlerTest {
     @Test
-    public void checkHandler() {
+    public void isMatch_verificationStatus_matchesPassedOnly() {
         VerificationPassedRuleHandler checker = new VerificationPassedRuleHandler();
 
         assertFalse(checker.isMatch(

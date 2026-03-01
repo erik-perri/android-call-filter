@@ -77,13 +77,13 @@ public class CallScreeningRoleTest {
     }
 
     @Test
-    public void roleRequestShowsDialog() {
+    public void roleRequest_onLaunch_showsDialog() {
         UiObject2 dialog = findRoleDialog();
         assertNotNullWithDump("Call screening role request dialog should appear", dialog);
     }
 
     @Test
-    public void roleDeniedShowsSnackBar() {
+    public void roleRequest_denied_showsSnackBar() {
         UiObject2 dialog = findRoleDialog();
         assertNotNullWithDump("Call screening role request dialog should appear", dialog);
 
