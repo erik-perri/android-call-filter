@@ -99,6 +99,22 @@ public class CallFilterServiceTest {
     }
 
     @Test
+    public void privateAllowed() throws Exception {
+        dbHelper.resetRules(
+                new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
+        );
+
+        CallSimulator.simulatePrivateCall();
+        try {
+            LogEntity log = pollForLogEntry();
+            assertNull(log.getNumber());
+            assertEquals(LogAction.ALLOWED, log.getAction());
+        } finally {
+            cancelCallSilently("#");
+        }
+    }
+
+    @Test
     public void allowed() throws Exception {
         dbHelper.resetRules(
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)

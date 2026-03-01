@@ -13,6 +13,7 @@ import com.novyr.callfilter.ui.loglist.LogListActivity;
 import com.novyr.callfilter.util.ApiLevelAssumptions;
 import com.novyr.callfilter.util.CallSimulator;
 import com.novyr.callfilter.util.DatabaseHelper;
+import com.novyr.callfilter.util.ContactHelper;
 import com.novyr.callfilter.util.PermissionHelper;
 
 import org.junit.After;
@@ -39,16 +40,21 @@ public class CallReceiverTest {
             new ActivityScenarioRule<>(LogListActivity.class);
 
     private DatabaseHelper dbHelper;
+    private ContactHelper contactHelper;
 
     @Before
     public void setUp() {
         ApiLevelAssumptions.assumePreQ();
         dbHelper = new DatabaseHelper();
         dbHelper.clearLogs();
+        contactHelper = new ContactHelper();
     }
 
     @After
     public void tearDown() {
+        if (contactHelper != null) {
+            contactHelper.cleanupContacts();
+        }
         if (dbHelper != null) {
             dbHelper.clearLogs();
             dbHelper.resetRules(
@@ -104,6 +110,40 @@ public class CallReceiverTest {
             assertEquals(LogAction.BLOCKED, log.getAction());
         } finally {
             cancelCallSilently("#");
+        }
+    }
+
+    @Test
+    public void privateAllowed() throws Exception {
+        dbHelper.resetRules(
+                new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
+        );
+
+        CallSimulator.simulatePrivateCall();
+        try {
+            LogEntity log = pollForLogEntry();
+            assertNull(log.getNumber());
+            assertEquals(LogAction.ALLOWED, log.getAction());
+        } finally {
+            cancelCallSilently("#");
+        }
+    }
+
+    @Test
+    public void contactAllowed() throws Exception {
+        dbHelper.resetRules(
+                new RuleEntity(RuleType.UNRECOGNIZED, RuleAction.BLOCK, null, true, 4),
+                new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
+        );
+        contactHelper.insertContact("Test Contact", "5553456");
+
+        CallSimulator.simulateIncomingCall("5553456");
+        try {
+            LogEntity log = pollForLogEntry();
+            assertEquals("5553456", log.getNumber());
+            assertEquals(LogAction.ALLOWED, log.getAction());
+        } finally {
+            cancelCallSilently("5553456");
         }
     }
 
