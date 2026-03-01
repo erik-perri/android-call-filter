@@ -65,7 +65,7 @@ android {
                 pixel2Api26(com.android.build.api.dsl.ManagedVirtualDevice) {
                     device = "Pixel 2"
                     apiLevel = 26
-                    systemImageSource = "aosp"
+                    systemImageSource = "google"
                     testedAbi = "x86"
                 }
                 pixel2Api28(com.android.build.api.dsl.ManagedVirtualDevice) {
