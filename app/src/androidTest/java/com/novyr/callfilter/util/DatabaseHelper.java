@@ -12,9 +12,12 @@ import com.novyr.callfilter.db.entity.enums.RuleAction;
 import com.novyr.callfilter.db.entity.enums.RuleType;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -71,7 +74,35 @@ public class DatabaseHelper {
             field.setAccessible(true);
             ExecutorService executor = (ExecutorService) field.get(null);
             if (executor != null) {
-                executor.submit(() -> {}).get(5, TimeUnit.SECONDS);
+                int poolSize = (executor instanceof ThreadPoolExecutor)
+                        ? ((ThreadPoolExecutor) executor).getMaximumPoolSize()
+                        : 1;
+
+                // Occupy every thread simultaneously so we know all prior tasks have finished.
+                // Each thread blocks on the latch until all threads are parked, proving no
+                // previously-queued work (e.g. createDefaultRules) is still running.
+                CountDownLatch arrived = new CountDownLatch(poolSize);
+                CountDownLatch release = new CountDownLatch(1);
+
+                List<Future<?>> futures = new ArrayList<>();
+                for (int i = 0; i < poolSize; i++) {
+                    futures.add(executor.submit(() -> {
+                        arrived.countDown();
+                        try {
+                            release.await(5, TimeUnit.SECONDS);
+                        } catch (InterruptedException ignored) {
+                        }
+                    }));
+                }
+
+                // Wait until every thread has entered our task (meaning prior work is done)
+                arrived.await(5, TimeUnit.SECONDS);
+                // Release all threads
+                release.countDown();
+
+                for (Future<?> future : futures) {
+                    future.get(5, TimeUnit.SECONDS);
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to drain database write executor", e);
