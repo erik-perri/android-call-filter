@@ -20,6 +20,12 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        // Pass the emulator console auth token to instrumentation tests
+        def authTokenFile = new File(System.getProperty("user.home"), ".emulator_console_auth_token")
+        if (authTokenFile.exists()) {
+            def token = authTokenFile.text.trim()
+            testInstrumentationRunnerArguments["emulatorAuthToken"] = token
+        }
 
         vectorDrawables {
             useSupportLibrary true

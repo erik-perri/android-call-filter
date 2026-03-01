@@ -23,7 +23,7 @@ public class CallSimulator {
     }
 
     public static void simulatePrivateCall() throws Exception {
-        simulateViaEmulatorConsole("gsm call 0");
+        simulateViaEmulatorConsole("gsm call #");
     }
 
     public static void cancelCall(String phoneNumber) throws Exception {
@@ -42,9 +42,11 @@ public class CallSimulator {
 
             if (greeting.contains("Authentication required")) {
                 String token = getAuthToken();
-                writer.write("auth " + token + "\n");
-                writer.flush();
-                readUntilOk(reader);
+                if (!token.isEmpty()) {
+                    writer.write("auth " + token + "\n");
+                    writer.flush();
+                    readUntilOk(reader);
+                }
             }
 
             writer.write(command + "\n");
@@ -56,16 +58,37 @@ public class CallSimulator {
         }
     }
 
-    private static String getAuthToken() throws Exception {
+    private static String getAuthToken() {
         String token = InstrumentationRegistry.getArguments().getString("emulatorAuthToken");
         if (token != null && !token.isEmpty()) {
             return token;
         }
 
-        File tokenFile = new File(System.getProperty("user.home"), ".emulator_console_auth_token");
-        try (BufferedReader reader = new BufferedReader(new FileReader(tokenFile))) {
-            return reader.readLine().trim();
+        // Try standard locations for the auth token file
+        String[] candidates = {
+                System.getProperty("user.home") + "/.emulator_console_auth_token",
+                "/data/local/tmp/.emulator_console_auth_token",
+                System.getenv("HOME") + "/.emulator_console_auth_token",
+        };
+
+        for (String path : candidates) {
+            if (path == null) continue;
+            File tokenFile = new File(path);
+            if (tokenFile.exists()) {
+                try (BufferedReader reader = new BufferedReader(new FileReader(tokenFile))) {
+                    String line = reader.readLine();
+                    if (line != null && !line.trim().isEmpty()) {
+                        return line.trim();
+                    }
+                    // Empty token file means auth is disabled
+                    return "";
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to read token from " + path, e);
+                }
+            }
         }
+
+        return "";
     }
 
     private static String readUntilOk(BufferedReader reader) throws Exception {
