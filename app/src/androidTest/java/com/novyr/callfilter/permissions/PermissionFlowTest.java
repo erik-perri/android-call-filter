@@ -212,6 +212,17 @@ public class PermissionFlowTest {
      * by checking if a foreign package is in the foreground and pressing back.
      */
     private void dismissReTriggeredDialogs() {
+        // Wait for the app to return to the foreground before checking for
+        // re-triggered dialogs. On API 29, the permission dialog's dismissal
+        // animation is still running when waitForIdle() returns, so
+        // getCurrentPackageName() can transiently report the permission
+        // controller package. A back press at that moment destroys the activity.
+        long deadline = System.currentTimeMillis() + 3000;
+        while (System.currentTimeMillis() < deadline
+                && !"com.novyr.callfilter".equals(device.getCurrentPackageName())) {
+            device.waitForIdle(200);
+        }
+
         for (int i = 0; i < 3; i++) {
             device.waitForIdle(500);
 
