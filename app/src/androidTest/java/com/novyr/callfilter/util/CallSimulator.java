@@ -3,6 +3,7 @@ package com.novyr.callfilter.util;
 import android.util.Log;
 
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,6 +16,7 @@ import java.net.Socket;
 
 public class CallSimulator {
     private static final String TAG = CallSimulator.class.getSimpleName();
+    private static final int SOCKET_TIMEOUT_MS = 10000;
 
     private CallSimulator() {
     }
@@ -31,10 +33,43 @@ public class CallSimulator {
         simulateViaEmulatorConsole("gsm cancel " + phoneNumber);
     }
 
+    private static int getConsolePort() {
+        try {
+            UiDevice device = UiDevice.getInstance(
+                    InstrumentationRegistry.getInstrumentation());
+            String serial = device.executeShellCommand("getprop ro.boot.qemu.console.port").trim();
+            if (!serial.isEmpty()) {
+                int port = Integer.parseInt(serial);
+                Log.d(TAG, "Detected console port from property: " + port);
+                return port;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to detect console port from property", e);
+        }
+
+        // Try the instrumentation argument
+        String portArg = InstrumentationRegistry.getArguments().getString("emulatorConsolePort");
+        if (portArg != null && !portArg.isEmpty()) {
+            try {
+                int port = Integer.parseInt(portArg);
+                Log.d(TAG, "Using console port from instrumentation arg: " + port);
+                return port;
+            } catch (NumberFormatException e) {
+                Log.w(TAG, "Invalid port in instrumentation arg: " + portArg);
+            }
+        }
+
+        Log.d(TAG, "Using default console port 5554");
+        return 5554;
+    }
+
     private static void simulateViaEmulatorConsole(String command) throws Exception {
+        int port = getConsolePort();
+        Log.d(TAG, "Connecting to emulator console at 10.0.2.2:" + port);
+
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress("10.0.2.2", 5554), 5000);
-            socket.setSoTimeout(5000);
+            socket.connect(new InetSocketAddress("10.0.2.2", port), SOCKET_TIMEOUT_MS);
+            socket.setSoTimeout(SOCKET_TIMEOUT_MS);
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(socket.getInputStream()));
             BufferedWriter writer = new BufferedWriter(
@@ -102,7 +137,11 @@ public class CallSimulator {
             if (line.startsWith("OK")) {
                 return sb.toString();
             }
+            if (line.startsWith("KO:")) {
+                throw new RuntimeException("Emulator console error: " + line);
+            }
         }
-        return sb.toString();
+        throw new RuntimeException(
+                "Emulator console connection closed without OK. Received: " + sb.toString());
     }
 }
