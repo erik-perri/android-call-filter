@@ -32,7 +32,7 @@ Unit tests run without an emulator:
 ./gradlew testDebugUnitTest
 ```
 
-Instrumented tests use [Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices) to automatically provision emulators.
+When running instrumentation tests via the Android Studio gutter, an emulator must be running. The can also be provisioned automatically using [Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices).
 
 ```bash
 # Run on a specific device (e.g. API 29)
