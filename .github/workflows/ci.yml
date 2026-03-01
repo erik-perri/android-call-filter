@@ -10,6 +10,19 @@ on:
       - '**'
   # Allow this workflow to be called by other workflows.
   workflow_call:
+  # Allow this workflow to be run manually.
+  workflow_dispatch:
+    inputs:
+      device_override:
+        description: 'Device to test'
+        required: true
+        default: 'all'
+        type: choice
+        options: [all, pixel2Api27, pixel2Api28, pixel2Api29, pixel2Api35]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   unit:
@@ -24,11 +37,18 @@ jobs:
   instrumentation:
     runs-on: ubuntu-latest
     needs: unit
+    # This job only runs if it's a PR, a manual trigger, or a call from another workflow
+    if: >
+      github.event_name == 'pull_request' || 
+      github.event_name == 'workflow_dispatch' || 
+      github.event_name == 'workflow_call'
     strategy:
       fail-fast: false
       matrix:
-        # These must match the managed devices defined in app/build.gradle
-        device: [ pixel2Api27, pixel2Api28, pixel2Api29, pixel2Api35 ]
+        # If manual, use the selected device. If not manual or 'all', use the full list.
+        # The list must match the managed devices defined in app/build.gradle.
+        device: ${{ (github.event.inputs.device_override != 'all' && github.event.inputs.device_override != '') && fromJSON(format('["{0}"]', github.event.inputs.device_override)) || fromJSON('["pixel2Api27", "pixel2Api28", "pixel2Api29", "pixel2Api35"]') }}
+
     steps:
       - uses: actions/checkout@v6
 
