@@ -19,6 +19,7 @@ android {
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true'
 
         // Pass the emulator console auth token to instrumentation tests
         def authTokenFile = new File(System.getProperty("user.home"), ".emulator_console_auth_token")
@@ -59,6 +60,8 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true
+
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
 
         managedDevices {
             devices {
@@ -159,6 +162,8 @@ dependencies {
     // UI Automator (system dialogs, permissions, shell commands)
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
 
+    // Test Orchestrator (runs each test in its own process to clear data and permissions)
+    androidTestUtil 'androidx.test:orchestrator:1.5.1'
 }
 
 allprojects {

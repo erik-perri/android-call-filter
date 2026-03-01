@@ -1,9 +1,7 @@
 package com.novyr.callfilter.permissions;
 
-import android.app.Instrumentation;
 import android.content.Context;
 import android.os.Build;
-import android.os.ParcelFileDescriptor;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.MediumTest;
@@ -20,22 +18,22 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * Tests the permission request flow when permissions are NOT pre-granted.
  *
- * Does NOT use GrantPermissionRule. Instead, revokes permissions before each test
- * and launches the activity manually so the system permission dialog appears.
+ * Does NOT use GrantPermissionRule. Relies on the Test Orchestrator with
+ * clearPackageData to ensure each test starts with a fresh app state where
+ * no permissions have been granted.
  */
 @MediumTest
 public class PermissionFlowTest {
     private static final long DIALOG_TIMEOUT_MS = 5000;
     private static final long SHORT_TIMEOUT_MS = 1500;
     private static final long SNACKBAR_TIMEOUT_MS = 5000;
-    private static final String PACKAGE = "com.novyr.callfilter";
 
     private UiDevice device;
     private ActivityScenario<LogListActivity> scenario;
@@ -44,29 +42,14 @@ public class PermissionFlowTest {
 
     @Before
     public void setUp() {
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        device = UiDevice.getInstance(instrumentation);
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
-        // Resolve string resources for Snackbar assertions
-        Context targetContext = instrumentation.getTargetContext();
+        Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         permissionDeniedText = targetContext.getString(R.string.permission_request_denied);
         retryText = targetContext.getString(R.string.permission_notice_retry);
 
-        // Revoke runtime permissions so the dialog will appear on launch
-        revokePermissions(instrumentation);
-
-        // Clear the permission SharedPreferences so AndroidPermissionChecker doesn't
-        // think permissions are "blocked" (previously requested + denied + don't ask again)
-        clearPermissionPreferences(instrumentation);
-
-        // On Q+, also remove the call screening role so it doesn't interfere
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            shellCommand(instrumentation,
-                    "cmd role remove-role-holder android.app.role.CALL_SCREENING " + PACKAGE);
-        }
-
-        // Now launch the activity — permissions are revoked, so onStart() will
-        // trigger the permission dialog
+        // Launch the activity — no permissions are granted (clearPackageData ensures
+        // a fresh state), so onStart() will trigger the permission dialog.
         scenario = ActivityScenario.launch(LogListActivity.class);
     }
 
@@ -76,26 +59,20 @@ public class PermissionFlowTest {
             scenario.close();
         }
 
-        // Dismiss any lingering system dialogs
         device.pressBack();
     }
 
     @Test
     public void onStartRequestsPermissions() {
-        // The activity's onStart triggers PermissionChecker.onStart(), which requests
-        // runtime permissions. A system permission dialog should appear.
         UiObject2 dialog = findPermissionDialog();
-        assertNotNull("System permission dialog should appear on launch", dialog);
+        assertNotNullWithDump("System permission dialog should appear on launch", dialog);
     }
 
     @Test
     public void permissionDeniedShowsSnackBar() {
-        // Wait for the permission dialog, then deny
         UiObject2 dialog = findPermissionDialog();
-        assertNotNull("System permission dialog should appear", dialog);
+        assertNotNullWithDump("System permission dialog should appear", dialog);
 
-        // Deny all permission dialogs — the system may show one per permission group
-        // (e.g. PHONE, CONTACTS, CALL_LOG on pre-Q)
         denyAllPermissionDialogs();
 
         // On Q+, after denying runtime permissions, the call screening role dialog
@@ -104,74 +81,63 @@ public class PermissionFlowTest {
             dismissCallScreeningDialogIfPresent();
         }
 
-        // Wait for the Snackbar to appear with the denied message.
-        // Use textContains because on Q+ the Snackbar may include multiple errors
-        // (e.g. "Permission request denied\nCall screening request denied").
         UiObject2 snackbar = device.wait(
                 Until.findObject(By.textContains(permissionDeniedText)),
                 SNACKBAR_TIMEOUT_MS);
-        assertNotNull("Snackbar should show permission denied message", snackbar);
+        assertNotNullWithDump(
+                "Snackbar should contain '" + permissionDeniedText + "'", snackbar);
     }
 
     @Test
     public void snackBarRetryRequestsAgain() {
-        // Deny the initial permission dialog(s)
         UiObject2 dialog = findPermissionDialog();
-        assertNotNull("System permission dialog should appear", dialog);
+        assertNotNullWithDump("System permission dialog should appear", dialog);
 
         denyAllPermissionDialogs();
 
-        // Dismiss call screening dialog if present (Q+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             dismissCallScreeningDialogIfPresent();
         }
 
-        // Wait for the RETRY button on the Snackbar
         UiObject2 retryButton = device.wait(
                 Until.findObject(By.text(retryText)),
                 SNACKBAR_TIMEOUT_MS);
-        assertNotNull("Snackbar RETRY button should appear", retryButton);
+        assertNotNullWithDump("Snackbar RETRY button should appear", retryButton);
 
         retryButton.click();
 
-        // Permission dialog should reappear
         UiObject2 retryDialog = findPermissionDialog();
-        assertNotNull("Permission dialog should reappear after RETRY", retryDialog);
+        assertNotNullWithDump("Permission dialog should reappear after RETRY", retryDialog);
     }
 
-    private void revokePermissions(Instrumentation instrumentation) {
-        String[] permissions = {
-                "android.permission.READ_CONTACTS",
-                "android.permission.CALL_PHONE",
-                "android.permission.READ_PHONE_STATE",
-                "android.permission.ANSWER_PHONE_CALLS",
-                "android.permission.READ_CALL_LOG",
-        };
+    // ── Helpers ──────────────────────────────────────────────────────────────
 
-        for (String permission : permissions) {
-            shellCommand(instrumentation, "pm revoke " + PACKAGE + " " + permission);
+    private void assertNotNullWithDump(String message, Object object) {
+        if (object != null) {
+            return;
         }
-    }
-
-    private void clearPermissionPreferences(Instrumentation instrumentation) {
-        shellCommand(instrumentation,
-                "run-as " + PACKAGE + " rm -f /data/data/" + PACKAGE
-                        + "/shared_prefs/permissions.xml");
-    }
-
-    private void shellCommand(Instrumentation instrumentation, String command) {
+        StringBuilder sb = new StringBuilder(message);
+        sb.append("\n\n=== Screen dump ===\n");
+        sb.append("API level: ").append(Build.VERSION.SDK_INT).append("\n");
+        sb.append("Current package: ").append(device.getCurrentPackageName()).append("\n\n");
         try {
-            ParcelFileDescriptor pfd = instrumentation.getUiAutomation()
-                    .executeShellCommand(command);
-            pfd.close();
-        } catch (IOException e) {
-            // Ignore — some commands may fail on certain API levels
+            List<UiObject2> textNodes = device.findObjects(By.textStartsWith(""));
+            if (textNodes != null) {
+                for (UiObject2 obj : textNodes) {
+                    sb.append("  text=\"").append(obj.getText()).append("\"");
+                    sb.append("  class=").append(obj.getClassName());
+                    if (obj.getResourceName() != null) {
+                        sb.append("  res=").append(obj.getResourceName());
+                    }
+                    sb.append("\n");
+                }
+            }
+        } catch (Exception e) {
+            sb.append("(dump failed: ").append(e.getMessage()).append(")\n");
         }
+        fail(sb.toString());
     }
 
-    /**
-     * Finds the system permission dialog by looking for common button text patterns.
-     */
     private UiObject2 findPermissionDialog() {
         return findPermissionDialogWithTimeout(DIALOG_TIMEOUT_MS);
     }
@@ -193,24 +159,14 @@ public class PermissionFlowTest {
                 Until.findObject(By.textContains("ALLOW")), SHORT_TIMEOUT_MS);
     }
 
-    /**
-     * Denies all permission dialogs. The system may show one dialog per permission
-     * group (e.g. PHONE, CONTACTS, CALL_LOG are separate groups on API 28).
-     * Loops until no more permission dialogs appear.
-     */
     private void denyAllPermissionDialogs() {
-        // Click deny on the first dialog (already confirmed present by caller)
         clickDenyOnce();
 
-        // Keep denying as long as more permission dialogs appear
         while (findPermissionDialogWithTimeout(SHORT_TIMEOUT_MS) != null) {
             clickDenyOnce();
         }
     }
 
-    /**
-     * Clicks the deny/don't allow button on the currently visible permission dialog.
-     */
     private void clickDenyOnce() {
         UiObject2 denyButton = device.wait(
                 Until.findObject(By.text("Deny")), SHORT_TIMEOUT_MS);
@@ -233,13 +189,7 @@ public class PermissionFlowTest {
         }
     }
 
-    /**
-     * Dismisses the call screening role dialog if it appears (Q+ only).
-     * On Q+, after the permission dialog, PermissionChecker moves to
-     * CallScreeningRoleChecker which shows the role selection dialog.
-     */
     private void dismissCallScreeningDialogIfPresent() {
-        // Try the standard cancel button (android:id/button2)
         UiObject2 cancelButton = device.wait(
                 Until.findObject(By.res("android:id/button2")), 3000);
         if (cancelButton != null) {
@@ -247,7 +197,6 @@ public class PermissionFlowTest {
             return;
         }
 
-        // Fallback: press back to dismiss whatever dialog is showing
         device.pressBack();
     }
 }

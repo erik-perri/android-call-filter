@@ -1,7 +1,7 @@
 package com.novyr.callfilter.permissions;
 
-import android.app.Instrumentation;
-import android.os.ParcelFileDescriptor;
+import android.content.Context;
+import android.os.Build;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.MediumTest;
@@ -22,44 +22,42 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.util.List;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * Tests the call screening role request flow on Q+ (API 29+).
  *
  * Uses GrantPermissionRule to pre-grant runtime permissions so the only dialog
- * that appears is the call screening role request dialog.
+ * that appears is the call screening role request dialog. Relies on the Test
+ * Orchestrator with clearPackageData so the call screening role is never
+ * pre-assigned.
  */
 @MediumTest
 public class CallScreeningRoleTest {
     private static final long DIALOG_TIMEOUT_MS = 5000;
-    private static final String PACKAGE = "com.novyr.callfilter";
+    private static final long SNACKBAR_TIMEOUT_MS = 5000;
 
     @Rule
     public GrantPermissionRule permissions = PermissionHelper.grantAllPermissions();
 
     private UiDevice device;
     private ActivityScenario<LogListActivity> scenario;
+    private String screeningDeniedText;
 
     @Before
     public void setUp() {
         ApiLevelAssumptions.assumeQOrHigher();
 
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        device = UiDevice.getInstance(instrumentation);
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
-        // Remove the call screening role so the role request dialog will appear
-        shellCommand(instrumentation,
-                "cmd role remove-role-holder android.app.role.CALL_SCREENING " + PACKAGE);
+        Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        screeningDeniedText = targetContext.getString(R.string.permission_screening_denied);
 
         // Launch the activity — runtime permissions are granted (via Rule), but the
-        // call screening role is not held, so the role dialog should appear
+        // call screening role is not held (clearPackageData ensures fresh state),
+        // so the role dialog should appear.
         scenario = ActivityScenario.launch(LogListActivity.class);
     }
 
@@ -69,7 +67,6 @@ public class CallScreeningRoleTest {
             scenario.close();
         }
 
-        // Dismiss any lingering system dialogs
         if (device != null) {
             device.pressBack();
         }
@@ -77,30 +74,52 @@ public class CallScreeningRoleTest {
 
     @Test
     public void roleRequestShowsDialog() {
-        // On Q+, with runtime permissions granted but no call screening role,
-        // the PermissionChecker should show the system role request dialog.
         UiObject2 dialog = findRoleDialog();
-        assertNotNull("Call screening role request dialog should appear", dialog);
+        assertNotNullWithDump("Call screening role request dialog should appear", dialog);
     }
 
     @Test
     public void roleDeniedShowsSnackBar() {
-        // Wait for the role dialog to appear
         UiObject2 dialog = findRoleDialog();
-        assertNotNull("Call screening role request dialog should appear", dialog);
+        assertNotNullWithDump("Call screening role request dialog should appear", dialog);
 
-        // Cancel/dismiss the dialog
         clickCancel();
 
-        // The Snackbar should appear with the screening denied message
-        onView(withText(R.string.permission_screening_denied))
-                .check(matches(isDisplayed()));
+        UiObject2 snackbar = device.wait(
+                Until.findObject(By.textContains(screeningDeniedText)),
+                SNACKBAR_TIMEOUT_MS);
+        assertNotNullWithDump(
+                "Snackbar should contain '" + screeningDeniedText + "'", snackbar);
     }
 
-    /**
-     * Finds the call screening role request dialog.
-     * Looks for the list view or "Set as default" button that identifies this dialog.
-     */
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    private void assertNotNullWithDump(String message, Object object) {
+        if (object != null) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder(message);
+        sb.append("\n\n=== Screen dump ===\n");
+        sb.append("API level: ").append(Build.VERSION.SDK_INT).append("\n");
+        sb.append("Current package: ").append(device.getCurrentPackageName()).append("\n\n");
+        try {
+            List<UiObject2> textNodes = device.findObjects(By.textStartsWith(""));
+            if (textNodes != null) {
+                for (UiObject2 obj : textNodes) {
+                    sb.append("  text=\"").append(obj.getText()).append("\"");
+                    sb.append("  class=").append(obj.getClassName());
+                    if (obj.getResourceName() != null) {
+                        sb.append("  res=").append(obj.getResourceName());
+                    }
+                    sb.append("\n");
+                }
+            }
+        } catch (Exception e) {
+            sb.append("(dump failed: ").append(e.getMessage()).append(")\n");
+        }
+        fail(sb.toString());
+    }
+
     private UiObject2 findRoleDialog() {
         // Try AOSP permission controller list
         UiObject2 list = device.wait(
@@ -132,11 +151,7 @@ public class CallScreeningRoleTest {
                 1000);
     }
 
-    /**
-     * Clicks the cancel/negative button on the role request dialog.
-     */
     private void clickCancel() {
-        // Try the standard negative button (android:id/button2)
         UiObject2 cancelButton = device.wait(
                 Until.findObject(By.res("android:id/button2")),
                 DIALOG_TIMEOUT_MS);
@@ -145,17 +160,6 @@ public class CallScreeningRoleTest {
             return;
         }
 
-        // Fallback: press back to dismiss the dialog
         device.pressBack();
-    }
-
-    private void shellCommand(Instrumentation instrumentation, String command) {
-        try {
-            ParcelFileDescriptor pfd = instrumentation.getUiAutomation()
-                    .executeShellCommand(command);
-            pfd.close();
-        } catch (IOException e) {
-            // Ignore — command may fail if role was never assigned
-        }
     }
 }
