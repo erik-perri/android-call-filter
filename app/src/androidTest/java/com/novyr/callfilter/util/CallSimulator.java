@@ -34,17 +34,37 @@ public class CallSimulator {
     }
 
     private static int getConsolePort() {
+        UiDevice device = UiDevice.getInstance(
+                InstrumentationRegistry.getInstrumentation());
+
+        // Try the dedicated console port property (set by newer emulator images)
         try {
-            UiDevice device = UiDevice.getInstance(
-                    InstrumentationRegistry.getInstrumentation());
-            String serial = device.executeShellCommand("getprop ro.boot.qemu.console.port").trim();
-            if (!serial.isEmpty()) {
-                int port = Integer.parseInt(serial);
+            String portProp = device.executeShellCommand(
+                    "getprop ro.boot.qemu.console.port").trim();
+            if (!portProp.isEmpty()) {
+                int port = Integer.parseInt(portProp);
                 Log.d(TAG, "Detected console port from property: " + port);
                 return port;
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to detect console port from property", e);
+        }
+
+        // Derive from the emulator serial (format: "emulator-XXXX" where XXXX
+        // is the console port). Works on all API levels since ro.serialno and
+        // ro.boot.serialno are always set by the emulator.
+        String[] serialProps = {"ro.boot.serialno", "ro.serialno"};
+        for (String prop : serialProps) {
+            try {
+                String serial = device.executeShellCommand("getprop " + prop).trim();
+                if (serial.startsWith("emulator-")) {
+                    int port = Integer.parseInt(serial.substring("emulator-".length()));
+                    Log.d(TAG, "Derived console port from " + prop + ": " + port);
+                    return port;
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to parse serial from " + prop, e);
+            }
         }
 
         // Try the instrumentation argument
