@@ -67,6 +67,10 @@ jobs:
             exit 1
           fi
 
+      # We read the token during build to pass down to the tests so they can connect
+      # to the simulator for fake phone calls. At the point we read it, the emulator
+      # is not running and no auth token has been created. As a result we create one
+      # before it can to pass to our tests.
       - name: Set emulator console auth token
         run: echo "ci-auth-token" > ~/.emulator_console_auth_token
 
