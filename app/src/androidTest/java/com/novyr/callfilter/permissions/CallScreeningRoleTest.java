@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.fail;
@@ -52,12 +53,15 @@ public class CallScreeningRoleTest {
 
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
+        // clearPackageData does NOT clear system-managed role assignments.
+        // Explicitly remove the call screening role so the dialog appears.
+        removeCallScreeningRole();
+
         Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         screeningDeniedText = targetContext.getString(R.string.permission_screening_denied);
 
         // Launch the activity — runtime permissions are granted (via Rule), but the
-        // call screening role is not held (clearPackageData ensures fresh state),
-        // so the role dialog should appear.
+        // call screening role is not held, so the role dialog should appear.
         scenario = ActivityScenario.launch(LogListActivity.class);
     }
 
@@ -161,5 +165,14 @@ public class CallScreeningRoleTest {
         }
 
         device.pressBack();
+    }
+
+    private void removeCallScreeningRole() {
+        try {
+            device.executeShellCommand(
+                    "cmd role remove-role-holder android.app.role.CALL_SCREENING com.novyr.callfilter");
+        } catch (IOException e) {
+            // Role may not be held — safe to ignore
+        }
     }
 }
