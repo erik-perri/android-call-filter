@@ -1,15 +1,5 @@
 name: Setup Java
 
-inputs:
-  include-emulator-cache:
-    description: 'Whether to cache/restore Android emulator images'
-    required: false
-    default: 'false'
-  device-name:
-    description: 'Name of the device to specify the cache key'
-    required: false
-    default: 'generic'
-
 runs:
   using: composite
   steps:
@@ -22,17 +12,6 @@ runs:
       uses: gradle/actions/setup-gradle@v5
       with:
         add-job-summary: 'on-failure'
-
-    - name: Cache Android System Images
-      if: ${{ inputs.include-emulator-cache == 'true' }}
-      uses: actions/cache@v5
-      with:
-        path: |
-          ~/.android/avd
-          ~/.android/adb*
-          ~/.gradle/managed-devices
-          /usr/local/lib/android/sdk/system-images
-        key: emu-${{ inputs.device-name }}-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
