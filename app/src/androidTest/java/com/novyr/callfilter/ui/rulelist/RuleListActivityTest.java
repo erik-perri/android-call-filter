@@ -259,13 +259,6 @@ public class RuleListActivityTest {
     }
 
     private void waitForIdle() {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ignored) {
-        }
-
-        scenario.onActivity(activity -> {
-            // Force a pass through the main looper to process pending LiveData updates
-        });
+        DatabaseHelper.waitForIdle(scenario);
     }
 }

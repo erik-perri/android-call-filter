@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import static org.junit.Assert.assertFalse;
@@ -91,6 +92,16 @@ public class DatabaseHelper {
         return entries.get(0);
     }
 
+
+    /**
+     * Flushes pending LiveData updates by forcing a pass through the main looper.
+     * Use after direct DAO inserts to ensure the UI has processed all updates.
+     */
+    public static <A extends android.app.Activity> void waitForIdle(ActivityScenario<A> scenario) {
+        scenario.onActivity(activity -> {
+            // Force a pass through the main looper to process pending LiveData updates
+        });
+    }
 
     private void drainWriteExecutor() {
         try {

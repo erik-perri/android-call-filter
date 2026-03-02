@@ -192,16 +192,6 @@ public class LogListActivityTest {
     }
 
     private void waitForIdle() {
-        // Give the database executor time to process inserts and LiveData to propagate.
-        // The DatabaseIdlingResource handles Espresso synchronization, but we need a
-        // brief pause after direct DAO inserts to let the observer cycle complete.
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException ignored) {
-        }
-
-        activityRule.getScenario().onActivity(activity -> {
-            // Force a pass through the main looper to process pending LiveData updates
-        });
+        DatabaseHelper.waitForIdle(activityRule.getScenario());
     }
 }
