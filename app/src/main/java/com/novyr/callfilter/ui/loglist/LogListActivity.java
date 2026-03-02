@@ -31,6 +31,7 @@ public class LogListActivity extends AppCompatActivity {
     private LogViewModel mLogViewModel;
     private Snackbar mPermissionNotice;
     private PermissionChecker mPermissionChecker;
+    private AlertDialog mClearLogsDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,16 +122,18 @@ public class LogListActivity extends AppCompatActivity {
             startActivity(new Intent(this, RuleListActivity.class));
             return true;
         } else if (itemId == R.id.action_clear_log) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.dialog_clear_logs_title)
-                    .setMessage(R.string.dialog_clear_logs_message)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setPositiveButton(
-                            R.string.yes,
-                            (dialog, whichButton) -> mLogViewModel.deleteAll()
-                    )
-                    .setNegativeButton(R.string.no, null)
-                    .show();
+            if (mClearLogsDialog == null || !mClearLogsDialog.isShowing()) {
+                mClearLogsDialog = new AlertDialog.Builder(this)
+                        .setTitle(R.string.dialog_clear_logs_title)
+                        .setMessage(R.string.dialog_clear_logs_message)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setPositiveButton(
+                                R.string.yes,
+                                (dialog, whichButton) -> mLogViewModel.deleteAll()
+                        )
+                        .setNegativeButton(R.string.no, null)
+                        .show();
+            }
             return true;
         }
 
