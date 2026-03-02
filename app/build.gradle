@@ -195,7 +195,6 @@ tasks.register('generateUnifiedCoverageReport', JacocoReport) {
             '**/*_Impl*.*', '**/*Dao_Impl*.*', '**/db/schemas/**'
     ]
 
-    // Use the Layout API for class directories
     def javaTree = fileTree(
             dir: layout.buildDirectory.dir("intermediates/javac/debug/compileDebugJavaWithJavac/classes"),
             excludes: fileFilter

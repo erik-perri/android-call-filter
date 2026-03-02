@@ -254,6 +254,6 @@ public class RuleListActivityTest {
     }
 
     private void waitForIdle() {
-        DatabaseHelper.waitForIdle(scenario);
+        dbHelper.waitForIdle(scenario);
     }
 }

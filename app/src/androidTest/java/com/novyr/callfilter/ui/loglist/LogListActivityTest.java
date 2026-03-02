@@ -192,6 +192,6 @@ public class LogListActivityTest {
     }
 
     private void waitForIdle() {
-        DatabaseHelper.waitForIdle(activityRule.getScenario());
+        dbHelper.waitForIdle(activityRule.getScenario());
     }
 }

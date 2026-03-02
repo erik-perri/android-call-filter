@@ -112,7 +112,7 @@ public class DatabaseHelper {
      * Flushes pending LiveData updates by forcing a pass through the main looper.
      * Use after direct DAO inserts to ensure the UI has processed all updates.
      */
-    public static <A extends android.app.Activity> void waitForIdle(ActivityScenario<A> scenario) {
+    public <A extends android.app.Activity> void waitForIdle(ActivityScenario<A> scenario) {
         scenario.onActivity(activity -> {
             // Force a pass through the main looper to process pending LiveData updates
         });
@@ -159,7 +159,7 @@ public class DatabaseHelper {
         }
     }
 
-    private static <T> T getValueFromLiveData(LiveData<T> liveData) throws InterruptedException {
+    public <T> T getValueFromLiveData(LiveData<T> liveData) throws InterruptedException {
         AtomicReference<T> result = new AtomicReference<>();
         CountDownLatch latch = new CountDownLatch(1);
         Observer<T> observer = value -> {

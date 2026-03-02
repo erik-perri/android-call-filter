@@ -8,9 +8,9 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import com.novyr.callfilter.db.CallFilterDatabase;
-import com.novyr.callfilter.db.LiveDataTestUtil;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.enums.LogAction;
+import com.novyr.callfilter.util.DatabaseHelper;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +23,7 @@ import java.util.Random;
 
 @MediumTest
 public class LogDaoTest {
+    private final DatabaseHelper dbHelper = new DatabaseHelper();
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
@@ -54,7 +55,7 @@ public class LogDaoTest {
         LogEntity[] entities = createEntities(1);
         mLogDao.insert(entities[0]);
 
-        List<LogEntity> fetched = LiveDataTestUtil.getValue(mLogDao.findAll());
+        List<LogEntity> fetched = dbHelper.getValueFromLiveData(mLogDao.findAll());
         assertEquals(1, fetched.size());
     }
 
@@ -63,12 +64,12 @@ public class LogDaoTest {
         LogEntity[] entities = createEntities(1);
         mLogDao.insert(entities[0]);
 
-        List<LogEntity> fetched = LiveDataTestUtil.getValue(mLogDao.findAll());
+        List<LogEntity> fetched = dbHelper.getValueFromLiveData(mLogDao.findAll());
         assertEquals(1, fetched.size());
 
         mLogDao.delete(fetched.get(0));
 
-        assertEquals(0, LiveDataTestUtil.getValue(mLogDao.findAll()).size());
+        assertEquals(0, dbHelper.getValueFromLiveData(mLogDao.findAll()).size());
     }
 
     @Test
@@ -78,11 +79,11 @@ public class LogDaoTest {
             mLogDao.insert(entity);
         }
 
-        assertEquals(10, LiveDataTestUtil.getValue(mLogDao.findAll()).size());
+        assertEquals(10, dbHelper.getValueFromLiveData(mLogDao.findAll()).size());
 
         mLogDao.deleteAll();
 
-        assertEquals(0, LiveDataTestUtil.getValue(mLogDao.findAll()).size());
+        assertEquals(0, dbHelper.getValueFromLiveData(mLogDao.findAll()).size());
     }
 
     @Test
@@ -92,7 +93,7 @@ public class LogDaoTest {
             mLogDao.insert(entity);
         }
 
-        List<LogEntity> fetched = LiveDataTestUtil.getValue(mLogDao.findAll());
+        List<LogEntity> fetched = dbHelper.getValueFromLiveData(mLogDao.findAll());
         assertEquals(10, fetched.size());
 
         // Find all should retrieve in the reverse order they are added, so the first fetched
