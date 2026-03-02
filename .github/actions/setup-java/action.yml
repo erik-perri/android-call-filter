@@ -22,7 +22,6 @@ runs:
       uses: gradle/actions/setup-gradle@v5
       with:
         add-job-summary: 'on-failure'
-        cache-read-only: false # TODO Remove
 
     - name: Cache Android System Images
       if: ${{ inputs.include-emulator-cache == 'true' }}
