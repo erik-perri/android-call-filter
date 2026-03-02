@@ -28,6 +28,7 @@ concurrency:
 jobs:
   unit:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
 
@@ -44,6 +45,7 @@ jobs:
 
   instrumentation:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: unit
     # This job only runs if it's a PR, a manual trigger, or a call from another workflow
     if: >
@@ -101,6 +103,7 @@ jobs:
 
   coverage:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [unit, instrumentation]
     steps:
       - uses: actions/checkout@v6
