@@ -21,6 +21,9 @@ updates:
       # uses-sdk:minSdkVersion 15 cannot be smaller than version 21 declared in library [com.google.android.material:material:1.13.0]
       - dependency-name: "com.google.android.material:material"
         versions: [ ">=1.7.0" ]
+      # uses-sdk:minSdkVersion 15 cannot be smaller than version 21 declared in library [androidx.recyclerview:recyclerview:1.4.0]
+      - dependency-name: "androidx.recyclerview:recyclerview"
+        versions: [ ">=1.3.0" ]
 
   - package-ecosystem: "github-actions"
     directory: "/"
