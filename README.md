@@ -32,15 +32,15 @@ Unit tests run without an emulator:
 ./gradlew testDebugUnitTest
 ```
 
-When running instrumentation tests via the Android Studio gutter, an emulator must be running. The can also be provisioned automatically using [Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices).
+When running instrumentation tests via the Android Studio gutter, an emulator must be running. The can also be provisioned automatically using [Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices). Because the test libraries require a higher minSdk than the app itself, pass `-PtestMinSdk=26`:
 
 ```bash
 # Run on a specific device (e.g. API 29)
-./gradlew pixel2Api29DebugAndroidTest
+./gradlew pixel2Api29DebugAndroidTest -PtestMinSdk=26
 
 # Run on all configured devices (API 27, 28, 29, 35)
 # We limit parallel devices to 1 to save local system resources
-./gradlew allDevicesDebugAndroidTest -Dandroid.testoptions.manageddevices.maxparallel=1
+./gradlew allDevicesDebugAndroidTest -PtestMinSdk=26 -Dandroid.testoptions.manageddevices.maxparallel=1
 ```
 
 To run tests on a physical device or a manually opened emulator:
