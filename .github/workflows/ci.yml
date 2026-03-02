@@ -125,30 +125,32 @@ jobs:
 
       - name: Generate Job Summary
         run: |
-          # Path to the generated XML report
           REPORT_PATH="app/build/reports/jacoco/generateUnifiedCoverageReport/generateUnifiedCoverageReport.xml"
 
-          # Extract the last INSTRUCTION counter (the overall total) from the JaCoCo XML.
-          # Use \K to avoid variable-length lookbehind issues on older PCRE versions.
-          LINE=$(grep 'type="INSTRUCTION"' "$REPORT_PATH" | tail -1)
-          MISSED=$(echo "$LINE" | grep -oP 'missed="\K[0-9]+')
-          COVERED=$(echo "$LINE" | grep -oP 'covered="\K[0-9]+')
+          MISSED=$(xmllint --xpath 'string(/report/counter[@type="INSTRUCTION"]/@missed)' "$REPORT_PATH")
+          COVERED=$(xmllint --xpath 'string(/report/counter[@type="INSTRUCTION"]/@covered)' "$REPORT_PATH")
+
+          MISSED=${MISSED:-0}
+          COVERED=${COVERED:-0}
 
           TOTAL=$((MISSED + COVERED))
-          if [ $TOTAL -gt 0 ]; then
+
+          if [ "$TOTAL" -gt 0 ]; then
             PERCENTAGE=$(echo "scale=2; ($COVERED / $TOTAL) * 100" | bc)
           else
             PERCENTAGE="0"
           fi
 
           # Write to the GitHub Summary
-          echo "## Code Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Total Instructions** | $TOTAL |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Covered** | $COVERED |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Missed** | $MISSED |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Percentage** | **$PERCENTAGE%** |" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Code Coverage Report"
+            echo "| Metric | Value |"
+            echo "| --- | --- |"
+            echo "| **Total Instructions** | $TOTAL |"
+            echo "| **Covered** | $COVERED |"
+            echo "| **Missed** | $MISSED |"
+            echo "| **Percentage** | **$PERCENTAGE%** |"
+          } >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Full HTML Report
         uses: actions/upload-artifact@v4
