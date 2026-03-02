@@ -123,6 +123,15 @@ jobs:
       - name: Generate Unified JaCoCo Report
         run: ./gradlew generateUnifiedCoverageReport
 
+      - name: Upload Full HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-coverage-report-html
+          path: app/build/reports/jacoco/generateUnifiedCoverageReport/html/
+
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install libxml2-utils
+
       - name: Generate Job Summary
         run: |
           REPORT_PATH="app/build/reports/jacoco/generateUnifiedCoverageReport/generateUnifiedCoverageReport.xml"
@@ -151,9 +160,3 @@ jobs:
             echo "| **Missed** | $MISSED |"
             echo "| **Percentage** | **$PERCENTAGE%** |"
           } >> $GITHUB_STEP_SUMMARY
-
-      - name: Upload Full HTML Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: full-coverage-report-html
-          path: app/build/reports/jacoco/generateUnifiedCoverageReport/html/
