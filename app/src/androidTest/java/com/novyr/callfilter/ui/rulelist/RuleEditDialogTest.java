@@ -232,8 +232,7 @@ public class RuleEditDialogTest {
         // Verify rule persisted to DB
         dbHelper.pollForRules(entries -> {
             for (RuleEntity rule : entries) {
-                if (rule.getType() == RuleType.MATCH && rule.getValue() != null
-                        && rule.getValue().contains("555")) {
+                if (rule.getType() == RuleType.MATCH && "555*".equals(rule.getValue())) {
                     return true;
                 }
             }
