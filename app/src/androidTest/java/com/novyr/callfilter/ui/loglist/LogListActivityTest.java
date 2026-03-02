@@ -125,7 +125,7 @@ public class LogListActivityTest {
     }
 
     @Test
-    public void clearLogsMenu_clicked_showsConfirmationDialog() {
+    public void clearLogsDialog_confirmed_showsEmptyView() {
         dbHelper.insertLog(LogAction.BLOCKED, "5550001");
 
         waitForIdle();
@@ -137,20 +137,10 @@ public class LogListActivityTest {
         onView(withText(R.string.dialog_clear_logs_message))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void clearLogsDialog_confirmed_showsEmptyView() {
-        dbHelper.insertLog(LogAction.BLOCKED, "5550001");
-
-        waitForIdle();
-
-        onView(withContentDescription("More options")).perform(click());
-        onView(withText(R.string.action_clear_logs))
-                .perform(click());
 
         onView(withText(R.string.yes))
                 .inRoot(isDialog())
+                .check(matches(isDisplayed()))
                 .perform(click());
 
         onView(withId(R.id.empty_view))

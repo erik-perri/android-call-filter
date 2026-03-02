@@ -183,22 +183,6 @@ public class RuleListActivityTest {
     }
 
     @Test
-    public void deleteRule_snackbarShown_showsUndoAction() {
-        dbHelper.insertRule(RuleType.RECOGNIZED, RuleAction.ALLOW, null, true, TEST_ORDER);
-
-        launchActivity();
-
-        onView(withId(R.id.rule_list))
-                .perform(actionOnItemAtPosition(0, longClick()));
-
-        onView(withText(R.string.context_menu_delete_rule))
-                .perform(click());
-
-        onView(withText(R.string.undo))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
     public void deleteRule_undoClicked_restoresRule() throws InterruptedException {
         dbHelper.insertRule(RuleType.RECOGNIZED, RuleAction.ALLOW, null, true, TEST_ORDER);
 
@@ -213,6 +197,7 @@ public class RuleListActivityTest {
                 .perform(click());
 
         onView(withText(R.string.undo))
+                .check(matches(isDisplayed()))
                 .perform(click());
 
         waitForIdle();
