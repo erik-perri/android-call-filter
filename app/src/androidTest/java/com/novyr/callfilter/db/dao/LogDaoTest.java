@@ -108,7 +108,7 @@ public class LogDaoTest {
         for (int i = 0; i < count; i++) {
             int number = random.nextInt(8999999) + 1000000;
             entities.add(new LogEntity(
-                    random.nextInt(1) > 0 ? LogAction.BLOCKED : LogAction.ALLOWED,
+                    random.nextInt(2) > 0 ? LogAction.BLOCKED : LogAction.ALLOWED,
                     String.valueOf(number)
             ));
         }
