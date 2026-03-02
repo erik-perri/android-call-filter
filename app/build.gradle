@@ -70,32 +70,32 @@ android {
                 // Pre-Pie: tests AndroidLegacyHandler (ITelephony reflection).
                 // API 26 is skipped — MODIFY_PHONE_STATE is strictly enforced.
                 pixel2Api27(com.android.build.api.dsl.ManagedVirtualDevice) {
-                    device = "Pixel 2"
-                    apiLevel = 27
-                    systemImageSource = "aosp"
-                    testedAbi = "x86"
+                    it.device = "Pixel 2"
+                    it.apiLevel = 27
+                    it.systemImageSource = "aosp"
+                    it.testedAbi = "x86_64"
                 }
                 // Pie: tests AndroidPieHandler (TelecomManager.endCall).
                 pixel2Api28(com.android.build.api.dsl.ManagedVirtualDevice) {
-                    device = "Pixel 2"
-                    apiLevel = 28
-                    systemImageSource = "aosp"
-                    testedAbi = "x86"
+                    it.device = "Pixel 2"
+                    it.apiLevel = 28
+                    it.systemImageSource = "aosp"
+                    it.testedAbi = "x86_64"
                 }
                 // Q: tests CallFilterService (CallScreeningService API).
                 pixel2Api29(com.android.build.api.dsl.ManagedVirtualDevice) {
-                    device = "Pixel 2"
-                    apiLevel = 29
-                    systemImageSource = "aosp"
-                    testedAbi = "x86"
+                    it.device = "Pixel 2"
+                    it.apiLevel = 29
+                    it.systemImageSource = "aosp"
+                    it.testedAbi = "x86_64"
                 }
                 // API 35: tests modern restrictions (notification permissions,
                 // stricter background execution).
                 pixel2Api35(com.android.build.api.dsl.ManagedVirtualDevice) {
-                    device = "Pixel 2"
-                    apiLevel = 35
-                    systemImageSource = "aosp-atd"
-                    testedAbi = "x86_64"
+                    it.device = "Pixel 2"
+                    it.apiLevel = 35
+                    it.systemImageSource = "aosp-atd"
+                    it.testedAbi = "x86_64"
                 }
             }
             groups {
