@@ -5,6 +5,7 @@ import android.os.Build;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
@@ -263,11 +264,8 @@ public class RuleEditDialogTest {
     }
 
     @Test
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.R)
     public void typeSpinner_apiR_includesVerificationTypes() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            return; // Only meaningful on API 30+
-        }
-
         launchActivity();
         openCreateDialog();
 
@@ -281,11 +279,8 @@ public class RuleEditDialogTest {
     }
 
     @Test
+    @SdkSuppress(maxSdkVersion = Build.VERSION_CODES.Q)
     public void typeSpinner_belowApiR_excludesVerificationTypes() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return; // Only meaningful below API 30
-        }
-
         launchActivity();
         openCreateDialog();
 

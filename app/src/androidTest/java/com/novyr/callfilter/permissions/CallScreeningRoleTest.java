@@ -5,6 +5,7 @@ import android.os.Build;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.By;
@@ -14,7 +15,6 @@ import androidx.test.uiautomator.Until;
 
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.ui.loglist.LogListActivity;
-import com.novyr.callfilter.util.ApiLevelAssumptions;
 import com.novyr.callfilter.util.PermissionHelper;
 
 import org.junit.After;
@@ -36,6 +36,7 @@ import static org.junit.Assert.fail;
  * pre-assigned.
  */
 @MediumTest
+@SdkSuppress(minSdkVersion = 29)
 public class CallScreeningRoleTest {
     private static final long DIALOG_TIMEOUT_MS = 5000;
     private static final long SNACKBAR_TIMEOUT_MS = 5000;
@@ -49,8 +50,6 @@ public class CallScreeningRoleTest {
 
     @Before
     public void setUp() {
-        ApiLevelAssumptions.assumeQOrHigher();
-
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
         // clearPackageData does NOT clear system-managed role assignments.
