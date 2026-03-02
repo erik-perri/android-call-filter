@@ -1,8 +1,13 @@
 package com.novyr.callfilter.call;
 
+import android.os.Build;
+
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.SdkSuppress;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
 
 import com.novyr.callfilter.CallReceiver;
 import com.novyr.callfilter.db.entity.LogEntity;
@@ -11,10 +16,9 @@ import com.novyr.callfilter.db.entity.enums.LogAction;
 import com.novyr.callfilter.db.entity.enums.RuleAction;
 import com.novyr.callfilter.db.entity.enums.RuleType;
 import com.novyr.callfilter.ui.loglist.LogListActivity;
-import com.novyr.callfilter.util.ApiLevelAssumptions;
 import com.novyr.callfilter.util.CallSimulator;
-import com.novyr.callfilter.util.DatabaseHelper;
 import com.novyr.callfilter.util.ContactHelper;
+import com.novyr.callfilter.util.DatabaseHelper;
 import com.novyr.callfilter.util.PermissionHelper;
 
 import org.junit.After;
@@ -28,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 @LargeTest
-public class CallReceiverTest {
+public class CallFilterTest {
     @Rule
     public GrantPermissionRule permissions = PermissionHelper.grantAllPermissions();
 
@@ -40,9 +44,14 @@ public class CallReceiverTest {
     private ContactHelper contactHelper;
 
     @Before
-    public void setUp() {
-        ApiLevelAssumptions.assumePreQ();
-        CallReceiver.resetState();
+    public void setUp() throws Exception {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            UiDevice device = UiDevice.getInstance(
+                    InstrumentationRegistry.getInstrumentation());
+            PermissionHelper.grantCallScreeningRole(device);
+        } else {
+            CallReceiver.resetState();
+        }
         dbHelper = new DatabaseHelper();
         dbHelper.clearLogs();
         contactHelper = new ContactHelper();
@@ -62,8 +71,9 @@ public class CallReceiverTest {
     }
 
     @Test
-    public void allowCall_noMatchingRules_callAllowed() throws Exception {
+    public void allowCall_unrecognizedNumber_callBlocked() throws Exception {
         dbHelper.resetRules(
+                new RuleEntity(RuleType.UNRECOGNIZED, RuleAction.BLOCK, null, true, 4),
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
         );
 
@@ -71,26 +81,9 @@ public class CallReceiverTest {
         try {
             LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5551234", log.getNumber());
-            assertEquals(LogAction.ALLOWED, log.getAction());
-        } finally {
-            CallSimulator.cancelCallSilently("5551234");
-        }
-    }
-
-    @Test
-    public void allowCall_unrecognizedNumber_callBlocked() throws Exception {
-        dbHelper.resetRules(
-                new RuleEntity(RuleType.UNRECOGNIZED, RuleAction.BLOCK, null, true, 4),
-                new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
-        );
-
-        CallSimulator.simulateIncomingCall("5559999");
-        try {
-            LogEntity log = dbHelper.pollForLogEntry();
-            assertEquals("5559999", log.getNumber());
             assertEquals(LogAction.BLOCKED, log.getAction());
         } finally {
-            CallSimulator.cancelCallSilently("5559999");
+            CallSimulator.cancelCallSilently("5551234");
         }
     }
 
@@ -124,6 +117,22 @@ public class CallReceiverTest {
             assertEquals(LogAction.ALLOWED, log.getAction());
         } finally {
             CallSimulator.cancelCallSilently("#");
+        }
+    }
+
+    @Test
+    public void allowCall_noMatchingRules_callAllowed() throws Exception {
+        dbHelper.resetRules(
+                new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
+        );
+
+        CallSimulator.simulateIncomingCall("5551234");
+        try {
+            LogEntity log = dbHelper.pollForLogEntry();
+            assertEquals("5551234", log.getNumber());
+            assertEquals(LogAction.ALLOWED, log.getAction());
+        } finally {
+            CallSimulator.cancelCallSilently("5551234");
         }
     }
 
@@ -196,9 +205,9 @@ public class CallReceiverTest {
         }
     }
 
+    @SdkSuppress(minSdkVersion = 28, maxSdkVersion = 28)
     @Test
     public void allowCall_upgradeSequence_producesOneLogEntry() throws Exception {
-        ApiLevelAssumptions.assumePieOrHigher();
         dbHelper.resetRules(
                 new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
         );
