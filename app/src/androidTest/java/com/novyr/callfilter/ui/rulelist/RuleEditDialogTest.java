@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
+
 
 import android.os.Build;
 
@@ -44,7 +44,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.List;
+
 
 @MediumTest
 public class RuleEditDialogTest {
@@ -174,7 +174,7 @@ public class RuleEditDialogTest {
     }
 
     @Test
-    public void areaCodeInput_validValue_savesAndCloses() throws InterruptedException {
+    public void areaCodeInput_validValue_savesAndCloses() throws Exception {
         launchActivity();
         openCreateDialog();
 
@@ -189,16 +189,14 @@ public class RuleEditDialogTest {
                 .check(doesNotExist());
 
         // Verify rule persisted to DB
-        Thread.sleep(500);
-        List<RuleEntity> rules = dbHelper.getRuleEntries();
-        boolean found = false;
-        for (RuleEntity rule : rules) {
-            if (rule.getType() == RuleType.AREA_CODE && "212".equals(rule.getValue())) {
-                found = true;
-                break;
+        dbHelper.pollForRules(entries -> {
+            for (RuleEntity rule : entries) {
+                if (rule.getType() == RuleType.AREA_CODE && "212".equals(rule.getValue())) {
+                    return true;
+                }
             }
-        }
-        assertTrue("Rule with type=AREA_CODE and value=212 should exist in DB", found);
+            return false;
+        });
     }
 
     @Test
@@ -217,7 +215,7 @@ public class RuleEditDialogTest {
     }
 
     @Test
-    public void matchInput_validValue_savesAndCloses() throws InterruptedException {
+    public void matchInput_validValue_savesAndCloses() throws Exception {
         launchActivity();
         openCreateDialog();
 
@@ -232,17 +230,15 @@ public class RuleEditDialogTest {
                 .check(doesNotExist());
 
         // Verify rule persisted to DB
-        Thread.sleep(500);
-        List<RuleEntity> rules = dbHelper.getRuleEntries();
-        boolean found = false;
-        for (RuleEntity rule : rules) {
-            if (rule.getType() == RuleType.MATCH && rule.getValue() != null
-                    && rule.getValue().contains("555")) {
-                found = true;
-                break;
+        dbHelper.pollForRules(entries -> {
+            for (RuleEntity rule : entries) {
+                if (rule.getType() == RuleType.MATCH && rule.getValue() != null
+                        && rule.getValue().contains("555")) {
+                    return true;
+                }
             }
-        }
-        assertTrue("Rule with type=MATCH should exist in DB", found);
+            return false;
+        });
     }
 
     @Test

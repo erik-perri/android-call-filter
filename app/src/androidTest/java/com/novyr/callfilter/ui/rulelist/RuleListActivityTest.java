@@ -133,7 +133,7 @@ public class RuleListActivityTest {
     }
 
     @Test
-    public void enabledSwitch_clicked_disablesRuleInDb() throws InterruptedException {
+    public void enabledSwitch_clicked_disablesRuleInDb() throws Exception {
         dbHelper.insertRule(RuleType.RECOGNIZED, RuleAction.ALLOW, null, true, TEST_ORDER);
 
         launchActivity();
@@ -141,10 +141,8 @@ public class RuleListActivityTest {
         onView(withId(R.id.rule_list))
                 .perform(actionOnItemAtPosition(0, click()));
 
-        // Wait for the delayed save (250ms in RuleViewHolder) plus propagation
-        Thread.sleep(1000);
-
-        List<RuleEntity> rules = dbHelper.getRuleEntries();
+        List<RuleEntity> rules = dbHelper.pollForRules(
+                entries -> !entries.isEmpty() && !entries.get(0).isEnabled());
         assertFalse("Rule should be disabled after toggle", rules.get(0).isEnabled());
     }
 
@@ -224,7 +222,7 @@ public class RuleListActivityTest {
     }
 
     @Test
-    public void dragHandle_dragFirstPastSecond_reordersRules() throws InterruptedException {
+    public void dragHandle_dragFirstPastSecond_reordersRules() throws Exception {
         // Insert 2 movable rules above the defaults. ORDER DESC: MATCH(30)=pos0, AREA_CODE(20)=pos1
         dbHelper.insertRule(RuleType.AREA_CODE, RuleAction.BLOCK, "212", true, 20);
         dbHelper.insertRule(RuleType.MATCH, RuleAction.BLOCK, "555*", true, 30);
@@ -248,11 +246,9 @@ public class RuleListActivityTest {
         );
         firstHandle.drag(target, 2000);
 
-        // Wait for the reorder to persist to DB
-        Thread.sleep(1000);
-
         // After drag: AREA_CODE should now be first (highest order), MATCH second.
-        List<RuleEntity> rules = dbHelper.getRuleEntries();
+        List<RuleEntity> rules = dbHelper.pollForRules(
+                entries -> entries.size() >= 2 && entries.get(0).getType() == RuleType.AREA_CODE);
         assertEquals("First rule should now be AREA_CODE", RuleType.AREA_CODE, rules.get(0).getType());
         assertEquals("Second rule should now be MATCH", RuleType.MATCH, rules.get(1).getType());
     }

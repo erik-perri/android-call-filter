@@ -93,6 +93,21 @@ public class DatabaseHelper {
     }
 
 
+    public List<RuleEntity> pollForRules(java.util.function.Predicate<List<RuleEntity>> condition)
+            throws Exception {
+        long deadline = System.currentTimeMillis() + POLL_TIMEOUT_MS;
+        while (System.currentTimeMillis() < deadline) {
+            List<RuleEntity> rules = getRuleEntries();
+            if (rules != null && condition.test(rules)) {
+                return rules;
+            }
+            Thread.sleep(POLL_INTERVAL_MS);
+        }
+        List<RuleEntity> rules = getRuleEntries();
+        assertFalse("Rule condition not met within timeout", rules == null || !condition.test(rules));
+        return rules;
+    }
+
     /**
      * Flushes pending LiveData updates by forcing a pass through the main looper.
      * Use after direct DAO inserts to ensure the UI has processed all updates.
