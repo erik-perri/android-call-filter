@@ -1,7 +1,5 @@
 package com.novyr.callfilter.permissions;
 
-import static org.junit.Assert.fail;
-
 import android.content.Context;
 import android.os.Build;
 
@@ -13,15 +11,18 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 
+import static org.junit.Assert.assertNotNull;
+
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.ui.loglist.LogListActivity;
+import com.novyr.callfilter.util.UiDumpOnFailureRule;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Tests the permission request flow when permissions are NOT pre-granted.
@@ -36,13 +37,16 @@ public class PermissionFlowTest {
     private static final long SHORT_TIMEOUT_MS = 1500;
     private static final long SNACKBAR_TIMEOUT_MS = 5000;
 
-    private UiDevice device;
+    private final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+
+    @Rule
+    public UiDumpOnFailureRule dumpRule = new UiDumpOnFailureRule(device);
+
     private ActivityScenario<LogListActivity> scenario;
     private String retryText;
 
     @Before
     public void setUp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
         // On Q+, pre-grant the call screening role so only the runtime permission
         // dialog appears (not the role dialog). This isolates what we're testing
@@ -69,13 +73,13 @@ public class PermissionFlowTest {
     @Test
     public void permissionCheck_onStart_showsPermissionDialog() {
         UiObject2 dialog = findPermissionDialog();
-        assertNotNullWithDump("System permission dialog should appear on launch", dialog);
+        assertNotNull("System permission dialog should appear on launch", dialog);
     }
 
     @Test
     public void permissionCheck_denied_showsSnackBar() {
         UiObject2 dialog = findPermissionDialog();
-        assertNotNullWithDump("System permission dialog should appear", dialog);
+        assertNotNull("System permission dialog should appear", dialog);
 
         denyAllPermissionDialogs();
 
@@ -90,13 +94,13 @@ public class PermissionFlowTest {
         UiObject2 retryButton = device.wait(
                 Until.findObject(By.text(retryText)),
                 SNACKBAR_TIMEOUT_MS);
-        assertNotNullWithDump("Snackbar with RETRY should appear after denying", retryButton);
+        assertNotNull("Snackbar with RETRY should appear after denying", retryButton);
     }
 
     @Test
     public void permissionCheck_retryClicked_showsDialogAgain() {
         UiObject2 dialog = findPermissionDialog();
-        assertNotNullWithDump("System permission dialog should appear", dialog);
+        assertNotNull("System permission dialog should appear", dialog);
 
         denyAllPermissionDialogs();
 
@@ -105,7 +109,7 @@ public class PermissionFlowTest {
         UiObject2 retryButton = device.wait(
                 Until.findObject(By.text(retryText)),
                 SNACKBAR_TIMEOUT_MS);
-        assertNotNullWithDump("Snackbar RETRY button should appear", retryButton);
+        assertNotNull("Snackbar RETRY button should appear", retryButton);
 
         // The re-trigger cycle may have caused the permission to become "blocked"
         // (shouldShowRequestPermissionRationale returns false). Clear the hasRequested
@@ -116,35 +120,7 @@ public class PermissionFlowTest {
         retryButton.click();
 
         UiObject2 retryDialog = findPermissionDialog();
-        assertNotNullWithDump("Permission dialog should reappear after RETRY", retryDialog);
-    }
-
-    // ── Helpers ──────────────────────────────────────────────────────────────
-
-    private void assertNotNullWithDump(String message, Object object) {
-        if (object != null) {
-            return;
-        }
-        StringBuilder sb = new StringBuilder(message);
-        sb.append("\n\n=== Screen dump ===\n");
-        sb.append("API level: ").append(Build.VERSION.SDK_INT).append("\n");
-        sb.append("Current package: ").append(device.getCurrentPackageName()).append("\n\n");
-        try {
-            List<UiObject2> textNodes = device.findObjects(By.textStartsWith(""));
-            if (textNodes != null) {
-                for (UiObject2 obj : textNodes) {
-                    sb.append("  text=\"").append(obj.getText()).append("\"");
-                    sb.append("  class=").append(obj.getClassName());
-                    if (obj.getResourceName() != null) {
-                        sb.append("  res=").append(obj.getResourceName());
-                    }
-                    sb.append("\n");
-                }
-            }
-        } catch (Exception e) {
-            sb.append("(dump failed: ").append(e.getMessage()).append(")\n");
-        }
-        fail(sb.toString());
+        assertNotNull("Permission dialog should reappear after RETRY", retryDialog);
     }
 
     private UiObject2 findPermissionDialog() {
