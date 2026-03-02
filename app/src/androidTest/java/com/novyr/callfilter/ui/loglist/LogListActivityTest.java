@@ -31,6 +31,7 @@ import com.novyr.callfilter.util.DatabaseHelper;
 import com.novyr.callfilter.util.DatabaseIdlingResource;
 import com.novyr.callfilter.util.PermissionHelper;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -98,7 +99,7 @@ public class LogListActivityTest {
         onView(withId(R.id.log_list))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.log_list_message))
-                .check(matches(withText(org.hamcrest.Matchers.containsString("555-1234"))));
+                .check(matches(withText(Matchers.containsString("555-1234"))));
     }
 
     @Test
@@ -108,7 +109,7 @@ public class LogListActivityTest {
         waitForIdle();
 
         onView(withId(R.id.log_list_created))
-                .check(matches(not(withText(""))));
+                .check(matches(withText(Matchers.matchesPattern(".*\\d+.+\\d+.*"))));
     }
 
     @Test

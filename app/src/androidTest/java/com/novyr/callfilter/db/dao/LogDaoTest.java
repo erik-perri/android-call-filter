@@ -57,6 +57,8 @@ public class LogDaoTest {
 
         List<LogEntity> fetched = dbHelper.getValueFromLiveData(mLogDao.findAll());
         assertEquals(1, fetched.size());
+        assertEquals(entities[0].getAction(), fetched.get(0).getAction());
+        assertEquals(entities[0].getNumber(), fetched.get(0).getNumber());
     }
 
     @Test
