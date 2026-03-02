@@ -1,5 +1,8 @@
 package com.novyr.callfilter.call;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
+
 import android.content.Context;
 import android.os.Build;
 
@@ -27,9 +30,6 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeTrue;
 
 @RunWith(Parameterized.class)
 @MediumTest

@@ -1,5 +1,12 @@
 package com.novyr.callfilter;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.not;
+
 import android.os.Build;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -7,8 +14,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObject;
-import androidx.test.uiautomator.UiSelector;
 
 import com.novyr.callfilter.ui.loglist.LogListActivity;
 import com.novyr.callfilter.util.PermissionHelper;
@@ -16,13 +21,6 @@ import com.novyr.callfilter.util.PermissionHelper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.not;
 
 @MediumTest
 public class SmokeTest {

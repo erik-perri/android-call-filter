@@ -1,6 +1,13 @@
 package com.novyr.callfilter.util;
 
+import static org.junit.Assert.assertFalse;
+
 import android.content.Context;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.novyr.callfilter.db.CallFilterDatabase;
 import com.novyr.callfilter.db.dao.LogDao;
@@ -20,13 +27,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import androidx.test.core.app.ActivityScenario;
-import androidx.test.platform.app.InstrumentationRegistry;
-
-import static org.junit.Assert.assertFalse;
 
 public class DatabaseHelper {
     private static final int POLL_TIMEOUT_MS = 10000;

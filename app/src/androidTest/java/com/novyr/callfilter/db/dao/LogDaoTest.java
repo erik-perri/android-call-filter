@@ -1,5 +1,7 @@
 package com.novyr.callfilter.db.dao;
 
+import static org.junit.Assert.assertEquals;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
@@ -18,8 +20,6 @@ import org.junit.Test;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-
-import static org.junit.Assert.assertEquals;
 
 @MediumTest
 public class LogDaoTest {

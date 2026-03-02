@@ -1,5 +1,7 @@
 package com.novyr.callfilter.permissions;
 
+import static org.junit.Assert.fail;
+
 import android.content.Context;
 import android.os.Build;
 
@@ -24,8 +26,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
-
-import static org.junit.Assert.fail;
 
 /**
  * Tests the call screening role request flow on Q+ (API 29+).

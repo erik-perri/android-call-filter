@@ -1,5 +1,8 @@
 package com.novyr.callfilter.db.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
@@ -17,9 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @MediumTest
 public class RuleDaoTest {

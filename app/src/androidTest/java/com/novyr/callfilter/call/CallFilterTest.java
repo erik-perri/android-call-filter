@@ -1,5 +1,8 @@
 package com.novyr.callfilter.call;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import android.os.Build;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -27,9 +30,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 @LargeTest
 public class CallFilterTest {
