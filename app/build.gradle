@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.novyr.callfilter"
         minSdk project.hasProperty('testMinSdk') ? project.property('testMinSdk').toInteger() : 15
-        targetSdk 34
+        targetSdk 36
         versionCode project.hasProperty('VERSION_CODE') ? project.property('VERSION_CODE').toInteger() : 1
         versionName project.hasProperty('VERSION_NAME') ? project.property('VERSION_NAME') : "1.0"
 
