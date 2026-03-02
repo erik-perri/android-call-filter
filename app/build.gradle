@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'jacoco'
 }
 
 android {
@@ -7,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.novyr.callfilter"
-        minSdk 15
+        minSdk project.hasProperty('testMinSdk') ? project.property('testMinSdk').toInteger() : 15
         targetSdk 34
         versionCode project.hasProperty('VERSION_CODE') ? project.property('VERSION_CODE').toInteger() : 1
         versionName project.hasProperty('VERSION_NAME') ? project.property('VERSION_NAME') : "1.0"
@@ -19,6 +20,14 @@ android {
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true', useTestStorageService: 'true'
+
+        // Pass the emulator console auth token to instrumentation tests
+        def authTokenFile = new File(System.getProperty("user.home"), ".emulator_console_auth_token")
+        if (authTokenFile.exists()) {
+            def token = authTokenFile.text.trim()
+            testInstrumentationRunnerArguments["emulatorAuthToken"] = token
+        }
 
         vectorDrawables {
             useSupportLibrary true
@@ -35,6 +44,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
         release {
             signingConfig signingConfigs.release
             minifyEnabled false
@@ -49,6 +61,55 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true
+
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        animationsDisabled true
+
+        managedDevices {
+            devices {
+                // Pre-Pie: tests AndroidLegacyHandler (ITelephony reflection).
+                // API 26 is skipped — MODIFY_PHONE_STATE is strictly enforced.
+                pixel2Api27(com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Pixel 2"
+                    apiLevel = 27
+                    systemImageSource = "aosp"
+                    testedAbi = "x86"
+                }
+                // Pie: tests AndroidPieHandler (TelecomManager.endCall).
+                pixel2Api28(com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Pixel 2"
+                    apiLevel = 28
+                    systemImageSource = "aosp"
+                    testedAbi = "x86"
+                }
+                // Q: tests CallFilterService (CallScreeningService API).
+                pixel2Api29(com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Pixel 2"
+                    apiLevel = 29
+                    systemImageSource = "aosp"
+                    testedAbi = "x86"
+                }
+                // API 35: tests modern restrictions (notification permissions,
+                // stricter background execution).
+                pixel2Api35(com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Pixel 2"
+                    apiLevel = 35
+                    systemImageSource = "aosp-atd"
+                    testedAbi = "x86_64"
+                }
+            }
+            groups {
+                allDevices {
+                    targetDevices.add(devices.pixel2Api27)
+                    targetDevices.add(devices.pixel2Api28)
+                    targetDevices.add(devices.pixel2Api29)
+                    targetDevices.add(devices.pixel2Api35)
+                }
+            }
+        }
+
+        resultsDir = layout.buildDirectory.dir("test-results").get().asFile.absolutePath
+        reportDir = layout.buildDirectory.dir("reports/tests").get().asFile.absolutePath
     }
     namespace 'com.novyr.callfilter'
 }
@@ -98,10 +159,57 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:truth:1.7.0'
     androidTestImplementation 'com.google.truth:truth:1.4.5'
 
+    // Espresso
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.7.0'
+
+    // UI Automator (system dialogs, permissions, shell commands)
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+
+    // Test Orchestrator (runs each test in its own process to clear data and permissions)
+    androidTestUtil 'androidx.test:orchestrator:1.5.1'
+
+    // Required to persist coverage files when using Orchestrator
+    androidTestUtil 'androidx.test.services:test-services:1.5.0'
 }
 
 allprojects {
     tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
     }
+}
+
+tasks.register('generateUnifiedCoverageReport', JacocoReport) {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports for Debug build"
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    def fileFilter = [
+            '**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*',
+            '**/*Test*.*', 'android/**/*.*',
+            '**/*_Impl*.*', '**/*Dao_Impl*.*', '**/db/schemas/**'
+    ]
+
+    def javaTree = fileTree(
+            dir: layout.buildDirectory.dir("intermediates/javac/debug/compileDebugJavaWithJavac/classes"),
+            excludes: fileFilter
+    )
+    def kotlinTree = fileTree(
+            dir: layout.buildDirectory.dir("tmp/kotlin-classes/debug"),
+            excludes: fileFilter
+    )
+
+    sourceDirectories.setFrom(files(["${project.projectDir}/src/main/java"]))
+    classDirectories.setFrom(files([javaTree, kotlinTree]))
+
+    // Search from the workspace root so CI-downloaded coverage-data/ is included
+    executionData.setFrom(fileTree(
+            dir: rootDir,
+            includes: ['**/*.exec', '**/*.ec']
+    ))
 }

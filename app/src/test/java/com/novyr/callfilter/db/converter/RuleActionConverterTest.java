@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNull;
 
 public class RuleActionConverterTest {
     @Test
-    public void testToAction() {
+    public void toRuleAction_intValue_returnsCorrectEnum() {
         assertEquals(RuleAction.BLOCK, RuleActionConverter.toRuleAction(1));
         assertEquals(RuleAction.ALLOW, RuleActionConverter.toRuleAction(2));
         assertNull(RuleActionConverter.toRuleAction(3));
@@ -17,7 +17,7 @@ public class RuleActionConverterTest {
     }
 
     @Test
-    public void testFromAction() {
+    public void fromRuleAction_enumValue_returnsCorrectInt() {
         assertEquals((Integer) 1, RuleActionConverter.fromRuleAction(RuleAction.BLOCK));
         assertEquals((Integer) 2, RuleActionConverter.fromRuleAction(RuleAction.ALLOW));
         assertNull(RuleActionConverter.fromRuleAction(null));

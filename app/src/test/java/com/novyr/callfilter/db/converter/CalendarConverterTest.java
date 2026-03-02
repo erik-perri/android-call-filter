@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNull;
 
 public class CalendarConverterTest {
     @Test
-    public void testToCalendar() {
+    public void toCalendar_timestampValue_returnsCorrectCalendar() {
         assertEquals(
                 buildCalendar(1970, 0, 1, 0, 0, 0),
                 CalendarConverter.toCalendar(0L)
@@ -23,7 +23,7 @@ public class CalendarConverterTest {
     }
 
     @Test
-    public void testFromCalendar() {
+    public void fromCalendar_calendarValue_returnsCorrectTimestamp() {
         assertEquals(
                 (Long) 0L,
                 CalendarConverter.fromCalendar(buildCalendar(1970, 0, 1, 0, 0, 0))

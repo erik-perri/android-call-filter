@@ -8,6 +8,12 @@ An Android app to reject calls from numbers matching various conditions.
 
 Use [Android Studio](https://developer.android.com/studio)
 
+## Issues
+
+* On Android versions before Q (API v29) the app does not always get notified about a call to reject it before the ringer can start.  This is fixed in Q with the [CallScreeningService](https://developer.android.com/reference/android/telecom/CallScreeningService.html) API.
+* On Android Oreo 8.0 (API v26) the app cannot block calls. `ITelephony.endCall()` strictly requires `MODIFY_PHONE_STATE` on this version. API v27 refactored `TelecomService` for the new public call APIs, which allowed the legacy reflection to work again.
+* On Android versions before Lollipop (API v21) the app must run as a system app to block calls.
+
 ## Releases
 
 Releases are automated via GitHub Actions. Pushing a tag matching `v<major>.<minor>.<patch>` (e.g. `v1.2.3`) runs unit tests, builds a signed release APK, and publishes it as a [GitHub Release](https://github.com/erik-perri/android-call-filter/releases).
@@ -18,10 +24,30 @@ Build provenance is attested so you can verify an APK was built from this reposi
 gh attestation verify call-filter-<version>.apk -R erik-perri/android-call-filter
 ```
 
-## Issues
+## Testing
 
- * On Android versions before Q (API v29) the app does not always get notified about a call to reject it before the ringer can start.  This is fixed in Q with the [CallScreeningService](https://developer.android.com/reference/android/telecom/CallScreeningService.html) API.
- * On Android versions before Lollipop (API v21) the app must run as a system app to block calls.
+Unit tests run without an emulator:
+
+```bash
+./gradlew testDebugUnitTest
+```
+
+When running instrumentation tests via the Android Studio gutter, an emulator must be running. The can also be provisioned automatically using [Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices).
+
+```bash
+# Run on a specific device (e.g. API 29)
+./gradlew pixel2Api29DebugAndroidTest
+
+# Run on all configured devices (API 27, 28, 29, 35)
+# We limit parallel devices to 1 to save local system resources
+./gradlew allDevicesDebugAndroidTest -Dandroid.testoptions.manageddevices.maxparallel=1
+```
+
+To run tests on a physical device or a manually opened emulator:
+
+```bash
+./gradlew connectedDebugAndroidTest
+```
 
 ## License
 

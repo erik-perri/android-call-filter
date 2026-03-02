@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNull;
 
 public class LogActionConverterTest {
     @Test
-    public void testToAction() {
+    public void toLogAction_intValue_returnsCorrectEnum() {
         assertEquals(LogAction.BLOCKED, LogActionConverter.toLogAction(0));
         assertEquals(LogAction.ALLOWED, LogActionConverter.toLogAction(1));
         assertEquals(LogAction.FAILED, LogActionConverter.toLogAction(2));
@@ -18,7 +18,7 @@ public class LogActionConverterTest {
     }
 
     @Test
-    public void testFromAction() {
+    public void fromLogAction_enumValue_returnsCorrectInt() {
         assertEquals((Integer) 0, LogActionConverter.fromLogAction(LogAction.BLOCKED));
         assertEquals((Integer) 1, LogActionConverter.fromLogAction(LogAction.ALLOWED));
         assertEquals((Integer) 2, LogActionConverter.fromLogAction(LogAction.FAILED));

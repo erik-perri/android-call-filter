@@ -1,6 +1,7 @@
 name: Android CI
 
 on:
+  pull_request:
   push:
     branches:
       - '**'
@@ -8,12 +9,24 @@ on:
     # directly.
     tags-ignore:
       - '**'
-  pull_request:
   # Allow this workflow to be called by other workflows.
   workflow_call:
+  # Allow this workflow to be run manually.
+  workflow_dispatch:
+    inputs:
+      device_override:
+        description: 'Device to test'
+        required: true
+        default: 'all'
+        type: choice
+        options: [all, pixel2Api27, pixel2Api28, pixel2Api29, pixel2Api35]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  unit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -21,3 +34,126 @@ jobs:
       - uses: ./.github/actions/setup-java
 
       - run: ./gradlew testDebugUnitTest
+
+      - name: Upload Unit Test Coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-unit
+          path: app/build/**/*.exec
+
+  instrumentation:
+    runs-on: ubuntu-latest
+    needs: unit
+    # This job only runs if it's a PR, a manual trigger, or a call from another workflow
+    if: >
+      github.event_name == 'pull_request' || 
+      github.event_name == 'workflow_dispatch' || 
+      github.event_name == 'workflow_call'
+    strategy:
+      fail-fast: false
+      matrix:
+        # If manual, use the selected device. If not manual or 'all', use the full list.
+        # The list must match the managed devices defined in app/build.gradle.
+        device: ${{ (github.event.inputs.device_override != 'all' && github.event.inputs.device_override != '') && fromJSON(format('["{0}"]', github.event.inputs.device_override)) || fromJSON('["pixel2Api27", "pixel2Api28", "pixel2Api29", "pixel2Api35"]') }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-java
+
+      - name: Enable KVM
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chmod 666 /dev/kvm
+            echo "KVM is available and accessible."
+          else
+            echo "KVM is NOT available on this runner. Tests will be extremely slow."
+            exit 1
+          fi
+
+      # We read the token during build to pass down to the tests so they can connect
+      # to the simulator for fake phone calls. At the point we read it, the emulator
+      # is not running and no auth token has been created. As a result we create one
+      # before it can to pass to our tests.
+      - name: Set emulator console auth token
+        run: echo "ci-auth-token" > ~/.emulator_console_auth_token
+
+      - name: Run test on ${{ matrix.device }}
+        run: >
+          ./gradlew :app:${{ matrix.device }}DebugAndroidTest
+          -PtestMinSdk=26
+          -Pandroid.testInstrumentationRunnerArguments.useTestStorageService=true
+
+      - name: Upload Instrumentation Coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.device }}
+          path: "**/build/**/*.ec"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.device }}
+          path: app/build/test-results/managedDevice/
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: [unit, instrumentation]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-java
+
+      - name: Download all coverage artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: coverage-data/
+
+      # We need to compile the debug classes so JaCoCo has something to analyze against
+      - name: Compile Debug Classes
+        run: ./gradlew compileDebugJavaWithJavac
+
+      - name: Generate Unified JaCoCo Report
+        run: ./gradlew generateUnifiedCoverageReport
+
+      - name: Upload Full HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-coverage-report-html
+          path: app/build/reports/jacoco/generateUnifiedCoverageReport/html/
+
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install libxml2-utils
+
+      - name: Generate Job Summary
+        run: |
+          REPORT_PATH="app/build/reports/jacoco/generateUnifiedCoverageReport/generateUnifiedCoverageReport.xml"
+
+          MISSED=$(xmllint --xpath 'string(/report/counter[@type="INSTRUCTION"]/@missed)' "$REPORT_PATH")
+          COVERED=$(xmllint --xpath 'string(/report/counter[@type="INSTRUCTION"]/@covered)' "$REPORT_PATH")
+
+          MISSED=${MISSED:-0}
+          COVERED=${COVERED:-0}
+
+          TOTAL=$((MISSED + COVERED))
+
+          if [ "$TOTAL" -gt 0 ]; then
+            PERCENTAGE=$(echo "scale=2; ($COVERED / $TOTAL) * 100" | bc)
+          else
+            PERCENTAGE="0"
+          fi
+
+          # Write to the GitHub Summary
+          {
+            echo "## Code Coverage Report"
+            echo "| Metric | Value |"
+            echo "| --- | --- |"
+            echo "| **Total Instructions** | $TOTAL |"
+            echo "| **Covered** | $COVERED |"
+            echo "| **Missed** | $MISSED |"
+            echo "| **Percentage** | **$PERCENTAGE%** |"
+          } >> $GITHUB_STEP_SUMMARY

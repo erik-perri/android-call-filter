@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNull;
 
 public class RuleTypeConverterTest {
     @Test
-    public void testToType() {
+    public void toRuleType_intValue_returnsCorrectEnum() {
         assertEquals(RuleType.UNMATCHED, RuleTypeConverter.toRuleType(1));
         assertEquals(RuleType.MATCH, RuleTypeConverter.toRuleType(6));
         assertNull(RuleTypeConverter.toRuleType(99));
@@ -17,7 +17,7 @@ public class RuleTypeConverterTest {
     }
 
     @Test
-    public void testFromType() {
+    public void fromRuleType_enumValue_returnsCorrectInt() {
         assertEquals((Integer) 1, RuleTypeConverter.fromRuleType(RuleType.UNMATCHED));
         assertEquals((Integer) 6, RuleTypeConverter.fromRuleType(RuleType.MATCH));
     }

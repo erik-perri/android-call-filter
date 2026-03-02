@@ -40,7 +40,7 @@ public class LogMessageFormatterTest {
     Resources mMockResources;
 
     @Test
-    public void testRecognized() {
+    public void formatMessage_recognizedNumber_showsContactName() {
         LogMessageFormatter formatter = new LogMessageFormatter(mMockResources, createFinderMock());
 
         LogEntity log = new LogEntity(LogAction.ALLOWED, RECOGNIZED_NUMBER);
@@ -52,7 +52,7 @@ public class LogMessageFormatterTest {
     }
 
     @Test
-    public void testUnrecognized() {
+    public void formatMessage_unrecognizedNumber_showsRawNumber() {
         LogMessageFormatter formatter = new LogMessageFormatter(mMockResources, createFinderMock());
 
         LogEntity log = new LogEntity(LogAction.ALLOWED, UNRECOGNIZED_NUMBER);
@@ -64,7 +64,7 @@ public class LogMessageFormatterTest {
     }
 
     @Test
-    public void testPrivate() {
+    public void formatMessage_privateNumber_showsPrivateLabel() {
         LogMessageFormatter formatter = new LogMessageFormatter(mMockResources, createFinderMock());
 
         LogEntity log = new LogEntity(LogAction.ALLOWED, null);
@@ -76,7 +76,7 @@ public class LogMessageFormatterTest {
     }
 
     @Test
-    public void testActions() {
+    public void formatMessage_differentActions_showsCorrectActionLabel() {
         LogMessageFormatter formatter = new LogMessageFormatter(mMockResources, createFinderMock());
 
         LogEntity log = new LogEntity(LogAction.ALLOWED, null);

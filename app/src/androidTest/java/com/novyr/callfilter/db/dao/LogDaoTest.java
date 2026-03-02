@@ -1,14 +1,16 @@
 package com.novyr.callfilter.db.dao;
 
+import static org.junit.Assert.assertEquals;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
 import com.novyr.callfilter.db.CallFilterDatabase;
-import com.novyr.callfilter.db.LiveDataTestUtil;
 import com.novyr.callfilter.db.entity.LogEntity;
 import com.novyr.callfilter.db.entity.enums.LogAction;
+import com.novyr.callfilter.util.DatabaseHelper;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,10 +21,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
-
 @MediumTest
 public class LogDaoTest {
+    private final DatabaseHelper dbHelper = new DatabaseHelper();
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
@@ -50,49 +51,51 @@ public class LogDaoTest {
     }
 
     @Test
-    public void insertSavesData() throws InterruptedException {
+    public void insert_singleEntity_savesToDatabase() throws InterruptedException {
         LogEntity[] entities = createEntities(1);
         mLogDao.insert(entities[0]);
 
-        List<LogEntity> fetched = LiveDataTestUtil.getValue(mLogDao.findAll());
+        List<LogEntity> fetched = dbHelper.getValueFromLiveData(mLogDao.findAll());
         assertEquals(1, fetched.size());
+        assertEquals(entities[0].getAction(), fetched.get(0).getAction());
+        assertEquals(entities[0].getNumber(), fetched.get(0).getNumber());
     }
 
     @Test
-    public void deleteRemovesData() throws InterruptedException {
+    public void delete_singleEntity_removesFromDatabase() throws InterruptedException {
         LogEntity[] entities = createEntities(1);
         mLogDao.insert(entities[0]);
 
-        List<LogEntity> fetched = LiveDataTestUtil.getValue(mLogDao.findAll());
+        List<LogEntity> fetched = dbHelper.getValueFromLiveData(mLogDao.findAll());
         assertEquals(1, fetched.size());
 
         mLogDao.delete(fetched.get(0));
 
-        assertEquals(0, LiveDataTestUtil.getValue(mLogDao.findAll()).size());
+        assertEquals(0, dbHelper.getValueFromLiveData(mLogDao.findAll()).size());
     }
 
     @Test
-    public void deleteAllClearsData() throws InterruptedException {
+    public void deleteAll_multipleEntities_clearsDatabase() throws InterruptedException {
         LogEntity[] entities = createEntities(10);
         for (LogEntity entity : entities) {
             mLogDao.insert(entity);
         }
 
-        assertEquals(10, LiveDataTestUtil.getValue(mLogDao.findAll()).size());
+        assertEquals(10, dbHelper.getValueFromLiveData(mLogDao.findAll()).size());
 
         mLogDao.deleteAll();
 
-        assertEquals(0, LiveDataTestUtil.getValue(mLogDao.findAll()).size());
+        assertEquals(0, dbHelper.getValueFromLiveData(mLogDao.findAll()).size());
     }
 
     @Test
-    public void findAllRetrievesData() throws InterruptedException {
+    public void findAll_multipleEntities_returnsInReverseOrder() throws InterruptedException {
         LogEntity[] entities = createEntities(10);
         for (LogEntity entity : entities) {
             mLogDao.insert(entity);
         }
 
-        List<LogEntity> fetched = LiveDataTestUtil.getValue(mLogDao.findAll());
+        List<LogEntity> fetched = dbHelper.getValueFromLiveData(mLogDao.findAll());
         assertEquals(10, fetched.size());
 
         // Find all should retrieve in the reverse order they are added, so the first fetched
@@ -108,7 +111,7 @@ public class LogDaoTest {
         for (int i = 0; i < count; i++) {
             int number = random.nextInt(8999999) + 1000000;
             entities.add(new LogEntity(
-                    random.nextInt(1) > 0 ? LogAction.BLOCKED : LogAction.ALLOWED,
+                    random.nextInt(2) > 0 ? LogAction.BLOCKED : LogAction.ALLOWED,
                     String.valueOf(number)
             ));
         }

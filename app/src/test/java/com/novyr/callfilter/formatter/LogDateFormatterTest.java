@@ -42,7 +42,7 @@ public class LogDateFormatterTest {
     }
 
     @Test
-    public void testFormatter() {
+    public void formatDate_differentLocales_formatsCorrectly() {
         LogDateFormatter formatter = new LogDateFormatter();
         int jdkVersion = getJavaVersion();
 

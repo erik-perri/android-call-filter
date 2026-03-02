@@ -29,14 +29,14 @@ public class AreaCodeRuleHandlerTest {
     }
 
     @Test
-    public void checkPrivateMatch() {
+    public void isMatch_privateNumber_returnsFalse() {
         AreaCodeRuleHandler checker = new AreaCodeRuleHandler(createExtractorMock());
 
         assertFalse(checker.isMatch(new CallDetails(null), VALID_AREA_CODE_1));
     }
 
     @Test
-    public void checkInvalidMatch() {
+    public void isMatch_invalidNumber_returnsFalse() {
         AreaCodeRuleHandler checker = new AreaCodeRuleHandler(createExtractorMock());
 
         assertFalse(checker.isMatch(new CallDetails(INVALID_NUMBER), VALID_AREA_CODE_1));
@@ -44,7 +44,7 @@ public class AreaCodeRuleHandlerTest {
     }
 
     @Test
-    public void checkNormalMatch() {
+    public void isMatch_validNumber_matchesCorrectAreaCode() {
         AreaCodeRuleHandler checker = new AreaCodeRuleHandler(createExtractorMock());
 
         assertTrue(checker.isMatch(new CallDetails(VALID_NUMBER_1), VALID_AREA_CODE_1));
