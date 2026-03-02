@@ -168,7 +168,7 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
 
     // Test Orchestrator (runs each test in its own process to clear data and permissions)
-    androidTestUtil 'androidx.test:orchestrator:1.5.1'
+    androidTestUtil 'androidx.test:orchestrator:1.6.1'
 
     // Required to persist coverage files when using Orchestrator
     androidTestUtil 'androidx.test.services:test-services:1.5.0'
