@@ -37,6 +37,13 @@ public class CallSimulator {
         executeCommand("gsm cancel " + phoneNumber);
     }
 
+    public static void cancelCallSilently(String phoneNumber) {
+        try {
+            cancelCall(phoneNumber);
+        } catch (Exception ignored) {
+        }
+    }
+
     private static void executeCommand(String command) {
         // Retry logic is implicit: findConsoleSocket() scans multiple candidates.
         // If the connection drops during execution, we invalidate cache and throw.

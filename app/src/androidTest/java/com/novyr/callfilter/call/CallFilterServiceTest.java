@@ -23,17 +23,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 @LargeTest
 public class CallFilterServiceTest {
-    private static final int POLL_TIMEOUT_MS = 10000;
-    private static final int POLL_INTERVAL_MS = 250;
-
     @Rule
     public GrantPermissionRule permissions = PermissionHelper.grantAllPermissions();
 
@@ -79,11 +73,11 @@ public class CallFilterServiceTest {
 
         CallSimulator.simulateIncomingCall("5551234");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5551234", log.getNumber());
             assertEquals(LogAction.BLOCKED, log.getAction());
         } finally {
-            cancelCallSilently("5551234");
+            CallSimulator.cancelCallSilently("5551234");
         }
     }
 
@@ -96,11 +90,11 @@ public class CallFilterServiceTest {
 
         CallSimulator.simulatePrivateCall();
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertNull(log.getNumber());
             assertEquals(LogAction.BLOCKED, log.getAction());
         } finally {
-            cancelCallSilently("#");
+            CallSimulator.cancelCallSilently("#");
         }
     }
 
@@ -112,11 +106,11 @@ public class CallFilterServiceTest {
 
         CallSimulator.simulatePrivateCall();
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertNull(log.getNumber());
             assertEquals(LogAction.ALLOWED, log.getAction());
         } finally {
-            cancelCallSilently("#");
+            CallSimulator.cancelCallSilently("#");
         }
     }
 
@@ -128,11 +122,11 @@ public class CallFilterServiceTest {
 
         CallSimulator.simulateIncomingCall("5551234");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5551234", log.getNumber());
             assertEquals(LogAction.ALLOWED, log.getAction());
         } finally {
-            cancelCallSilently("5551234");
+            CallSimulator.cancelCallSilently("5551234");
         }
     }
 
@@ -146,11 +140,11 @@ public class CallFilterServiceTest {
 
         CallSimulator.simulateIncomingCall("5553456");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5553456", log.getNumber());
             assertEquals(LogAction.ALLOWED, log.getAction());
         } finally {
-            cancelCallSilently("5553456");
+            CallSimulator.cancelCallSilently("5553456");
         }
     }
 
@@ -163,11 +157,11 @@ public class CallFilterServiceTest {
 
         CallSimulator.simulateIncomingCall("8005551234");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("8005551234", log.getNumber());
             assertEquals(LogAction.BLOCKED, log.getAction());
         } finally {
-            cancelCallSilently("8005551234");
+            CallSimulator.cancelCallSilently("8005551234");
         }
     }
 
@@ -180,11 +174,11 @@ public class CallFilterServiceTest {
 
         CallSimulator.simulateIncomingCall("5551234");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5551234", log.getNumber());
             assertEquals(LogAction.BLOCKED, log.getAction());
         } finally {
-            cancelCallSilently("5551234");
+            CallSimulator.cancelCallSilently("5551234");
         }
     }
 
@@ -197,32 +191,11 @@ public class CallFilterServiceTest {
 
         CallSimulator.simulateIncomingCall("5559999");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5559999", log.getNumber());
             assertEquals(LogAction.ALLOWED, log.getAction());
         } finally {
-            cancelCallSilently("5559999");
-        }
-    }
-
-    private LogEntity pollForLogEntry() throws Exception {
-        long deadline = System.currentTimeMillis() + POLL_TIMEOUT_MS;
-        while (System.currentTimeMillis() < deadline) {
-            List<LogEntity> entries = dbHelper.getLogEntries();
-            if (entries != null && !entries.isEmpty()) {
-                return entries.get(0);
-            }
-            Thread.sleep(POLL_INTERVAL_MS);
-        }
-        List<LogEntity> entries = dbHelper.getLogEntries();
-        assertFalse("No log entry appeared within timeout", entries == null || entries.isEmpty());
-        return entries.get(0);
-    }
-
-    private void cancelCallSilently(String number) {
-        try {
-            CallSimulator.cancelCall(number);
-        } catch (Exception ignored) {
+            CallSimulator.cancelCallSilently("5559999");
         }
     }
 }

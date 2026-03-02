@@ -25,14 +25,10 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 @LargeTest
 public class CallReceiverTest {
-    private static final int POLL_TIMEOUT_MS = 10000;
-    private static final int POLL_INTERVAL_MS = 250;
-
     @Rule
     public GrantPermissionRule permissions = PermissionHelper.grantAllPermissions();
 
@@ -73,11 +69,11 @@ public class CallReceiverTest {
 
         CallSimulator.simulateIncomingCall("5551234");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5551234", log.getNumber());
             assertEquals(LogAction.ALLOWED, log.getAction());
         } finally {
-            cancelCallSilently("5551234");
+            CallSimulator.cancelCallSilently("5551234");
         }
     }
 
@@ -90,11 +86,11 @@ public class CallReceiverTest {
 
         CallSimulator.simulateIncomingCall("5559999");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5559999", log.getNumber());
             assertEquals(LogAction.BLOCKED, log.getAction());
         } finally {
-            cancelCallSilently("5559999");
+            CallSimulator.cancelCallSilently("5559999");
         }
     }
 
@@ -107,11 +103,11 @@ public class CallReceiverTest {
 
         CallSimulator.simulatePrivateCall();
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertNull(log.getNumber());
             assertEquals(LogAction.BLOCKED, log.getAction());
         } finally {
-            cancelCallSilently("#");
+            CallSimulator.cancelCallSilently("#");
         }
     }
 
@@ -123,11 +119,11 @@ public class CallReceiverTest {
 
         CallSimulator.simulatePrivateCall();
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertNull(log.getNumber());
             assertEquals(LogAction.ALLOWED, log.getAction());
         } finally {
-            cancelCallSilently("#");
+            CallSimulator.cancelCallSilently("#");
         }
     }
 
@@ -141,11 +137,11 @@ public class CallReceiverTest {
 
         CallSimulator.simulateIncomingCall("5553456");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5553456", log.getNumber());
             assertEquals(LogAction.ALLOWED, log.getAction());
         } finally {
-            cancelCallSilently("5553456");
+            CallSimulator.cancelCallSilently("5553456");
         }
     }
 
@@ -158,11 +154,11 @@ public class CallReceiverTest {
 
         CallSimulator.simulateIncomingCall("8005551234");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("8005551234", log.getNumber());
             assertEquals(LogAction.BLOCKED, log.getAction());
         } finally {
-            cancelCallSilently("8005551234");
+            CallSimulator.cancelCallSilently("8005551234");
         }
     }
 
@@ -175,11 +171,11 @@ public class CallReceiverTest {
 
         CallSimulator.simulateIncomingCall("5551234");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5551234", log.getNumber());
             assertEquals(LogAction.BLOCKED, log.getAction());
         } finally {
-            cancelCallSilently("5551234");
+            CallSimulator.cancelCallSilently("5551234");
         }
     }
 
@@ -192,11 +188,11 @@ public class CallReceiverTest {
 
         CallSimulator.simulateIncomingCall("5559999");
         try {
-            LogEntity log = pollForLogEntry();
+            LogEntity log = dbHelper.pollForLogEntry();
             assertEquals("5559999", log.getNumber());
             assertEquals(LogAction.ALLOWED, log.getAction());
         } finally {
-            cancelCallSilently("5559999");
+            CallSimulator.cancelCallSilently("5559999");
         }
     }
 
@@ -214,22 +210,8 @@ public class CallReceiverTest {
             assertEquals("5557777", entries.get(0).getNumber());
             assertEquals(LogAction.ALLOWED, entries.get(0).getAction());
         } finally {
-            cancelCallSilently("5557777");
+            CallSimulator.cancelCallSilently("5557777");
         }
-    }
-
-    private LogEntity pollForLogEntry() throws Exception {
-        long deadline = System.currentTimeMillis() + POLL_TIMEOUT_MS;
-        while (System.currentTimeMillis() < deadline) {
-            List<LogEntity> entries = dbHelper.getLogEntries();
-            if (entries != null && !entries.isEmpty()) {
-                return entries.get(0);
-            }
-            Thread.sleep(POLL_INTERVAL_MS);
-        }
-        List<LogEntity> entries = dbHelper.getLogEntries();
-        assertFalse("No log entry appeared within timeout", entries == null || entries.isEmpty());
-        return entries.get(0);
     }
 
     /**
@@ -239,6 +221,8 @@ public class CallReceiverTest {
      */
     private List<LogEntity> pollForStableLogCount() throws Exception {
         final int STABLE_MS = 2000;
+        final int POLL_TIMEOUT_MS = 10000;
+        final int POLL_INTERVAL_MS = 250;
         long stableSince = System.currentTimeMillis();
         int lastCount = dbHelper.getLogEntries().size();
         long deadline = System.currentTimeMillis() + POLL_TIMEOUT_MS;
@@ -255,12 +239,5 @@ public class CallReceiverTest {
         }
 
         return dbHelper.getLogEntries();
-    }
-
-    private void cancelCallSilently(String number) {
-        try {
-            CallSimulator.cancelCall(number);
-        } catch (Exception ignored) {
-        }
     }
 }

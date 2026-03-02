@@ -25,7 +25,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import static org.junit.Assert.assertFalse;
+
 public class DatabaseHelper {
+    private static final int POLL_TIMEOUT_MS = 10000;
+    private static final int POLL_INTERVAL_MS = 250;
+
     private final CallFilterDatabase db;
     private final LogDao logDao;
     private final RuleDao ruleDao;
@@ -71,6 +76,21 @@ public class DatabaseHelper {
     public List<RuleEntity> getRuleEntries() throws InterruptedException {
         return getValueFromLiveData(ruleDao.findAll());
     }
+
+    public LogEntity pollForLogEntry() throws Exception {
+        long deadline = System.currentTimeMillis() + POLL_TIMEOUT_MS;
+        while (System.currentTimeMillis() < deadline) {
+            List<LogEntity> entries = getLogEntries();
+            if (entries != null && !entries.isEmpty()) {
+                return entries.get(0);
+            }
+            Thread.sleep(POLL_INTERVAL_MS);
+        }
+        List<LogEntity> entries = getLogEntries();
+        assertFalse("No log entry appeared within timeout", entries == null || entries.isEmpty());
+        return entries.get(0);
+    }
+
 
     private void drainWriteExecutor() {
         try {
