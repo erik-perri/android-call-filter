@@ -1,0 +1,58 @@
+name: Dev Build
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Dev APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-java
+
+      - name: Set version info
+        id: version
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          VERSION_NAME="dev-${SHORT_SHA}"
+          VERSION_CODE=$(date +%s)
+          echo "VERSION_NAME=${VERSION_NAME}" >> $GITHUB_OUTPUT
+          echo "VERSION_CODE=${VERSION_CODE}" >> $GITHUB_OUTPUT
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release-keystore.jks"
+          echo "KEYSTORE_FILE=$RUNNER_TEMP/release-keystore.jks" >> "$GITHUB_ENV"
+
+      - name: Build signed release APK
+        env:
+          KEYSTORE_FILE: ${{ env.KEYSTORE_FILE }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          ./gradlew assembleRelease \
+            -PVERSION_NAME=${{ steps.version.outputs.VERSION_NAME }} \
+            -PVERSION_CODE=${{ steps.version.outputs.VERSION_CODE }}
+
+      - name: Rename APK
+        id: apk
+        run: |
+          APK_NAME="call-filter-${{ steps.version.outputs.VERSION_NAME }}.apk"
+          mv app/build/outputs/apk/release/app-release.apk "$APK_NAME"
+          echo "APK_NAME=$APK_NAME" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: call-filter-${{ steps.version.outputs.VERSION_NAME }}
+          path: ${{ steps.apk.outputs.APK_NAME }}
+          retention-days: 30
