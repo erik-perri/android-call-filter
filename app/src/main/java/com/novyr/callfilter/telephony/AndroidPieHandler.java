@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Build;
 import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
@@ -15,8 +16,11 @@ import androidx.core.content.ContextCompat;
 public class AndroidPieHandler implements HandlerInterface {
     private TelecomManager mTelecomManager = null;
     private TelephonyManager mTelephonyManager = null;
+    private AudioManager mAudioManager = null;
 
     AndroidPieHandler(Context context) {
+        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
         if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ANSWER_PHONE_CALLS
@@ -37,7 +41,7 @@ public class AndroidPieHandler implements HandlerInterface {
             return AnswerAndEndResult.FAILED;
         }
 
-        return AnswerAndEndSequence.run(new AnswerAndEndSequence.Telephony() {
+        return AnswerAndEndSequence.run(mAudioManager, new AnswerAndEndSequence.Telephony() {
             @SuppressLint("MissingPermission")
             @Override
             public void attemptAnswer() {

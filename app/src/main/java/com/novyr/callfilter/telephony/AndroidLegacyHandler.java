@@ -2,6 +2,7 @@ package com.novyr.callfilter.telephony;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.media.AudioManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -13,12 +14,15 @@ public class AndroidLegacyHandler implements HandlerInterface {
     private static final String TAG = AndroidLegacyHandler.class.getSimpleName();
 
     private TelephonyManager mTelephonyManager = null;
+    private AudioManager mAudioManager = null;
     private Object mInterfaceTelephony = null;
     private Method mMethodSilenceRinger = null;
     private Method mMethodEndCall = null;
     private Method mMethodAnswerRingingCall = null;
 
     AndroidLegacyHandler(Context context) {
+        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
         try {
             TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             if (manager == null) {
@@ -81,7 +85,7 @@ public class AndroidLegacyHandler implements HandlerInterface {
             return endCall() ? AnswerAndEndResult.ENDED_WITHOUT_ANSWER : AnswerAndEndResult.FAILED;
         }
 
-        return AnswerAndEndSequence.run(new AnswerAndEndSequence.Telephony() {
+        return AnswerAndEndSequence.run(mAudioManager, new AnswerAndEndSequence.Telephony() {
             @Override
             public void attemptAnswer() throws Exception {
                 mMethodAnswerRingingCall.invoke(mInterfaceTelephony);

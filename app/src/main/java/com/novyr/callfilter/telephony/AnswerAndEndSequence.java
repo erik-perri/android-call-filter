@@ -1,8 +1,11 @@
 package com.novyr.callfilter.telephony;
 
+import android.media.AudioManager;
 import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.novyr.callfilter.BuildConfig;
 
@@ -14,6 +17,9 @@ import com.novyr.callfilter.BuildConfig;
  * re-issued until the call actually reaches OFFHOOK (~13 attempts / ~3.25s on the test device).
  * Once connected we hold the line briefly so the carrier unambiguously sees the call as answered
  * (and therefore does not forward it to voicemail), then end it.
+ *
+ * <p>The microphone is muted for the duration so the caller cannot hear the room during the
+ * connected moment, then restored.
  */
 final class AnswerAndEndSequence {
     private static final String TAG = AnswerAndEndSequence.class.getSimpleName();
@@ -41,26 +47,79 @@ final class AnswerAndEndSequence {
     private AnswerAndEndSequence() {
     }
 
-    static AnswerAndEndResult run(Telephony telephony) {
-        boolean connected = false;
+    static AnswerAndEndResult run(@Nullable AudioManager audioManager, Telephony telephony) {
+        boolean muted = muteMicrophone(audioManager);
+
         try {
-            connected = answerUntilOffhook(telephony);
-            if (connected) {
-                Thread.sleep(CONNECTED_HOLD_MS);
+            boolean connected = false;
+            try {
+                connected = answerUntilOffhook(telephony);
+                if (connected) {
+                    Thread.sleep(CONNECTED_HOLD_MS);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+
+            // End the call even if it never connected, otherwise it would keep ringing (silenced
+            // on Q+) until the carrier gives up and voicemail picks it up anyway.
+            if (!telephony.endCall()) {
+                return AnswerAndEndResult.FAILED;
+            }
+
+            return connected
+                    ? AnswerAndEndResult.ANSWERED_AND_ENDED
+                    : AnswerAndEndResult.ENDED_WITHOUT_ANSWER;
+        } finally {
+            if (muted) {
+                unmuteMicrophone(audioManager);
+            }
+        }
+    }
+
+    /**
+     * Mute the microphone before answering so there is no unmuted gap once the call connects.
+     * Muting is global, sticky state (MODIFY_AUDIO_SETTINGS), so the caller of this method must
+     * restore it when this returns true, and we leave it alone when it is not ours to manage.
+     *
+     * @return Whether the microphone was muted by us and must be restored.
+     */
+    private static boolean muteMicrophone(@Nullable AudioManager audioManager) {
+        if (audioManager == null) {
+            return false;
         }
 
-        // End the call even if it never connected, otherwise it would keep ringing (silenced on
-        // Q+) until the carrier gives up and voicemail picks it up anyway.
-        if (!telephony.endCall()) {
-            return AnswerAndEndResult.FAILED;
-        }
+        try {
+            // A call is already active (this one is call waiting); muting now would silence the
+            // user's live conversation while we deal with the new call.
+            if (audioManager.getMode() == AudioManager.MODE_IN_CALL) {
+                return false;
+            }
 
-        return connected
-                ? AnswerAndEndResult.ANSWERED_AND_ENDED
-                : AnswerAndEndResult.ENDED_WITHOUT_ANSWER;
+            // Already muted by the user or another app; leave it that way.
+            if (audioManager.isMicrophoneMute()) {
+                return false;
+            }
+
+            audioManager.setMicrophoneMute(true);
+            return true;
+        } catch (Exception e) {
+            // Some OEMs reject non-dialer mic muting; the answer dance must still proceed.
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, "Failed to mute microphone", e);
+            }
+            return false;
+        }
+    }
+
+    private static void unmuteMicrophone(AudioManager audioManager) {
+        try {
+            audioManager.setMicrophoneMute(false);
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, "Failed to restore microphone", e);
+            }
+        }
     }
 
     private static boolean answerUntilOffhook(Telephony telephony) throws InterruptedException {

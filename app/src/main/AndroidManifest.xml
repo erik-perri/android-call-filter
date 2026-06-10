@@ -13,6 +13,9 @@
     <uses-permission
         android:name="android.permission.CALL_PHONE"
         android:maxSdkVersion="28" />
+    <!-- AudioManager.setMicrophoneMute(): keeps the caller from hearing the room during the
+         brief connected moment of the answer-then-hang-up action. -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission
         android:name="android.permission.READ_CALL_LOG"
         android:maxSdkVersion="28" />
