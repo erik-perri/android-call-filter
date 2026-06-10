@@ -2,9 +2,11 @@ package com.novyr.callfilter.db.entity.enums;
 
 import android.os.Build;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.novyr.callfilter.R;
+import com.novyr.callfilter.permissions.Capability;
 
 public enum RuleType {
     UNMATCHED(1, R.string.rule_type_unmatched),
@@ -42,5 +44,21 @@ public enum RuleType {
 
     public int getMinSdkVersion() {
         return mMinSdkVersion;
+    }
+
+    /**
+     * @return The optional capability this type needs to be evaluated, or null if none. Rules
+     * whose capability is inactive are skipped during matching rather than matched on missing
+     * data.
+     */
+    @Nullable
+    public Capability getRequiredCapability() {
+        switch (this) {
+            case RECOGNIZED:
+            case UNRECOGNIZED:
+                return Capability.CONTACTS_MATCHING;
+            default:
+                return null;
+        }
     }
 }

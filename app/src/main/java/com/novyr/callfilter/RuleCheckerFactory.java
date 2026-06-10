@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.novyr.callfilter.db.RuleRepository;
 import com.novyr.callfilter.db.entity.RuleEntity;
+import com.novyr.callfilter.permissions.AndroidCapabilityResolver;
 import com.novyr.callfilter.rules.RuleHandlerManager;
 
 public class RuleCheckerFactory {
@@ -12,7 +13,8 @@ public class RuleCheckerFactory {
                 .getRuleRepository();
         return new RuleChecker(
                 new RuleHandlerManager(new ContactFinder(context)),
-                repo.findEnabled().toArray(new RuleEntity[0])
+                repo.findEnabled().toArray(new RuleEntity[0]),
+                new AndroidCapabilityResolver(context)
         );
     }
 }

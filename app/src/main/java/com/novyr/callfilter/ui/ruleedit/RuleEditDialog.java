@@ -1,5 +1,6 @@
 package com.novyr.callfilter.ui.ruleedit;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
@@ -14,12 +15,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 
 import com.novyr.callfilter.ContactFinder;
 import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.RuleEntity;
 import com.novyr.callfilter.db.entity.enums.RuleAction;
 import com.novyr.callfilter.db.entity.enums.RuleType;
+import com.novyr.callfilter.permissions.AndroidCapabilityResolver;
+import com.novyr.callfilter.permissions.Capability;
 import com.novyr.callfilter.rules.RuleHandlerInterface;
 import com.novyr.callfilter.rules.RuleHandlerManager;
 import com.novyr.callfilter.rules.RuleHandlerWithFormInterface;
@@ -30,6 +34,8 @@ import java.util.List;
 
 // TODO Figure out a better way to structure this
 public class RuleEditDialog {
+    public static final int HANG_UP_PERMISSION_REQUEST = 251;
+
     private final Context mContext;
     private final RuleHandlerManager mHandlerManager;
     private final LayoutInflater mLayoutInflater;
@@ -51,6 +57,7 @@ public class RuleEditDialog {
 
         final TextView formHeading = formView.findViewById(R.id.form_heading);
         final Spinner actionSpinner = formView.findViewById(R.id.action_spinner);
+        final TextView actionHelp = formView.findViewById(R.id.action_help);
         final Spinner typeSpinner = formView.findViewById(R.id.type_spinner);
         final Spinner enabledSpinner = formView.findViewById(R.id.enabled_spinner);
 
@@ -61,6 +68,37 @@ public class RuleEditDialog {
         );
 
         setupSpinner(actionSpinner, getActionValues(), getActionDisplayName(localRule.getAction()));
+
+        actionHelp.setText(getActionHelp(localRule.getAction()));
+        actionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            private boolean mInitialEvent = true;
+
+            @Override
+            public void onItemSelected(
+                    AdapterView<?> parentView,
+                    View selectedItemView,
+                    int position,
+                    long id
+            ) {
+                RuleAction action = getActionSpinnerValue(actionSpinner);
+                actionHelp.setText(getActionHelp(action));
+
+                // The spinner fires once for the initial selection when the dialog opens; only a
+                // user-made selection should trigger the permission offer.
+                if (mInitialEvent) {
+                    mInitialEvent = false;
+                    return;
+                }
+
+                if (action == RuleAction.ANSWER_AND_END) {
+                    offerHangUpPermissions(actionSpinner);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+            }
+        });
 
         setupSpinner(
                 enabledSpinner,
@@ -147,10 +185,62 @@ public class RuleEditDialog {
                 }
             }
 
+            if (localRule.getAction() == RuleAction.ANSWER_AND_END
+                    && AndroidCapabilityResolver.missingPermissions(
+                            mContext,
+                            Capability.HANG_UP
+                    ).length > 0) {
+                // Still saved; the decision layer degrades the action to a block until granted.
+                Toast.makeText(
+                        mContext,
+                        R.string.hang_up_permission_missing,
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+
             editComplete.onEditComplete(localRule);
 
             alert.dismiss();
         });
+    }
+
+    /**
+     * The in-context permission ask for the hang-up action: explain the tradeoff, then request
+     * the missing permissions. Declining keeps the action on Block instead.
+     */
+    private void offerHangUpPermissions(Spinner actionSpinner) {
+        final String[] missing = AndroidCapabilityResolver.missingPermissions(
+                mContext,
+                Capability.HANG_UP
+        );
+        if (missing.length == 0) {
+            return;
+        }
+
+        new AlertDialog.Builder(mContext)
+                .setTitle(R.string.hang_up_permission_title)
+                .setMessage(R.string.hang_up_permission_message)
+                .setPositiveButton(R.string.hang_up_permission_allow, (dialog, id) -> {
+                    if (mContext instanceof Activity) {
+                        ActivityCompat.requestPermissions(
+                                (Activity) mContext,
+                                missing,
+                                HANG_UP_PERMISSION_REQUEST
+                        );
+                    }
+                })
+                .setNegativeButton(
+                        R.string.hang_up_permission_cancel,
+                        (dialog, id) -> revertActionToBlock(actionSpinner)
+                )
+                .setOnCancelListener(dialog -> revertActionToBlock(actionSpinner))
+                .show();
+    }
+
+    private void revertActionToBlock(Spinner actionSpinner) {
+        actionSpinner.setSelection(
+                getActionValues().indexOf(getActionDisplayName(RuleAction.BLOCK))
+        );
     }
 
     private void updateTypeForm(View formView, RuleType type, RuleEntity rule) {
@@ -216,6 +306,22 @@ public class RuleEditDialog {
                 return mContext.getResources().getString(R.string.rule_action_allow);
             case BLOCK:
                 return mContext.getResources().getString(R.string.rule_action_block);
+            case ANSWER_AND_END:
+                return mContext.getResources().getString(R.string.rule_action_answer_end);
+        }
+
+        throw new RuntimeException("Unknown action");
+    }
+
+    private String getActionHelp(RuleAction action) {
+        switch (action) {
+            case ALLOW:
+                return mContext.getResources().getString(R.string.rule_form_help_action_allow);
+            case BLOCK:
+                return mContext.getResources().getString(R.string.rule_form_help_action_block);
+            case ANSWER_AND_END:
+                return mContext.getResources()
+                               .getString(R.string.rule_form_help_action_answer_end);
         }
 
         throw new RuntimeException("Unknown action");

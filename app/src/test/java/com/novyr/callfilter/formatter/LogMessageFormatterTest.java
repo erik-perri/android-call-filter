@@ -26,12 +26,18 @@ public class LogMessageFormatterTest {
     private final String ACTION_ALLOWED = "ALLOWED";
     private final String ACTION_BLOCKED = "BLOCKED";
     private final String ACTION_FAILED = "FAILED";
+    private final String ACTION_ENDED_NO_VOICEMAIL = "ENDED_NO_VOICEMAIL";
+    private final String ACTION_FELL_BACK_TO_BLOCK = "FELL_BACK_TO_BLOCK";
 
     @Before
     public void setUp() {
         when(mMockResources.getString(R.string.log_action_allowed)).thenReturn(ACTION_ALLOWED);
         when(mMockResources.getString(R.string.log_action_blocked)).thenReturn(ACTION_BLOCKED);
         when(mMockResources.getString(R.string.log_action_failed)).thenReturn(ACTION_FAILED);
+        when(mMockResources.getString(R.string.log_action_ended_no_voicemail))
+                .thenReturn(ACTION_ENDED_NO_VOICEMAIL);
+        when(mMockResources.getString(R.string.log_action_fell_back_to_block))
+                .thenReturn(ACTION_FELL_BACK_TO_BLOCK);
         when(mMockResources.getString(R.string.log_number_private)).thenReturn(NUMBER_PRIVATE);
         when(mMockResources.getString(R.string.log_message_format)).thenReturn("%1$s: %2$s");
     }
@@ -94,6 +100,18 @@ public class LogMessageFormatterTest {
         log.setAction(LogAction.FAILED);
         assertEquals(
                 String.format("%s: %s", ACTION_FAILED, NUMBER_PRIVATE),
+                formatter.formatMessage(log)
+        );
+
+        log.setAction(LogAction.ENDED_NO_VOICEMAIL);
+        assertEquals(
+                String.format("%s: %s", ACTION_ENDED_NO_VOICEMAIL, NUMBER_PRIVATE),
+                formatter.formatMessage(log)
+        );
+
+        log.setAction(LogAction.FELL_BACK_TO_BLOCK);
+        assertEquals(
+                String.format("%s: %s", ACTION_FELL_BACK_TO_BLOCK, NUMBER_PRIVATE),
                 formatter.formatMessage(log)
         );
     }

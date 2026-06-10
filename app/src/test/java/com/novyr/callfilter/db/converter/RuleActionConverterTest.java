@@ -12,7 +12,8 @@ public class RuleActionConverterTest {
     public void toRuleAction_intValue_returnsCorrectEnum() {
         assertEquals(RuleAction.BLOCK, RuleActionConverter.toRuleAction(1));
         assertEquals(RuleAction.ALLOW, RuleActionConverter.toRuleAction(2));
-        assertNull(RuleActionConverter.toRuleAction(3));
+        assertEquals(RuleAction.ANSWER_AND_END, RuleActionConverter.toRuleAction(3));
+        assertNull(RuleActionConverter.toRuleAction(4));
         assertNull(RuleActionConverter.toRuleAction(-1));
     }
 
@@ -20,6 +21,7 @@ public class RuleActionConverterTest {
     public void fromRuleAction_enumValue_returnsCorrectInt() {
         assertEquals((Integer) 1, RuleActionConverter.fromRuleAction(RuleAction.BLOCK));
         assertEquals((Integer) 2, RuleActionConverter.fromRuleAction(RuleAction.ALLOW));
+        assertEquals((Integer) 3, RuleActionConverter.fromRuleAction(RuleAction.ANSWER_AND_END));
         assertNull(RuleActionConverter.fromRuleAction(null));
     }
 }

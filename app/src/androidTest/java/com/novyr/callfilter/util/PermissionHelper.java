@@ -22,7 +22,12 @@ public class PermissionHelper {
         permissions.add(Manifest.permission.READ_CONTACTS);
         permissions.add(Manifest.permission.WRITE_CONTACTS);
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // The hang-up action's in-context permissions; granted here so the capability is
+            // active in tests.
+            permissions.add(Manifest.permission.ANSWER_PHONE_CALLS);
+            permissions.add(Manifest.permission.READ_PHONE_STATE);
+        } else {
             permissions.add(Manifest.permission.CALL_PHONE);
             permissions.add(Manifest.permission.READ_PHONE_STATE);
 

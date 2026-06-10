@@ -26,6 +26,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     private final TextView mValueView;
     private final TextView mAllowView;
     private final TextView mBlockView;
+    private final TextView mAnswerEndView;
     private final SwitchCompat mEnabledSwitch;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -44,6 +45,7 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         mDragHandle = itemView.findViewById(R.id.rule_drag_handle);
         mAllowView = itemView.findViewById(R.id.rule_action_allow);
         mBlockView = itemView.findViewById(R.id.rule_action_block);
+        mAnswerEndView = itemView.findViewById(R.id.rule_action_answer_end);
         mTypeView = itemView.findViewById(R.id.rule_type);
         mValueView = itemView.findViewById(R.id.rule_value);
         mEnabledSwitch = itemView.findViewById(R.id.rule_enabled_switch);
@@ -93,10 +95,17 @@ public class RuleViewHolder extends RecyclerView.ViewHolder implements View.OnCl
             case ALLOW:
                 mAllowView.setVisibility(View.VISIBLE);
                 mBlockView.setVisibility(View.GONE);
+                mAnswerEndView.setVisibility(View.GONE);
                 break;
             case BLOCK:
                 mAllowView.setVisibility(View.GONE);
                 mBlockView.setVisibility(View.VISIBLE);
+                mAnswerEndView.setVisibility(View.GONE);
+                break;
+            case ANSWER_AND_END:
+                mAllowView.setVisibility(View.GONE);
+                mBlockView.setVisibility(View.GONE);
+                mAnswerEndView.setVisibility(View.VISIBLE);
                 break;
         }
     }

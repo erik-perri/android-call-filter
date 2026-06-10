@@ -13,7 +13,9 @@ public class LogActionConverterTest {
         assertEquals(LogAction.BLOCKED, LogActionConverter.toLogAction(0));
         assertEquals(LogAction.ALLOWED, LogActionConverter.toLogAction(1));
         assertEquals(LogAction.FAILED, LogActionConverter.toLogAction(2));
-        assertNull(LogActionConverter.toLogAction(3));
+        assertEquals(LogAction.ENDED_NO_VOICEMAIL, LogActionConverter.toLogAction(3));
+        assertEquals(LogAction.FELL_BACK_TO_BLOCK, LogActionConverter.toLogAction(4));
+        assertNull(LogActionConverter.toLogAction(5));
         assertNull(LogActionConverter.toLogAction(-1));
     }
 
@@ -22,6 +24,8 @@ public class LogActionConverterTest {
         assertEquals((Integer) 0, LogActionConverter.fromLogAction(LogAction.BLOCKED));
         assertEquals((Integer) 1, LogActionConverter.fromLogAction(LogAction.ALLOWED));
         assertEquals((Integer) 2, LogActionConverter.fromLogAction(LogAction.FAILED));
+        assertEquals((Integer) 3, LogActionConverter.fromLogAction(LogAction.ENDED_NO_VOICEMAIL));
+        assertEquals((Integer) 4, LogActionConverter.fromLogAction(LogAction.FELL_BACK_TO_BLOCK));
         assertNull(LogActionConverter.fromLogAction(null));
     }
 }

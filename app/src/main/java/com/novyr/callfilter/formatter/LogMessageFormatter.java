@@ -33,6 +33,12 @@ public class LogMessageFormatter implements MessageFormatter {
             case FAILED:
                 action = mResources.getString(R.string.log_action_failed);
                 break;
+            case ENDED_NO_VOICEMAIL:
+                action = mResources.getString(R.string.log_action_ended_no_voicemail);
+                break;
+            case FELL_BACK_TO_BLOCK:
+                action = mResources.getString(R.string.log_action_fell_back_to_block);
+                break;
             default:
                 action = String.format(
                         mResources.getString(R.string.log_action_unknown),

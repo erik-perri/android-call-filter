@@ -6,9 +6,10 @@
         android:name="android.permission.MODIFY_PHONE_STATE"
         android:maxSdkVersion="19"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission
-        android:name="android.permission.ANSWER_PHONE_CALLS"
-        android:maxSdkVersion="28" />
+    <!-- TelecomManager.acceptRingingCall()/endCall(). On API 28 this is how calls are blocked;
+         on API 29+ blocking happens in the screening service and this only powers the
+         answer-then-hang-up action (requested in-context with that action, not at launch). -->
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission
         android:name="android.permission.CALL_PHONE"
         android:maxSdkVersion="28" />
@@ -16,9 +17,11 @@
         android:name="android.permission.READ_CALL_LOG"
         android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission
-        android:name="android.permission.READ_PHONE_STATE"
-        android:maxSdkVersion="28" />
+    <!-- Delivery of the PHONE_STATE ringing broadcast to CallReceiver. Below API 29 that
+         broadcast drives all call filtering; on API 29+ filtering happens in the screening
+         service and the receiver only performs the answer-then-hang-up handoff (requested
+         in-context with that action, not at launch). -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".CallFilterApplication"

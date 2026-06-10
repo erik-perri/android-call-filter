@@ -22,6 +22,7 @@
     <string name="add_new_rule">Add new rule</string>
     <string name="rule_action_block">Block</string>
     <string name="rule_action_allow">Allow</string>
+    <string name="rule_action_answer_end">Hang up</string>
     <string name="rule_type_unmatched">Anything else</string>
     <string name="rule_type_recognized">Numbers in contacts</string>
     <string name="rule_type_unrecognized">Numbers not in contacts</string>
@@ -39,6 +40,14 @@
     <string name="rule_form_label_match">Match</string>
     <string name="rule_form_help_match" tools:ignore="TypographyDashes">Non-numeric characters and the US/Canada country code will be removed from the incoming number before matching (1-800-555-1234 will be matched as 8005551234)\n\nIf no wildcards are supplied, an exact match will be used.\n\nSupported wildcards:\n * Match zero or more digits\n ? Match one digit</string>
     <string name="rule_form_invalid">%s invalid</string>
+    <string name="rule_form_help_action_allow">Lets the call ring normally.</string>
+    <string name="rule_form_help_action_block">Stops the call. Most carriers will still send the caller to voicemail.</string>
+    <string name="rule_form_help_action_answer_end">Briefly answers, then hangs up, so the caller is dropped instead of reaching voicemail. The call will connect for a moment and callers will see it was picked up, then they can\'t leave a message.</string>
+    <string name="hang_up_permission_title">Allow hanging up?</string>
+    <string name="hang_up_permission_message">Hanging up needs the “answer phone calls” permission so Call Filter can pick up and immediately drop the call.\n\nThe call connects for a moment: callers will see it was picked up, they can\'t leave a message, and metered plans may count a very short call. Until the permission is granted, rules with this action will block instead.</string>
+    <string name="hang_up_permission_allow">Continue</string>
+    <string name="hang_up_permission_cancel">Use Block</string>
+    <string name="hang_up_permission_missing">Hang-up permission not granted; matching calls will be blocked instead</string>
     <string name="rule_list_drag_handle_desc">Reorder drag handle</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -46,6 +55,8 @@
     <string name="log_action_blocked">Blocked call</string>
     <string name="log_action_allowed">Allowed call</string>
     <string name="log_action_failed">Failed to block call</string>
+    <string name="log_action_ended_no_voicemail">Hung up call</string>
+    <string name="log_action_fell_back_to_block">Blocked call (hang up unavailable)</string>
     <string name="log_action_unknown">Unknown (%d)</string>
     <string name="log_number_private">Private</string>
     <string name="log_message_format">%1$s: %2$s</string>
