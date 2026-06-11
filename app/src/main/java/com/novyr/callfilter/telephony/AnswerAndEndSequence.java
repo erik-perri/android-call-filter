@@ -25,7 +25,7 @@ final class AnswerAndEndSequence {
     private static final String TAG = AnswerAndEndSequence.class.getSimpleName();
 
     /** Max time to keep re-issuing the answer / waiting for OFFHOOK before giving up. */
-    private static final long OFFHOOK_TIMEOUT_MS = 5000;
+    private static final long OFFHOOK_TIMEOUT_MS = 7500;
 
     /** How often to re-issue the answer and re-check the call state. */
     private static final long ANSWER_RETRY_INTERVAL_MS = 250;
