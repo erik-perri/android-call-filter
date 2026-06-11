@@ -145,7 +145,7 @@ jobs:
           TOTAL=$((MISSED + COVERED))
 
           if [ "$TOTAL" -gt 0 ]; then
-            PERCENTAGE=$(echo "scale=2; ($COVERED / $TOTAL) * 100" | bc)
+            PERCENTAGE=$(echo "scale=2; ($COVERED * 100) / $TOTAL" | bc)
           else
             PERCENTAGE="0"
           fi
