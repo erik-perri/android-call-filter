@@ -56,6 +56,16 @@ class LogViewHolder extends RecyclerView.ViewHolder implements View.OnCreateCont
             case FAILED:
                 mIcon.setImageResource(R.drawable.ic_error_outline_black_24dp);
                 break;
+            case ENDED_NO_VOICEMAIL:
+                mIcon.setImageResource(R.drawable.ic_call_end_red_24dp);
+                break;
+            case FELL_BACK_TO_BLOCK:
+                mIcon.setImageResource(R.drawable.ic_block_red_24dp);
+                break;
+            default:
+                // Recycled holders keep their last icon unless we clear it here.
+                mIcon.setImageDrawable(null);
+                break;
         }
     }
 
