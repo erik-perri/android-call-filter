@@ -8,7 +8,7 @@
         tools:ignore="ProtectedPermissions" />
     <!-- TelecomManager.acceptRingingCall()/endCall(). On API 28 this is how calls are blocked;
          on API 29+ blocking happens in the screening service and this only powers the
-         answer-then-hang-up action (requested in-context with that action, not at launch). -->
+         answer-then-hang-up action. -->
     <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
     <uses-permission
         android:name="android.permission.CALL_PHONE"
@@ -22,8 +22,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <!-- Delivery of the PHONE_STATE ringing broadcast to CallReceiver. Below API 29 that
          broadcast drives all call filtering; on API 29+ filtering happens in the screening
-         service and the receiver only performs the answer-then-hang-up handoff (requested
-         in-context with that action, not at launch). -->
+         service and the receiver only performs the answer-then-hang-up handoff. -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
