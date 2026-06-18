@@ -2,6 +2,7 @@ package com.novyr.callfilter.call;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.os.Build;
 
@@ -221,6 +222,65 @@ public class CallFilterTest {
         } finally {
             CallSimulator.cancelCallSilently("5557777");
         }
+    }
+
+    @Test
+    public void answerAndEnd_matchingRule_attemptsAnswerThenHangUp() throws Exception {
+        dbHelper.resetRules(
+                new RuleEntity(RuleType.UNRECOGNIZED, RuleAction.ANSWER_AND_END, null, true, 4),
+                new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
+        );
+
+        CallSimulator.simulateIncomingCall("5551234");
+        try {
+            LogEntity log = dbHelper.pollForLogEntry();
+            assertEquals("5551234", log.getNumber());
+            assertAnswerAndEndOutcome(log.getAction());
+        } finally {
+            CallSimulator.cancelCallSilently("5551234");
+        }
+    }
+
+    /**
+     * On Q+ the screening service cannot answer, so it silences the call and hands it off to
+     * CallReceiver via PendingAnswerStore. Duplicate RINGING broadcasts must not answer twice or
+     * log twice — the atomic claim guarantees exactly one outcome is recorded.
+     */
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
+    @Test
+    public void answerAndEnd_handoff_producesOneLogEntry() throws Exception {
+        dbHelper.resetRules(
+                new RuleEntity(RuleType.UNRECOGNIZED, RuleAction.ANSWER_AND_END, null, true, 4),
+                new RuleEntity(RuleType.UNMATCHED, RuleAction.ALLOW, null, true, 0)
+        );
+
+        CallSimulator.simulateIncomingCall("5558888");
+        try {
+            List<LogEntity> entries = pollForStableLogCount();
+            assertEquals("Answer handoff should log exactly one outcome", 1, entries.size());
+            assertEquals("5558888", entries.get(0).getNumber());
+            assertAnswerAndEndOutcome(entries.get(0).getAction());
+        } finally {
+            CallSimulator.cancelCallSilently("5558888");
+        }
+    }
+
+    /**
+     * The answer-then-hang-up path resolves three honest ways depending on the telephony stack:
+     * the answer connects and we end the call ({@code ENDED_NO_VOICEMAIL}); the answer never
+     * reaches off-hook so we fall back ({@code FELL_BACK_TO_BLOCK}); or the telephony call fails
+     * outright ({@code FAILED}). All three prove the dispatch took the answer path rather than a
+     * plain block or allow. Which one occurs — and whether voicemail is truly avoided — can only be
+     * pinned down on real hardware with a live carrier, so the emulator assertion checks the path,
+     * not the exact outcome.
+     */
+    private void assertAnswerAndEndOutcome(LogAction action) {
+        assertTrue(
+                "Expected an answer-then-hang-up outcome but was " + action,
+                action == LogAction.ENDED_NO_VOICEMAIL
+                        || action == LogAction.FELL_BACK_TO_BLOCK
+                        || action == LogAction.FAILED
+        );
     }
 
     /**

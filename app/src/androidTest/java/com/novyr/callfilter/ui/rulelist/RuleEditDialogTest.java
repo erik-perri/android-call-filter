@@ -101,6 +101,13 @@ public class RuleEditDialogTest {
                 .perform(click());
     }
 
+    private void selectActionSpinnerItem(String displayName) {
+        onView(withId(R.id.action_spinner)).perform(click());
+        onData(allOf(instanceOf(CharSequence.class), is((CharSequence) displayName)))
+                .inRoot(isPlatformPopup())
+                .perform(click());
+    }
+
     private void clickOk() {
         onView(withText("OK")).inRoot(isDialog()).perform(click());
     }
@@ -283,6 +290,57 @@ public class RuleEditDialogTest {
         onView(withText(getStringResource(R.string.rule_type_verification_failed)))
                 .inRoot(isPlatformPopup())
                 .check(doesNotExist());
+    }
+
+    @Test
+    public void actionSpinner_includesHangUpOption() {
+        launchActivity();
+        openCreateDialog();
+
+        onView(withId(R.id.action_spinner)).perform(click());
+
+        onData(allOf(
+                instanceOf(CharSequence.class),
+                is((CharSequence) getStringResource(R.string.rule_action_answer_end))
+        )).inRoot(isPlatformPopup())
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void actionSpinner_hangUpSelected_savesAnswerAndEndRule() throws Exception {
+        launchActivity();
+        openCreateDialog();
+
+        // The hang-up permissions are pre-granted, so HANG_UP is active: selecting the action
+        // shows no permission ask and keeps the selection (rather than reverting to Block).
+        selectTypeSpinnerItem(getStringResource(R.string.rule_type_private));
+        selectActionSpinnerItem(getStringResource(R.string.rule_action_answer_end));
+
+        clickOk();
+
+        onView(withText(R.string.rule_form_heading_create)).check(doesNotExist());
+
+        dbHelper.pollForRules(entries -> {
+            for (RuleEntity rule : entries) {
+                if (rule.getType() == RuleType.PRIVATE
+                        && rule.getAction() == RuleAction.ANSWER_AND_END) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    @Test
+    public void editDialog_answerAndEndRule_populatesAction() {
+        dbHelper.insertRule(RuleType.PRIVATE, RuleAction.ANSWER_AND_END, null, true, TEST_ORDER);
+
+        launchActivity();
+        openEditDialog(0);
+
+        onView(withId(R.id.action_spinner))
+                .check(matches(withSpinnerText(
+                        containsString(getStringResource(R.string.rule_action_answer_end)))));
     }
 
     private String getStringResource(int resId) {
