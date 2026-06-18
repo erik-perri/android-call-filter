@@ -27,8 +27,11 @@ public class AndroidCapabilityResolver implements CapabilityResolver {
             case CONTACTS_MATCHING:
                 return true;
             case HANG_UP:
-                // TODO Figure out the Build.VERSION floor, if there is one.
-                return true;
+                // Floor is P: below it we answer via the ITelephony.answerRingingCall() reflection,
+                // which the framework gates behind MODIFY_PHONE_STATE (signature/privileged, never
+                // grantable to a normal app). From P, TelecomManager + the runtime-grantable
+                // ANSWER_PHONE_CALLS is what makes answering possible. Verified failing on API 27.
+                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
         }
 
         return false;
