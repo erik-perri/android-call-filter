@@ -44,7 +44,7 @@
     <string name="rule_form_help_action_block">Stops the call. Most carriers will still send the caller to voicemail.</string>
     <string name="rule_form_help_action_answer_end">Briefly answers, then hangs up, so the caller is dropped instead of reaching voicemail. The microphone is muted while connected.</string>
     <string name="hang_up_permission_title">Allow hanging up?</string>
-    <string name="hang_up_permission_message">Hanging up needs the “answer phone calls” permission so Call Filter can pick up and immediately drop the call.\n\nThe call connects for a moment: callers will see it was picked up, they can\'t leave a message, and metered plans may count a very short call. The microphone is muted while it\'s connected. Until the permission is granted, rules with this action will block instead.</string>
+    <string name="hang_up_permission_message">Hanging up needs the “answer phone calls” permission so Call Filter can pick up and immediately drop the call, plus call-log access so it can tell which ringing call to drop.\n\nThe call connects for a moment: callers will see it was picked up, they can\'t leave a message, and metered plans may count a very short call. The microphone is muted while it\'s connected. Until both permissions are granted, rules with this action will block instead.</string>
     <string name="hang_up_permission_allow">Continue</string>
     <string name="hang_up_permission_cancel">Use Block</string>
     <string name="hang_up_permission_missing">Hang-up permission not granted; matching calls will be blocked instead</string>

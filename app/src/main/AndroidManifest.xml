@@ -16,9 +16,10 @@
     <!-- AudioManager.setMicrophoneMute(): keeps the caller from hearing the room during the
          brief connected moment of the answer-then-hang-up action. -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission
-        android:name="android.permission.READ_CALL_LOG"
-        android:maxSdkVersion="28" />
+    <!-- On API 28 this enriches the PHONE_STATE broadcast with the caller number. On API 29+ it is
+         what makes that broadcast carry EXTRA_INCOMING_NUMBER, which CallReceiver needs to match the
+         ringing call to the right answer-then-hang-up mark; without it the action degrades to block. -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <!-- Delivery of the PHONE_STATE ringing broadcast to CallReceiver. Below API 29 that
          broadcast drives all call filtering; on API 29+ filtering happens in the screening

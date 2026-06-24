@@ -65,11 +65,15 @@ public class AndroidCapabilityResolver implements CapabilityResolver {
             case HANG_UP:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     // ANSWER_PHONE_CALLS drives acceptRingingCall()/endCall(). READ_PHONE_STATE is
-                    // what gets the PHONE_STATE ringing broadcast delivered to CallReceiver for
-                    // the answer handoff.
+                    // what gets the PHONE_STATE ringing broadcast delivered to CallReceiver for the
+                    // answer handoff. READ_CALL_LOG is what puts the caller number on that broadcast
+                    // so the receiver can match the ringing call to the right mark instead of
+                    // guessing; without it the handoff can't correlate, so we require it and let the
+                    // action degrade to a (correctly correlated) block instead.
                     return new String[]{
                             Manifest.permission.ANSWER_PHONE_CALLS,
                             Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.READ_CALL_LOG,
                     };
                 }
 

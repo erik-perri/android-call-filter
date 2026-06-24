@@ -1,5 +1,6 @@
 package com.novyr.callfilter.telephony;
 
+import android.os.SystemClock;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 
@@ -23,10 +24,13 @@ import java.util.List;
  */
 public final class PendingAnswerStore {
     /**
-     * How long a mark stays live. If the receiver never claims it within this window we drop it
-     * so a later, unrelated call is never answered by mistake.
+     * How long a mark stays live. The screened call reaches the ringing state within a fraction of
+     * a second of being marked, so a tight window is enough to claim it while keeping the span in
+     * which an unrelated call could be answered by mistake small. Measured against
+     * {@link SystemClock#elapsedRealtime()} so a wall-clock change between mark and broadcast can't
+     * expire a live mark early or keep a stale one alive.
      */
-    private static final long EXPIRY_MS = 8000;
+    private static final long EXPIRY_MS = 3000;
 
     private static final List<Claim> sPending = new ArrayList<>();
 
@@ -35,7 +39,7 @@ public final class PendingAnswerStore {
 
     public static synchronized void markAnswerNextRinging(@Nullable String number) {
         prune();
-        sPending.add(new Claim(number, System.currentTimeMillis() + EXPIRY_MS));
+        sPending.add(new Claim(number, SystemClock.elapsedRealtime() + EXPIRY_MS));
     }
 
     /**
@@ -44,9 +48,11 @@ public final class PendingAnswerStore {
      * and the RINGING broadcast a different call could start ringing, and without it we would
      * answer whichever call happened to ring next.
      *
-     * <p>When the broadcast carries no number (no READ_CALL_LOG enrichment on Q+), matching is
-     * only safe if exactly one mark is outstanding; with several we refuse rather than risk
-     * answering the wrong call.
+     * <p>The answer-then-hang-up capability now requires READ_CALL_LOG, so the broadcast normally
+     * carries the number and the per-number match above does the work. A numberless broadcast is
+     * the rare fallback (e.g. an OEM that redacts it despite the grant); there, matching is only
+     * safe if exactly one mark is outstanding, so with several we refuse rather than risk answering
+     * the wrong call.
      *
      * @return The claimed mark, or null if this ringing call is not one we should answer.
      */
@@ -75,7 +81,7 @@ public final class PendingAnswerStore {
     }
 
     private static void prune() {
-        long now = System.currentTimeMillis();
+        long now = SystemClock.elapsedRealtime();
         for (Iterator<Claim> it = sPending.iterator(); it.hasNext(); ) {
             if (now > it.next().mExpiresAt) {
                 it.remove();

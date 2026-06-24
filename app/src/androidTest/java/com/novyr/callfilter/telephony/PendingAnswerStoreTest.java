@@ -75,7 +75,8 @@ public class PendingAnswerStoreTest {
 
     @Test
     public void claim_numberlessMark_matchesAnyIncomingNumber() {
-        // A mark made without a number (no READ_CALL_LOG enrichment on Q+) is a wildcard.
+        // A mark made without a number (handle missing, or a broadcast redacted despite the grant)
+        // is a wildcard.
         PendingAnswerStore.markAnswerNextRinging(null);
 
         PendingAnswerStore.Claim claim = PendingAnswerStore.claim("5551234");
