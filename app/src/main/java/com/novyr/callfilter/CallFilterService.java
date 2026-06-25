@@ -27,6 +27,8 @@ public class CallFilterService extends CallScreeningService {
 
     @Override
     public void onScreenCall(@NonNull Call.Details details) {
+        Context context = getApplicationContext();
+
         CallResponse.Builder response = new CallResponse.Builder();
         response.setDisallowCall(false);
         response.setRejectCall(false);
@@ -38,7 +40,6 @@ public class CallFilterService extends CallScreeningService {
             return;
         }
 
-        Context context = getApplicationContext();
         String number = getNumberFromDetails(details);
 
         executor.execute(() -> {

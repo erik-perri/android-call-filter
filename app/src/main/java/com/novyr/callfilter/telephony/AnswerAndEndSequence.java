@@ -44,11 +44,35 @@ final class AnswerAndEndSequence {
         int getCallState();
     }
 
+    /**
+     * Persists/clears a marker around the microphone mute so a sequence whose process is killed
+     * mid-call can be detected and undone at the next process start.
+     */
+    interface MuteGuard {
+        void arm();
+
+        void disarm();
+
+        MuteGuard NO_OP = new MuteGuard() {
+            @Override
+            public void arm() {
+            }
+
+            @Override
+            public void disarm() {
+            }
+        };
+    }
+
     private AnswerAndEndSequence() {
     }
 
-    static AnswerAndEndResult run(@Nullable AudioManager audioManager, Telephony telephony) {
-        boolean muted = muteMicrophone(audioManager);
+    static AnswerAndEndResult run(
+            @Nullable AudioManager audioManager,
+            Telephony telephony,
+            MuteGuard muteGuard
+    ) {
+        boolean muted = muteMicrophone(audioManager, muteGuard);
 
         try {
             boolean connected = false;
@@ -72,7 +96,7 @@ final class AnswerAndEndSequence {
                     : AnswerAndEndResult.ENDED_WITHOUT_ANSWER;
         } finally {
             if (muted) {
-                unmuteMicrophone(audioManager);
+                unmuteMicrophone(audioManager, muteGuard);
             }
         }
     }
@@ -84,7 +108,7 @@ final class AnswerAndEndSequence {
      *
      * @return Whether the microphone was muted by us and must be restored.
      */
-    private static boolean muteMicrophone(@Nullable AudioManager audioManager) {
+    private static boolean muteMicrophone(@Nullable AudioManager audioManager, MuteGuard muteGuard) {
         if (audioManager == null) {
             return false;
         }
@@ -101,10 +125,14 @@ final class AnswerAndEndSequence {
                 return false;
             }
 
+            // Persist the marker before touching the mute so a kill during the connected window is
+            // recoverable on the next call; drop it again if the mute itself fails.
+            muteGuard.arm();
             audioManager.setMicrophoneMute(true);
             return true;
         } catch (Exception e) {
             // Some OEMs reject non-dialer mic muting; the answer dance must still proceed.
+            muteGuard.disarm();
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, "Failed to mute microphone", e);
             }
@@ -112,9 +140,12 @@ final class AnswerAndEndSequence {
         }
     }
 
-    private static void unmuteMicrophone(AudioManager audioManager) {
+    private static void unmuteMicrophone(AudioManager audioManager, MuteGuard muteGuard) {
         try {
             audioManager.setMicrophoneMute(false);
+            // Only clear the marker once the mute is actually gone; if this throws, leave it set so
+            // the next call's recovery retries instead of stranding the user muted.
+            muteGuard.disarm();
         } catch (Exception e) {
             if (BuildConfig.DEBUG) {
                 Log.w(TAG, "Failed to restore microphone", e);

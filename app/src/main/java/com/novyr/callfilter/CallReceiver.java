@@ -34,7 +34,7 @@ public class CallReceiver extends BroadcastReceiver {
      * Static to ensure the thread pool persists for the duration of the process,
      * even if this specific Receiver instance is short-lived.
      */
-    private static final Executor executor = Executors.newSingleThreadExecutor();
+    static final Executor executor = Executors.newSingleThreadExecutor();
 
     @Override
     public void onReceive(Context context, Intent intent) {

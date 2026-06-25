@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 public class AndroidLegacyHandler implements HandlerInterface {
     private static final String TAG = AndroidLegacyHandler.class.getSimpleName();
 
+    private final Context mContext;
     private TelephonyManager mTelephonyManager = null;
     private AudioManager mAudioManager = null;
     private Object mInterfaceTelephony = null;
@@ -21,6 +22,7 @@ public class AndroidLegacyHandler implements HandlerInterface {
     private Method mMethodAnswerRingingCall = null;
 
     AndroidLegacyHandler(Context context) {
+        mContext = context.getApplicationContext();
         mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
         try {
@@ -102,6 +104,6 @@ public class AndroidLegacyHandler implements HandlerInterface {
                         ? mTelephonyManager.getCallState()
                         : TelephonyManager.CALL_STATE_IDLE;
             }
-        });
+        }, MicMuteGuard.guardFor(mContext));
     }
 }

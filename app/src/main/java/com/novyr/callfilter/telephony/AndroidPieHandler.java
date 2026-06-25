@@ -14,11 +14,13 @@ import androidx.core.content.ContextCompat;
 
 @RequiresApi(api = Build.VERSION_CODES.P)
 public class AndroidPieHandler implements HandlerInterface {
+    private final Context mContext;
     private TelecomManager mTelecomManager = null;
     private TelephonyManager mTelephonyManager = null;
     private AudioManager mAudioManager = null;
 
     AndroidPieHandler(Context context) {
+        mContext = context.getApplicationContext();
         mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
         if (ContextCompat.checkSelfPermission(
@@ -63,6 +65,6 @@ public class AndroidPieHandler implements HandlerInterface {
                         ? mTelephonyManager.getCallState()
                         : TelephonyManager.CALL_STATE_IDLE;
             }
-        });
+        }, MicMuteGuard.guardFor(mContext));
     }
 }
