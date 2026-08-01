@@ -81,11 +81,17 @@ jobs:
       - name: Set emulator console auth token
         run: echo "ci-auth-token" > ~/.emulator_console_auth_token
 
+      - name: Clean unused devices
+        run: ./gradlew cleanManagedDevices --unusedOnly || true
+
       - name: Run test on ${{ matrix.device }}
         run: >
           ./gradlew :app:${{ matrix.device }}DebugAndroidTest
           -PtestMinSdk=26
           -Pandroid.testInstrumentationRunnerArguments.useTestStorageService=true
+          -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
+          -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=15
+          -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
 
       - name: Upload Instrumentation Coverage
         if: always()
