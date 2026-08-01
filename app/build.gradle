@@ -165,7 +165,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.7.0'
 
     // UI Automator (system dialogs, permissions, shell commands)
-    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.4.0'
 
     // Test Orchestrator (runs each test in its own process to clear data and permissions)
     androidTestUtil 'androidx.test:orchestrator:1.6.1'
