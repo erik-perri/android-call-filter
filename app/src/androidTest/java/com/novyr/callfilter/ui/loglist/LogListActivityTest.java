@@ -151,8 +151,9 @@ public class LogListActivityTest {
                 .inRoot(isDialog())
                 .perform(click());
 
-        onView(withId(R.id.log_list))
-                .check(matches(isDisplayed()));
+        // The dialog window can still hold focus for a moment after the click, and
+        // Espresso searches the focused window, so wait for it to go away.
+        waitForLogList();
     }
 
     @Test
