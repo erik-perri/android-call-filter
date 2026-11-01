@@ -45,8 +45,7 @@ jobs:
 
   instrumentation:
     runs-on: ubuntu-latest
-    # Room for two 15-minute test attempts, diagnostics capture, and setup.
-    timeout-minutes: 45
+    timeout-minutes: 30
     needs: unit
     # This job only runs if it's a PR, a manual trigger, or a call from another workflow
     if: >
@@ -89,165 +88,29 @@ jobs:
       - name: Set emulator console auth token
         run: echo "ci-auth-token" > ~/.emulator_console_auth_token
 
-      - name: Clean unused devices
-        run: ./gradlew cleanManagedDevices --unusedOnly || true
-
-      # Gradle downloads the system image on every run, and that download has
-      # been seen to hang indefinitely (pixel2Api27, 2026-11-01). Restoring it
-      # from cache skips the download entirely after the first good run.
-      - name: Restore system image
-        id: sysimg-restore
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ${{ env.ANDROID_HOME }}/system-images
-          key: system-images-${{ matrix.device }}-v2
-
-      # Managed-device runs are occasionally flaky, and pixel2Api28 sometimes
-      # hangs mid-run with no timeout ever firing. Each attempt runs under a
-      # watchdog: on timeout it snapshots the device and host *before* killing
-      # Gradle (killing Gradle shuts the emulator down), then retries once. A
-      # pass on the second attempt is surfaced as a warning annotation.
+      # pixel2Api28's emulator intermittently wedges or drops offline. It does so
+      # with both 32- and 64-bit images and with both swiftshader_indirect and
+      # software GPU modes, and every observed failure came after test 25. The
+      # device exists to cover the Pie-specific paths (AndroidPieHandler, the API
+      # 28 permission set), so it only runs the tests for those; the UI suites
+      # are covered by the other devices.
       - name: Run test on ${{ matrix.device }}
+        timeout-minutes: 20
         env:
           DEVICE: ${{ matrix.device }}
-          ATTEMPT_TIMEOUT_SECONDS: 900
         run: |
-          ADB="$ANDROID_HOME/platform-tools/adb"
-          DIAG_DIR="$RUNNER_TEMP/diagnostics"
-          mkdir -p "$DIAG_DIR"
-
-          # Stream the full device logcat for the whole step. The per-test
-          # logcats in the results are only written when a test finishes, so
-          # they never contain the hang itself.
-          (
-            while true; do
-              "$ADB" wait-for-device >/dev/null 2>&1 || true
-              echo "===== logcat attached $(date -u +%FT%TZ)" >> "$DIAG_DIR/device-logcat.txt"
-              "$ADB" logcat -v threadtime >> "$DIAG_DIR/device-logcat.txt" 2>&1 || true
-              sleep 2
-            done
-          ) &
-          LOGCAT_LOOP_PID=$!
-          trap 'pkill -P "$LOGCAT_LOOP_PID" 2>/dev/null || true; kill "$LOGCAT_LOOP_PID" 2>/dev/null || true' EXIT
-
-          capture_diagnostics() {
-            local d="$DIAG_DIR/attempt-$1"
-            mkdir -p "$d"
-            echo "Capturing diagnostics to $d"
-
-            # Host side: is the emulator spinning or idle, what are Gradle/UTP doing?
-            uptime > "$d/host-uptime.txt" 2>&1 || true
-            ps -eo pid,ppid,stat,pcpu,pmem,etime,args --sort=-pcpu > "$d/host-ps.txt" 2>&1 || true
-            for pid in $(pgrep -f java || true); do
-              timeout 30 jstack "$pid" > "$d/host-jstack-$pid.txt" 2>&1 || true
-            done
-            timeout 15 "$ADB" devices -l > "$d/adb-devices.txt" 2>&1 || true
-
-            # Per-thread view of the emulator: which thread is spinning, and its
-            # kernel and native stacks (vCPU stuck in KVM vs a render/IO thread).
-            for qpid in $(pgrep -f qemu-system || true); do
-              ps -L -o tid,stat,pcpu,comm -p "$qpid" > "$d/host-qemu-threads-$qpid.txt" 2>&1 || true
-              sudo sh -c "for t in /proc/$qpid/task/*; do echo \"===== \$t \$(cat \$t/comm)\"; cat \$t/stack; done" \
-                > "$d/host-qemu-kstacks-$qpid.txt" 2>&1 || true
-              if command -v gdb > /dev/null; then
-                timeout 90 sudo gdb -batch -p "$qpid" -ex 'thread apply all bt' > "$d/host-qemu-gdb-$qpid.txt" 2>&1 || true
-              fi
-            done
-
-            # Guest side. If adb can't even run `true`, the emulator itself is
-            # wedged rather than something inside Android.
-            if ! timeout 20 "$ADB" shell true > /dev/null 2>&1; then
-              echo "adb shell unresponsive at $(date -u +%FT%TZ)" > "$d/adb-shell-UNRESPONSIVE.txt"
-              return 0
-            fi
-            timeout 30 "$ADB" exec-out screencap -p > "$d/screen.png" 2>/dev/null || true
-            timeout 60 "$ADB" shell ps -A -o PID,PPID,S,WCHAN,TIME,NAME > "$d/guest-ps.txt" 2>&1 || true
-            timeout 60 "$ADB" shell dumpsys activity activities > "$d/dumpsys-activities.txt" 2>&1 || true
-            timeout 60 "$ADB" shell dumpsys activity processes > "$d/dumpsys-processes.txt" 2>&1 || true
-            timeout 60 "$ADB" shell dumpsys window windows > "$d/dumpsys-windows.txt" 2>&1 || true
-            timeout 60 "$ADB" logcat -d -b events -b crash -v threadtime > "$d/logcat-events-crash.txt" 2>&1 || true
-
-            # Java stack dumps of the app/instrumentation and orchestrator
-            # processes show exactly where they are stuck. AOSP images are
-            # userdebug, so su is available for kill -3 and reading /data/anr.
-            for proc in com.novyr.callfilter androidx.test.orchestrator; do
-              for gpid in $(timeout 15 "$ADB" shell pidof "$proc" 2>/dev/null | tr -d '\r'); do
-                timeout 15 "$ADB" shell su 0 kill -3 "$gpid" > /dev/null 2>&1 || true
-              done
-            done
-            sleep 5
-            timeout 60 "$ADB" shell "su 0 sh -c 'ls -l /data/anr; for f in /data/anr/*; do echo \"===== \$f\"; cat \"\$f\"; done'" \
-              > "$d/guest-anr-traces.txt" 2>&1 || true
-          }
-
-          run_tests() {
-            ./gradlew ":app:${DEVICE}DebugAndroidTest" \
-              -PtestMinSdk=26 \
-              -Pandroid.testInstrumentationRunnerArguments.useTestStorageService=true \
-              -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
-              -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=15 \
-              -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1 &
-            local gradle_pid=$!
-            local waited=0
-            while kill -0 "$gradle_pid" 2>/dev/null; do
-              if [ "$waited" -ge "$ATTEMPT_TIMEOUT_SECONDS" ]; then
-                echo "::warning title=Instrumentation attempt timed out::${DEVICE} attempt $1 did not finish within ${ATTEMPT_TIMEOUT_SECONDS}s; see the diagnostics-${DEVICE} artifact"
-                capture_diagnostics "$1"
-                kill -TERM "$gradle_pid" 2>/dev/null || true
-                sleep 30
-                kill -KILL "$gradle_pid" 2>/dev/null || true
-                wait "$gradle_pid" 2>/dev/null || true
-                return 124
-              fi
-              sleep 10
-              waited=$((waited + 10))
-            done
-            wait "$gradle_pid"
-          }
-
-          for attempt in 1 2; do
-            echo "===== attempt ${attempt} starting $(date -u +%FT%TZ)" >> "$DIAG_DIR/device-logcat.txt"
-            if run_tests "$attempt"; then
-              if [ "$attempt" -gt 1 ]; then
-                echo "::warning title=Flaky instrumentation run::${DEVICE} passed only on attempt ${attempt}"
-              fi
-              exit 0
-            fi
-            echo "::warning title=Instrumentation attempt failed::${DEVICE} attempt ${attempt} failed or timed out"
-
-            # Tear down whatever a failed or killed attempt left behind so the
-            # retry gets a fresh emulator.
-            ./gradlew --stop || true
-            pkill -9 -f qemu-system || true
-            "$ADB" kill-server || true
-            find ~/.android/avd/gradle-managed -name '*.lock' -prune -exec rm -rf {} + 2>/dev/null || true
-          done
-          exit 1
-
-      # Only cache an image that finished installing; a hung or partial
-      # download must not poison the cache.
-      - name: Check system image is complete
-        id: sysimg-check
-        if: always() && steps.sysimg-restore.outputs.cache-hit != 'true'
-        run: |
-          if find "$ANDROID_HOME/system-images" -name source.properties 2>/dev/null | grep -q .; then
-            echo "complete=true" >> "$GITHUB_OUTPUT"
+          extra_args=()
+          if [ "$DEVICE" = "pixel2Api28" ]; then
+            extra_args+=("-Pandroid.testInstrumentationRunnerArguments.class=com.novyr.callfilter.call.CallFilterTest,com.novyr.callfilter.permissions.PermissionFlowTest")
           fi
 
-      - name: Save system image
-        if: always() && steps.sysimg-check.outputs.complete == 'true'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ${{ env.ANDROID_HOME }}/system-images
-          key: system-images-${{ matrix.device }}-v2
-
-      - name: Upload diagnostics
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: diagnostics-${{ matrix.device }}
-          path: ${{ runner.temp }}/diagnostics/
-          if-no-files-found: ignore
+          ./gradlew ":app:${DEVICE}DebugAndroidTest" \
+            -PtestMinSdk=26 \
+            -Pandroid.testInstrumentationRunnerArguments.useTestStorageService=true \
+            -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
+            -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=15 \
+            -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1 \
+            "${extra_args[@]}"
 
       - name: Upload Instrumentation Coverage
         if: always()
