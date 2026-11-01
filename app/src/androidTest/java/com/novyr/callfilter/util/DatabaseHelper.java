@@ -6,7 +6,6 @@ import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.novyr.callfilter.db.CallFilterDatabase;
@@ -106,16 +105,6 @@ public class DatabaseHelper {
         List<RuleEntity> rules = getRuleEntries();
         assertFalse("Rule condition not met within timeout", rules == null || !condition.test(rules));
         return rules;
-    }
-
-    /**
-     * Flushes pending LiveData updates by forcing a pass through the main looper.
-     * Use after direct DAO inserts to ensure the UI has processed all updates.
-     */
-    public <A extends android.app.Activity> void waitForIdle(ActivityScenario<A> scenario) {
-        scenario.onActivity(activity -> {
-            // Force a pass through the main looper to process pending LiveData updates
-        });
     }
 
     private void drainWriteExecutor() {

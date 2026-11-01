@@ -12,11 +12,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.novyr.callfilter.util.ViewWait.waitUntil;
 import static org.hamcrest.Matchers.not;
 
 import android.os.Build;
 
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
@@ -28,7 +28,6 @@ import com.novyr.callfilter.R;
 import com.novyr.callfilter.db.entity.enums.LogAction;
 import com.novyr.callfilter.ui.rulelist.RuleListActivity;
 import com.novyr.callfilter.util.DatabaseHelper;
-import com.novyr.callfilter.util.DatabaseIdlingResource;
 import com.novyr.callfilter.util.PermissionHelper;
 
 import org.hamcrest.Matchers;
@@ -40,7 +39,6 @@ import org.junit.Test;
 @MediumTest
 public class LogListActivityTest {
     private final DatabaseHelper dbHelper = new DatabaseHelper();
-    private final DatabaseIdlingResource idlingResource = new DatabaseIdlingResource();
 
     @Rule
     public GrantPermissionRule permissions = PermissionHelper.grantAllPermissions();
@@ -51,8 +49,6 @@ public class LogListActivityTest {
 
     @Before
     public void setUp() throws Exception {
-        IdlingRegistry.getInstance().register(idlingResource);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             UiDevice device = UiDevice.getInstance(
                     InstrumentationRegistry.getInstrumentation());
@@ -65,13 +61,11 @@ public class LogListActivityTest {
     @After
     public void tearDown() {
         dbHelper.clearLogs();
-        IdlingRegistry.getInstance().unregister(idlingResource);
     }
 
     @Test
     public void logList_noLogs_showsEmptyView() {
-        onView(withId(R.id.empty_view))
-                .check(matches(isDisplayed()));
+        waitUntil(withId(R.id.empty_view), matches(isDisplayed()));
         onView(withId(R.id.log_list))
                 .check(matches(not(isDisplayed())));
     }
@@ -82,10 +76,8 @@ public class LogListActivityTest {
         dbHelper.insertLog(LogAction.ALLOWED, "5550002");
         dbHelper.insertLog(LogAction.BLOCKED, "5550003");
 
-        waitForIdle();
+        waitForLogList();
 
-        onView(withId(R.id.log_list))
-                .check(matches(isDisplayed()));
         onView(withId(R.id.empty_view))
                 .check(matches(not(isDisplayed())));
     }
@@ -94,22 +86,20 @@ public class LogListActivityTest {
     public void logEntry_hasNumber_showsNumberInMessage() {
         dbHelper.insertLog(LogAction.BLOCKED, "5551234");
 
-        waitForIdle();
+        waitForLogList();
 
-        onView(withId(R.id.log_list))
-                .check(matches(isDisplayed()));
-        onView(withId(R.id.log_list_message))
-                .check(matches(withText(Matchers.containsString("555-1234"))));
+        waitUntil(withId(R.id.log_list_message),
+                matches(withText(Matchers.containsString("555-1234"))));
     }
 
     @Test
     public void logEntry_displayed_showsTimestamp() {
         dbHelper.insertLog(LogAction.BLOCKED, "5550001");
 
-        waitForIdle();
+        waitForLogList();
 
-        onView(withId(R.id.log_list_created))
-                .check(matches(withText(Matchers.matchesPattern(".*\\d+.+\\d+.*"))));
+        waitUntil(withId(R.id.log_list_created),
+                matches(withText(Matchers.matchesPattern(".*\\d+.+\\d+.*"))));
     }
 
     @Test
@@ -129,7 +119,7 @@ public class LogListActivityTest {
     public void clearLogsDialog_confirmed_showsEmptyView() {
         dbHelper.insertLog(LogAction.BLOCKED, "5550001");
 
-        waitForIdle();
+        waitForLogList();
 
         onView(withContentDescription("More options")).perform(click());
         onView(withText(R.string.action_clear_logs))
@@ -144,15 +134,14 @@ public class LogListActivityTest {
                 .check(matches(isDisplayed()))
                 .perform(click());
 
-        onView(withId(R.id.empty_view))
-                .check(matches(isDisplayed()));
+        waitUntil(withId(R.id.empty_view), matches(isDisplayed()));
     }
 
     @Test
     public void clearLogsDialog_cancelled_logsRemainVisible() {
         dbHelper.insertLog(LogAction.BLOCKED, "5550001");
 
-        waitForIdle();
+        waitForLogList();
 
         onView(withContentDescription("More options")).perform(click());
         onView(withText(R.string.action_clear_logs))
@@ -170,7 +159,7 @@ public class LogListActivityTest {
     public void logEntry_removeFromContextMenu_removesEntry() {
         dbHelper.insertLog(LogAction.BLOCKED, "5550001");
 
-        waitForIdle();
+        waitForLogList();
 
         onView(withId(R.id.log_list))
                 .perform(actionOnItemAtPosition(0, longClick()));
@@ -178,11 +167,15 @@ public class LogListActivityTest {
         onView(withText(R.string.context_menu_log_remove))
                 .perform(click());
 
-        onView(withId(R.id.empty_view))
-                .check(matches(isDisplayed()));
+        waitUntil(withId(R.id.empty_view), matches(isDisplayed()));
     }
 
-    private void waitForIdle() {
-        dbHelper.waitForIdle(activityRule.getScenario());
+    /**
+     * Waits for inserted logs to reach the UI. The list is only made visible in the
+     * same LiveData callback that hands the entries to the adapter, so once it is
+     * displayed the rows are bound.
+     */
+    private void waitForLogList() {
+        waitUntil(withId(R.id.log_list), matches(isDisplayed()));
     }
 }

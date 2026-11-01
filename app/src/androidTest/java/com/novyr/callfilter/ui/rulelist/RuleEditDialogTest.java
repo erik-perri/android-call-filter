@@ -19,12 +19,12 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static com.novyr.callfilter.util.ViewWait.waitUntil;
 
 
 import android.os.Build;
 
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SdkSuppress;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -36,7 +36,6 @@ import com.novyr.callfilter.db.entity.RuleEntity;
 import com.novyr.callfilter.db.entity.enums.RuleAction;
 import com.novyr.callfilter.db.entity.enums.RuleType;
 import com.novyr.callfilter.util.DatabaseHelper;
-import com.novyr.callfilter.util.DatabaseIdlingResource;
 import com.novyr.callfilter.util.PermissionHelper;
 
 import org.junit.After;
@@ -49,7 +48,6 @@ import org.junit.Test;
 @MediumTest
 public class RuleEditDialogTest {
     private final DatabaseHelper dbHelper = new DatabaseHelper();
-    private final DatabaseIdlingResource idlingResource = new DatabaseIdlingResource();
     private ActivityScenario<RuleListActivity> scenario;
 
     private static final int TEST_ORDER = 100;
@@ -59,8 +57,6 @@ public class RuleEditDialogTest {
 
     @Before
     public void setUp() throws Exception {
-        IdlingRegistry.getInstance().register(idlingResource);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             UiDevice device = UiDevice.getInstance(
                     InstrumentationRegistry.getInstrumentation());
@@ -76,7 +72,6 @@ public class RuleEditDialogTest {
             scenario.close();
         }
         dbHelper.resetRules();
-        IdlingRegistry.getInstance().unregister(idlingResource);
     }
 
     private void launchActivity() {
@@ -88,6 +83,8 @@ public class RuleEditDialogTest {
     }
 
     private void openEditDialog(int position) {
+        // The rule list is populated asynchronously from LiveData after launch.
+        waitUntil(withId(R.id.rule_list), matches(isDisplayed()));
         onView(withId(R.id.rule_list))
                 .perform(actionOnItemAtPosition(position, longClick()));
         onView(withText(R.string.context_menu_edit_rule))
