@@ -38,7 +38,7 @@ jobs:
 
       - name: Upload Unit Test Coverage
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage-unit
           path: app/build/**/*.exec
@@ -95,14 +95,14 @@ jobs:
 
       - name: Upload Instrumentation Coverage
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage-${{ matrix.device }}
           path: "**/build/**/*.ec"
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: results-${{ matrix.device }}
           path: app/build/test-results/managedDevice/
@@ -130,7 +130,7 @@ jobs:
         run: ./gradlew generateUnifiedCoverageReport
 
       - name: Upload Full HTML Report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: full-coverage-report-html
           path: app/build/reports/jacoco/generateUnifiedCoverageReport/html/
