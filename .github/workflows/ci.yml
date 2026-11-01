@@ -91,6 +91,16 @@ jobs:
       - name: Clean unused devices
         run: ./gradlew cleanManagedDevices --unusedOnly || true
 
+      # Gradle downloads the system image on every run, and that download has
+      # been seen to hang indefinitely (pixel2Api27, 2026-11-01). Restoring it
+      # from cache skips the download entirely after the first good run.
+      - name: Restore system image
+        id: sysimg-restore
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.ANDROID_HOME }}/system-images
+          key: system-images-${{ matrix.device }}-v1
+
       - name: Run test on ${{ matrix.device }}
         run: >
           ./gradlew :app:${{ matrix.device }}DebugAndroidTest
@@ -99,6 +109,23 @@ jobs:
           -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect
           -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=15
           -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
+
+      # Only cache an image that finished installing; a hung or partial
+      # download must not poison the cache.
+      - name: Check system image is complete
+        id: sysimg-check
+        if: always() && steps.sysimg-restore.outputs.cache-hit != 'true'
+        run: |
+          if find "$ANDROID_HOME/system-images" -name source.properties 2>/dev/null | grep -q .; then
+            echo "complete=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Save system image
+        if: always() && steps.sysimg-check.outputs.complete == 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.ANDROID_HOME }}/system-images
+          key: system-images-${{ matrix.device }}-v1
 
       - name: Upload Instrumentation Coverage
         if: always()
