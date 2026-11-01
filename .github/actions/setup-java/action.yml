@@ -1,5 +1,11 @@
 name: Setup Java
 
+inputs:
+  android-packages:
+    description: 'Space-separated SDK packages for setup-android to install'
+    required: false
+    default: 'platform-tools'
+
 runs:
   using: composite
   steps:
@@ -15,3 +21,5 @@ runs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
+      with:
+        packages: ${{ inputs.android-packages }}

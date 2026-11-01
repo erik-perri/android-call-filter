@@ -63,6 +63,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - uses: ./.github/actions/setup-java
+        with:
+          # Install the emulator up front. setup-android <4.0.2 got it implicitly
+          # as a dependency of the removed `tools` package, and AGP's managed
+          # device setup fails on API 27/28 when it has to fetch it itself
+          # ("Cannot query the value of this property because it has no value
+          # available").
+          android-packages: platform-tools emulator
 
       - name: Enable KVM
         run: |
