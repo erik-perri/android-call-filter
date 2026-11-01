@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.novyr.callfilter.util.RecyclerViewMatcher.withRecyclerView;
+import static com.novyr.callfilter.util.ViewWait.waitUntil;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,7 +18,6 @@ import android.graphics.Rect;
 import android.os.Build;
 
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.GrantPermissionRule;
@@ -30,7 +30,6 @@ import com.novyr.callfilter.db.entity.RuleEntity;
 import com.novyr.callfilter.db.entity.enums.RuleAction;
 import com.novyr.callfilter.db.entity.enums.RuleType;
 import com.novyr.callfilter.util.DatabaseHelper;
-import com.novyr.callfilter.util.DatabaseIdlingResource;
 import com.novyr.callfilter.util.PermissionHelper;
 
 import org.junit.After;
@@ -43,7 +42,6 @@ import java.util.List;
 @MediumTest
 public class RuleListActivityTest {
     private final DatabaseHelper dbHelper = new DatabaseHelper();
-    private final DatabaseIdlingResource idlingResource = new DatabaseIdlingResource();
     private ActivityScenario<RuleListActivity> scenario;
 
     // Test-inserted rules use a high order so they appear at position 0 (query is ORDER BY order DESC).
@@ -54,8 +52,6 @@ public class RuleListActivityTest {
 
     @Before
     public void setUp() throws Exception {
-        IdlingRegistry.getInstance().register(idlingResource);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             UiDevice device = UiDevice.getInstance(
                     InstrumentationRegistry.getInstrumentation());
@@ -71,19 +67,26 @@ public class RuleListActivityTest {
             scenario.close();
         }
         dbHelper.resetRules();
-        IdlingRegistry.getInstance().unregister(idlingResource);
     }
 
     private void launchActivity() {
         scenario = ActivityScenario.launch(RuleListActivity.class);
     }
 
+    /**
+     * Waits for the initial rule query to reach the UI. The list is only made visible
+     * in the same LiveData callback that hands the rules to the adapter.
+     */
+    private void launchActivityAndWaitForRules() {
+        launchActivity();
+        waitUntil(withId(R.id.rule_list), matches(isDisplayed()));
+    }
+
     @Test
     public void ruleList_emptyRules_showsEmptyView() {
         launchActivity();
 
-        onView(withId(R.id.empty_view))
-                .check(matches(isDisplayed()));
+        waitUntil(withId(R.id.empty_view), matches(isDisplayed()));
         onView(withId(R.id.rule_list))
                 .check(matches(not(isDisplayed())));
     }
@@ -92,7 +95,7 @@ public class RuleListActivityTest {
     public void ruleEntry_allowAction_showsAllowLabel() {
         dbHelper.insertRule(RuleType.RECOGNIZED, RuleAction.ALLOW, null, true, TEST_ORDER);
 
-        launchActivity();
+        launchActivityAndWaitForRules();
 
         onView(withRecyclerView(R.id.rule_list).atPositionOnView(0, R.id.rule_action_allow))
                 .check(matches(isDisplayed()));
@@ -104,7 +107,7 @@ public class RuleListActivityTest {
     public void ruleEntry_blockAction_showsBlockLabel() {
         dbHelper.insertRule(RuleType.PRIVATE, RuleAction.BLOCK, null, true, TEST_ORDER);
 
-        launchActivity();
+        launchActivityAndWaitForRules();
 
         onView(withRecyclerView(R.id.rule_list).atPositionOnView(0, R.id.rule_action_block))
                 .check(matches(isDisplayed()));
@@ -116,7 +119,7 @@ public class RuleListActivityTest {
     public void ruleEntry_areaCodeType_showsTypeLabel() {
         dbHelper.insertRule(RuleType.AREA_CODE, RuleAction.BLOCK, "212", true, TEST_ORDER);
 
-        launchActivity();
+        launchActivityAndWaitForRules();
 
         onView(withRecyclerView(R.id.rule_list).atPositionOnView(0, R.id.rule_type))
                 .check(matches(withText(R.string.rule_type_area_code)));
@@ -126,7 +129,7 @@ public class RuleListActivityTest {
     public void ruleEntry_matchWithValue_showsValue() {
         dbHelper.insertRule(RuleType.MATCH, RuleAction.BLOCK, "555*", true, TEST_ORDER);
 
-        launchActivity();
+        launchActivityAndWaitForRules();
 
         onView(withRecyclerView(R.id.rule_list).atPositionOnView(0, R.id.rule_value))
                 .check(matches(withText("555*")));
@@ -136,7 +139,7 @@ public class RuleListActivityTest {
     public void enabledSwitch_clicked_disablesRuleInDb() throws Exception {
         dbHelper.insertRule(RuleType.RECOGNIZED, RuleAction.ALLOW, null, true, TEST_ORDER);
 
-        launchActivity();
+        launchActivityAndWaitForRules();
 
         onView(withId(R.id.rule_list))
                 .perform(actionOnItemAtPosition(0, click()));
@@ -150,7 +153,7 @@ public class RuleListActivityTest {
     public void ruleEntry_longPressEdit_opensEditDialog() {
         dbHelper.insertRule(RuleType.RECOGNIZED, RuleAction.ALLOW, null, true, TEST_ORDER);
 
-        launchActivity();
+        launchActivityAndWaitForRules();
 
         onView(withId(R.id.rule_list))
                 .perform(actionOnItemAtPosition(0, longClick()));
@@ -163,10 +166,10 @@ public class RuleListActivityTest {
     }
 
     @Test
-    public void ruleEntry_longPressDelete_removesRule() throws InterruptedException {
+    public void ruleEntry_longPressDelete_removesRule() throws Exception {
         dbHelper.insertRule(RuleType.RECOGNIZED, RuleAction.ALLOW, null, true, TEST_ORDER);
 
-        launchActivity();
+        launchActivityAndWaitForRules();
 
         int countBefore = dbHelper.getRuleEntries().size();
 
@@ -176,17 +179,15 @@ public class RuleListActivityTest {
         onView(withText(R.string.context_menu_delete_rule))
                 .perform(click());
 
-        waitForIdle();
-
-        int countAfter = dbHelper.getRuleEntries().size();
+        int countAfter = dbHelper.pollForRules(entries -> entries.size() == countBefore - 1).size();
         assertEquals("One rule should have been removed", countBefore - 1, countAfter);
     }
 
     @Test
-    public void deleteRule_undoClicked_restoresRule() throws InterruptedException {
+    public void deleteRule_undoClicked_restoresRule() throws Exception {
         dbHelper.insertRule(RuleType.RECOGNIZED, RuleAction.ALLOW, null, true, TEST_ORDER);
 
-        launchActivity();
+        launchActivityAndWaitForRules();
 
         int countBefore = dbHelper.getRuleEntries().size();
 
@@ -195,14 +196,16 @@ public class RuleListActivityTest {
 
         onView(withText(R.string.context_menu_delete_rule))
                 .perform(click());
+
+        // Make sure the delete actually landed, otherwise the count check below
+        // would pass without undo doing anything.
+        dbHelper.pollForRules(entries -> entries.size() == countBefore - 1);
 
         onView(withText(R.string.undo))
                 .check(matches(isDisplayed()))
                 .perform(click());
 
-        waitForIdle();
-
-        int countAfter = dbHelper.getRuleEntries().size();
+        int countAfter = dbHelper.pollForRules(entries -> entries.size() == countBefore).size();
         assertEquals("Rule count should be restored after undo", countBefore, countAfter);
     }
 
@@ -212,7 +215,7 @@ public class RuleListActivityTest {
         dbHelper.insertRule(RuleType.AREA_CODE, RuleAction.BLOCK, "212", true, 20);
         dbHelper.insertRule(RuleType.MATCH, RuleAction.BLOCK, "555*", true, 30);
 
-        launchActivity();
+        launchActivityAndWaitForRules();
 
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
@@ -236,9 +239,5 @@ public class RuleListActivityTest {
                 entries -> entries.size() >= 2 && entries.get(0).getType() == RuleType.AREA_CODE);
         assertEquals("First rule should now be AREA_CODE", RuleType.AREA_CODE, rules.get(0).getType());
         assertEquals("Second rule should now be MATCH", RuleType.MATCH, rules.get(1).getType());
-    }
-
-    private void waitForIdle() {
-        dbHelper.waitForIdle(scenario);
     }
 }

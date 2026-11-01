@@ -66,6 +66,11 @@ android {
         animationsDisabled true
 
         managedDevices {
+            // AGP 8.13 does not pass testedAbi through to device setup, so it has no
+            // effect on which system image is used: the image ABI comes from
+            // require64Bit alone, which defaults to false and gives 32-bit x86 images
+            // for API <= 30. A 32-bit pixel2Api28 guest repeatedly wedged in CI
+            // (emulator spinning at 100% CPU, adb shell unresponsive).
             devices {
                 // Pre-Pie: tests AndroidLegacyHandler (ITelephony reflection).
                 // API 26 is skipped — MODIFY_PHONE_STATE is strictly enforced.
@@ -74,6 +79,7 @@ android {
                     it.apiLevel = 27
                     it.systemImageSource = "aosp"
                     it.testedAbi = "x86_64"
+                    it.require64Bit = true
                 }
                 // Pie: tests AndroidPieHandler (TelecomManager.endCall).
                 pixel2Api28(com.android.build.api.dsl.ManagedVirtualDevice) {
@@ -81,6 +87,7 @@ android {
                     it.apiLevel = 28
                     it.systemImageSource = "aosp"
                     it.testedAbi = "x86_64"
+                    it.require64Bit = true
                 }
                 // Q: tests CallFilterService (CallScreeningService API).
                 pixel2Api29(com.android.build.api.dsl.ManagedVirtualDevice) {
@@ -88,6 +95,7 @@ android {
                     it.apiLevel = 29
                     it.systemImageSource = "aosp"
                     it.testedAbi = "x86_64"
+                    it.require64Bit = true
                 }
                 // API 35: tests modern restrictions (notification permissions,
                 // stricter background execution).
@@ -96,6 +104,7 @@ android {
                     it.apiLevel = 35
                     it.systemImageSource = "aosp-atd"
                     it.testedAbi = "x86_64"
+                    it.require64Bit = true
                 }
             }
             groups {
