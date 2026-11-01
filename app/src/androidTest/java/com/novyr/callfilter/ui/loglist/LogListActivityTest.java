@@ -147,12 +147,19 @@ public class LogListActivityTest {
         onView(withText(R.string.action_clear_logs))
                 .perform(click());
 
+        // Confirm the dialog is up before tapping it, as the confirmed test does.
+        // Tapping "No" immediately after the menu click has been seen to land
+        // before the new dialog window was taking input on the emulator, leaving
+        // the dialog open.
+        onView(withText(R.string.dialog_clear_logs_message))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
         onView(withText(R.string.no))
                 .inRoot(isDialog())
+                .check(matches(isDisplayed()))
                 .perform(click());
 
-        // The dialog window can still hold focus for a moment after the click, and
-        // Espresso searches the focused window, so wait for it to go away.
         waitForLogList();
     }
 
