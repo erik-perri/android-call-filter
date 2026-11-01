@@ -100,7 +100,7 @@ jobs:
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.ANDROID_HOME }}/system-images
-          key: system-images-${{ matrix.device }}-v1
+          key: system-images-${{ matrix.device }}-v2
 
       # Managed-device runs are occasionally flaky, and pixel2Api28 sometimes
       # hangs mid-run with no timeout ever firing. Each attempt runs under a
@@ -142,6 +142,17 @@ jobs:
               timeout 30 jstack "$pid" > "$d/host-jstack-$pid.txt" 2>&1 || true
             done
             timeout 15 "$ADB" devices -l > "$d/adb-devices.txt" 2>&1 || true
+
+            # Per-thread view of the emulator: which thread is spinning, and its
+            # kernel and native stacks (vCPU stuck in KVM vs a render/IO thread).
+            for qpid in $(pgrep -f qemu-system || true); do
+              ps -L -o tid,stat,pcpu,comm -p "$qpid" > "$d/host-qemu-threads-$qpid.txt" 2>&1 || true
+              sudo sh -c "for t in /proc/$qpid/task/*; do echo \"===== \$t \$(cat \$t/comm)\"; cat \$t/stack; done" \
+                > "$d/host-qemu-kstacks-$qpid.txt" 2>&1 || true
+              if command -v gdb > /dev/null; then
+                timeout 90 sudo gdb -batch -p "$qpid" -ex 'thread apply all bt' > "$d/host-qemu-gdb-$qpid.txt" 2>&1 || true
+              fi
+            done
 
             # Guest side. If adb can't even run `true`, the emulator itself is
             # wedged rather than something inside Android.
@@ -228,7 +239,7 @@ jobs:
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ env.ANDROID_HOME }}/system-images
-          key: system-images-${{ matrix.device }}-v1
+          key: system-images-${{ matrix.device }}-v2
 
       - name: Upload diagnostics
         if: always()
